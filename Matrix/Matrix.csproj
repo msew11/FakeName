@@ -4,9 +4,10 @@
     <Authors></Authors>
     <Company></Company>
     <Version>0.0.0.1</Version>
-    <Description>A sample plugin.</Description>
+    <Description>Matrix</Description>
     <Copyright></Copyright>
-    <PackageProjectUrl>https://github.com/goatcorp/SamplePlugin</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/Minstrel-jh/TestPlugin</PackageProjectUrl>
+    <RootNamespace>Matrix</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
