@@ -1,39 +1,32 @@
 ﻿using System;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
-using Matrix.Config;
 
 namespace Matrix.Windows;
 
-public class ConfigWindow : Window, IDisposable
+internal class ConfigWindow : Window, IDisposable
 {
+    private Plugin Plugin { get; }
 
     public ConfigWindow(Plugin plugin) : base("Config")
     {
-        this.SizeCondition = ImGuiCond.Always;
+        Plugin = plugin;
     }
 
     public void Dispose() { }
 
+    public void Open()
+    {
+        IsOpen = true;
+    }
+
     public override void Draw()
     {
-        
-
-        var fakeName = Service.Config.FakeName;
+        var fakeName = Plugin.Config.FakeNameText;
         if (ImGui.InputText($"角色名", ref fakeName, 18))
         {
-            Service.Config.FakeName = fakeName;
-            Service.Config.Save();
+            Plugin.Config.FakeNameText = fakeName;
+            Plugin.SaveConfig();
         }
-
-
-        // can't ref a property, so use a local copy
-        //var configValue = this.configuration.SomePropertyToBeSavedAndWithADefault;
-        // if (ImGui.Checkbox("Random Config Bool", ref configValue))
-        // {
-        //     this.configuration.SomePropertyToBeSavedAndWithADefault = configValue;
-        //     // can save immediately on change, if you don't want to provide a "Save and Close" button
-        //     this.configuration.Save();
-        // }
     }
 }
