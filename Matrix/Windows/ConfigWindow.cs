@@ -26,13 +26,18 @@ internal class ConfigWindow : Window, IDisposable
         {
             if (ImGui.BeginTabItem("改名"))
             {
-                ImGui.Text("角色名");
-                
+                var enabled = Plugin.Config.Enabled;
+                if (ImGui.Checkbox("Enable", ref enabled))
+                {
+                    Plugin.Config.Enabled = enabled;
+                    Plugin.Config.SaveConfig();
+                }
+
                 var fakeName = Plugin.Config.FakeNameText;
-                if (ImGui.InputText("", ref fakeName, 18))
+                if (ImGui.InputText("角色名", ref fakeName, 18))
                 {
                     Plugin.Config.FakeNameText = fakeName;
-                    Plugin.SaveConfig();
+                    Plugin.Config.SaveConfig();
                 }
             }
         }

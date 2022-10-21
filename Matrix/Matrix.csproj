@@ -32,6 +32,11 @@
     <DalamudLibPath>D:\FFXIV\XIVLauncherCN\Roaming\addon\Hooks\dev\</DalamudLibPath>
   </PropertyGroup>
 
+
+    <ItemGroup>
+        <None Include="..\.editorconfig" Link=".editorconfig" />
+    </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="DalamudPackager" Version="2.1.8" />
     <ProjectReference Include="..\XivCommon\XivCommon.csproj" />

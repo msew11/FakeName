@@ -1,7 +1,6 @@
 using Dalamud.Game.Command;
 using Dalamud.Plugin;
-using Matrix.GameFunctions;
-using Matrix.Utils;
+using XivCommon;
 
 namespace Matrix;
 
@@ -10,41 +9,46 @@ public class Plugin : IDalamudPlugin
     public string Name => "Matrix";
 
     internal Configuration Config { get; }
+    
+    internal readonly XivCommonBase Common;
+    internal GameFunctions2 Functions { get; }
 
-    internal HookSetNamePlate HookSetNamePlate { get; }
+    // private HookSetNamePlate HookSetNamePlate { get; }
 
     internal WindowManager WindowManager { get; }
-
+    internal NameRepository NameRepository { get; }
+    private Obscurer Obscurer { get; }
     private Commands Commands { get; }
 
     public Plugin(DalamudPluginInterface pluginInterface, CommandManager commandManager)
     {
         pluginInterface.Create<Service>();
 
-        SeStringUtils.Initialize();
-
         // 加载配置
         Config = Service.Interface.GetPluginConfig() as Configuration ?? new Configuration();
-        Config.FakeName = SeStringUtils.Text(Config.FakeNameText);
+        
+        // XivCommon
+        Common = new XivCommonBase();
+        Functions = new GameFunctions2(this);
         
         // 游戏方法
-        HookSetNamePlate = new HookSetNamePlate(this);
+        // HookSetNamePlate = new HookSetNamePlate(this);
 
         WindowManager = new WindowManager(this);
+        NameRepository = new NameRepository(this);
+        Obscurer = new Obscurer(this);
         Commands = new Commands(this);
     }
 
     public void Dispose()
     {
-        WindowManager.Dispose();
         Commands.Dispose();
+        Obscurer.Dispose();
+        NameRepository.Dispose();
+        WindowManager.Dispose();
 
-        HookSetNamePlate.Dispose();
-    }
-
-    internal void SaveConfig()
-    {
-        Service.Interface.SavePluginConfig(Config);
-        Config.FakeName = SeStringUtils.Text(Config.FakeNameText);
+        // HookSetNamePlate.Dispose();
+        Functions.Dispose();
+        Common.Dispose();
     }
 }

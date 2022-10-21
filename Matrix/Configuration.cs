@@ -1,7 +1,5 @@
 ﻿using System;
 using Dalamud.Configuration;
-using Dalamud.Game.Text.SeStringHandling;
-using Matrix.Utils;
 
 namespace Matrix;
 
@@ -10,8 +8,12 @@ public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 0;
 
+    public bool Enabled { get; set; } = false;
+
     public string FakeNameText { get; set; } = "";
 
-    [NonSerialized]
-    public SeString FakeName = SeStringUtils.SeStringFromPtr(SeStringUtils.emptyPtr);
+    internal void SaveConfig()
+    {
+        Service.Interface.SavePluginConfig(this);
+    }
 }

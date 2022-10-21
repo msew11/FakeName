@@ -41,7 +41,7 @@ namespace XivCommon {
         /// <summary>
         /// Examine functions
         /// </summary>
-        public Examine Examine { get; }
+        // public Examine Examine { get; }
 
         /// <summary>
         /// Talk events
@@ -95,7 +95,7 @@ namespace XivCommon {
             this.Chat = new Chat(scanner);
             this.PartyFinder = new PartyFinder(scanner, partyFinderGui, hooks);
             this.BattleTalk = new BattleTalk(hooks.HasFlag(Hooks.BattleTalk));
-            this.Examine = new Examine(scanner);
+            //this.Examine = new Examine(scanner);
             this.Talk = new Talk(scanner, hooks.HasFlag(Hooks.Talk));
             this.ChatBubbles = new ChatBubbles(objectTable, scanner, hooks.HasFlag(Hooks.ChatBubbles));
             this.Tooltips = new Tooltips(scanner, this.GameGui, hooks.HasFlag(Hooks.Tooltips));

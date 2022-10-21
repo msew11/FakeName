@@ -32,7 +32,8 @@ internal class HookSetNamePlate : IDisposable
     
         if (localPlayerName == currentName.TextValue)
         {
-            var fakeNamePtr = SeStringUtils.SeStringToPtr(Plugin.Config.FakeName);
+            var fakeName = SeStringUtils.Text(Plugin.Config.FakeNameText);
+            var fakeNamePtr = SeStringUtils.SeStringToPtr(fakeName);
             return Hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, fakeNamePtr,
                                  fcName, iconId);
         }
@@ -50,6 +51,7 @@ internal class HookSetNamePlate : IDisposable
         Plugin = plugin;
         
         SignatureHelper.Initialise(this);
+        SeStringUtils.Initialize();
 
         Hook.Enable();
     }
