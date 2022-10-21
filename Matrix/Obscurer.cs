@@ -216,13 +216,11 @@ internal class Obscurer : IDisposable {
     // }
 
     private void OnNamePlateUpdate(NamePlateUpdateEventArgs args) {
-        PluginLog.Information("OnNamePlateUpdate1");
         // only replace nameplates that have objects in the table
         // note: 
         if (!Plugin.Config.Enabled || !Plugin.NameRepository.Initialised || args.ObjectId == 0xE0000000) {
             return;
         }
-        PluginLog.Information("OnNamePlateUpdate2");
 
         // find the object this nameplate references
         // note: 遍历ObjectTable，找到事件中ObjectId对应的GameObject
@@ -230,7 +228,6 @@ internal class Obscurer : IDisposable {
         if (obj == null) {
             return;
         }
-        PluginLog.Information("OnNamePlateUpdate3");
 
         // handle owners
         // note: 如果找到的GameObject的OwnerId存在，就找到它的Owner，并将操作对象改为Owner
@@ -241,14 +238,12 @@ internal class Obscurer : IDisposable {
 
             obj = owner;
         }
-        PluginLog.Information("OnNamePlateUpdate4");
 
         // only work for characters
         // note: 当前Object的类型需要是玩家
         if (obj.ObjectKind != ObjectKind.Player || obj is not Character chara) {
             return;
         }
-        PluginLog.Information("OnNamePlateUpdate5");
 
         var info = GetInfo(chara);
 
