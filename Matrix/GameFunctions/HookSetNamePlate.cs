@@ -7,16 +7,16 @@ namespace Matrix.GameFunctions;
 
 internal class HookSetNamePlate : IDisposable
 {
-    internal const string SetNamePlateSignature =
+    internal const string Signature =
         "48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 54 41 56 41 57 48 83 EC 40 44 0F B6 E2";
 
-    private delegate IntPtr SetNamePlateDelegate(
+    private delegate IntPtr Delegate(
         IntPtr addon, bool isPrefixTitle, bool displayTitle, IntPtr title, IntPtr name, IntPtr fcName, int iconId);
 
-    [Signature(SetNamePlateSignature, DetourName = nameof(SetNamePlateDetour))]
-    private Hook<SetNamePlateDelegate> SetNamePlateHook { get; init; } = null!;
+    [Signature(Signature, DetourName = nameof(Detour))]
+    private Hook<Delegate> Hook { get; init; } = null!;
 
-    private unsafe IntPtr SetNamePlateDetour(
+    private IntPtr Detour(
         IntPtr namePlateObjectPtr, bool isPrefixTitle, bool displayTitle, IntPtr title,
         IntPtr name, IntPtr fcName, int iconId)
     {
@@ -33,13 +33,13 @@ internal class HookSetNamePlate : IDisposable
         if (localPlayerName == currentName.TextValue)
         {
             var fakeNamePtr = SeStringUtils.SeStringToPtr(Plugin.Config.FakeName);
-            return SetNamePlateHook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, fakeNamePtr,
-                                             fcName, iconId);
+            return Hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, fakeNamePtr,
+                                 fcName, iconId);
         }
         else
         {
-            return SetNamePlateHook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, name, fcName,
-                                             iconId);
+            return Hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, name, fcName,
+                                 iconId);
         }
     }
 
@@ -51,11 +51,12 @@ internal class HookSetNamePlate : IDisposable
         
         SignatureHelper.Initialise(this);
 
-        SetNamePlateHook.Enable();
+        Hook.Enable();
     }
 
     public void Dispose()
     {
-        SetNamePlateHook.Dispose();
+        Hook.Disable();
+        Hook.Dispose();
     }
 }

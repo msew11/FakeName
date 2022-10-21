@@ -1,6 +1,5 @@
 using Dalamud.Game.Command;
 using Dalamud.Plugin;
-using Dalamud.Utility.Signatures;
 using Matrix.GameFunctions;
 using Matrix.Utils;
 

@@ -22,11 +22,19 @@ internal class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
-        var fakeName = Plugin.Config.FakeNameText;
-        if (ImGui.InputText($"角色名", ref fakeName, 18))
+        if (ImGui.BeginTabBar("##tabbar"))
         {
-            Plugin.Config.FakeNameText = fakeName;
-            Plugin.SaveConfig();
+            if (ImGui.BeginTabItem("改名"))
+            {
+                ImGui.Text("角色名");
+                
+                var fakeName = Plugin.Config.FakeNameText;
+                if (ImGui.InputText("", ref fakeName, 18))
+                {
+                    Plugin.Config.FakeNameText = fakeName;
+                    Plugin.SaveConfig();
+                }
+            }
         }
     }
 }
