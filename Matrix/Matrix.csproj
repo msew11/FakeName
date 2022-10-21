@@ -31,13 +31,10 @@
   <PropertyGroup>
     <DalamudLibPath>D:\FFXIV\XIVLauncherCN\Roaming\addon\Hooks\dev\</DalamudLibPath>
   </PropertyGroup>
-  
-   <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
-    <DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
-  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="DalamudPackager" Version="2.1.8" />
+    <ProjectReference Include="..\XivCommon\XivCommon.csproj" />
     <Reference Include="FFXIVClientStructs">
       <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
       <Private>false</Private>
