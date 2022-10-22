@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 
-namespace Matrix.Utils;
+namespace FakeName.Utils;
 
 public static class SeStringUtils
 {

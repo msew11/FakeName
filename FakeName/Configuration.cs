@@ -1,7 +1,7 @@
 ﻿using System;
 using Dalamud.Configuration;
 
-namespace Matrix;
+namespace FakeName;
 
 [Serializable]
 public class Configuration : IPluginConfiguration

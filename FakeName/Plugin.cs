@@ -2,11 +2,11 @@ using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using XivCommon;
 
-namespace Matrix;
+namespace FakeName;
 
 public class Plugin : IDalamudPlugin
 {
-    public string Name => "Matrix";
+    public string Name => "FakeName";
 
     internal Configuration Config { get; }
     

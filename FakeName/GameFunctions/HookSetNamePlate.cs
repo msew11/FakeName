@@ -1,9 +1,9 @@
 ﻿using System;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using Matrix.Utils;
+using FakeName.Utils;
 
-namespace Matrix.GameFunctions;
+namespace FakeName.GameFunctions;
 
 internal class HookSetNamePlate : IDisposable
 {

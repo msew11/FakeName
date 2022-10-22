@@ -1,7 +1,7 @@
 ﻿using System;
 using Dalamud.Game.Command;
 
-namespace Matrix;
+namespace FakeName;
 
 internal class Commands : IDisposable {
     private Plugin Plugin { get; }
@@ -9,13 +9,13 @@ internal class Commands : IDisposable {
     internal Commands(Plugin plugin) {
         Plugin = plugin;
 
-        Service.CommandManager.AddHandler("/matrix", new CommandInfo(this.OnCommand) {
-            HelpMessage = "打开Matrix",
+        Service.CommandManager.AddHandler("/fakename", new CommandInfo(this.OnCommand) {
+            HelpMessage = "打开FakeName",
         });
     }
 
     public void Dispose() {
-        Service.CommandManager.RemoveHandler("/matrix");
+        Service.CommandManager.RemoveHandler("/fakename");
     }
 
     private void OnCommand(string command, string arguments) {

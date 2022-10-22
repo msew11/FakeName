@@ -1,9 +1,9 @@
 {
   "Author": "matrix",
-  "Name": "Matrix",
+  "Name": "FakeName",
   "Punchline": "A short one-liner that shows up in /xlplugins.",
   "Description": "A description that shows up in /xlplugins. List any major slash-command(s).",
-  "InternalName": "Matrix",
+  "InternalName": "FakeName",
   "ApplicableVersion": "any",
   "DalamudApiLevel": 6,
   "Tags": [

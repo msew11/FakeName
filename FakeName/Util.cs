@@ -5,7 +5,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 
-namespace Matrix;
+namespace FakeName;
 
 internal static class Util {
     internal static void ReplacePlayerName(this SeString text, string name, string replacement) {

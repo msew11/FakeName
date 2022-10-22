@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Matrix;
+namespace FakeName;
 
 internal class NameRepository : IDisposable
 {

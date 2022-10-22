@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Matrix;
+namespace FakeName;
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct EquipData {

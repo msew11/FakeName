@@ -2,7 +2,7 @@
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 
-namespace Matrix.Windows;
+namespace FakeName.Windows;
 
 internal class ConfigWindow : Window, IDisposable
 {

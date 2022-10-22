@@ -1,12 +1,12 @@
 ﻿using System;
 using Dalamud.Interface.Windowing;
-using Matrix.Windows;
+using FakeName.Windows;
 
-namespace Matrix;
+namespace FakeName;
 
 internal class WindowManager : IDisposable
 {
-    internal readonly WindowSystem WindowSystem = new("Matrix");
+    internal readonly WindowSystem WindowSystem = new("FakeName");
     internal ConfigWindow ConfigWindow { get; }
 
     public WindowManager(Plugin plugin)

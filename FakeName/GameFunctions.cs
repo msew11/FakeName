@@ -9,7 +9,7 @@ using Dalamud.Utility.Signatures;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 
-namespace Matrix;
+namespace FakeName;
 
 internal class GameFunctions2 : IDisposable {
     private static class Signatures {

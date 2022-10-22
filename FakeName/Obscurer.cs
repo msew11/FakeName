@@ -12,7 +12,7 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
 using XivCommon.Functions.NamePlates;
 
-namespace Matrix;
+namespace FakeName;
 
 internal class Obscurer : IDisposable {
     private Plugin Plugin { get; }
