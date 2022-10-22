@@ -1,14 +1,8 @@
 {
-  "Author": "matrix",
-  "Name": "FakeName",
-  "Punchline": "A short one-liner that shows up in /xlplugins.",
-  "Description": "A description that shows up in /xlplugins. List any major slash-command(s).",
-  "InternalName": "FakeName",
-  "ApplicableVersion": "any",
-  "DalamudApiLevel": 6,
-  "Tags": [
-    "sample",
-    "plugin",
-    "goats"
-  ]
+    "Author": "matrix",
+    "Name": "FakeName",
+    "Description": "Change your character name.",
+    "InternalName": "FakeName",
+    "ApplicableVersion": "any",
+    "DalamudApiLevel": 6
 }
