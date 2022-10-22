@@ -12,9 +12,10 @@
         "DalamudApiLevel": 6,
         "IsHide": false,
         "IsTestingExclusive": false,
-        "Tags": [],
-        "DownloadLinkInstall": "https://github.com/Minstrel-jh/FakeName/releases/download/1.0.0.0/latest.zip",
-        "DownloadLinkTesting": "https://github.com/Minstrel-jh/FakeName/releases/download/1.0.0.0/latest.zip",
-        "DownloadLinkUpdate": "https://github.com/Minstrel-jh/FakeName/releases/download/1.0.0.0/latest.zip"
+        "DownloadCount": 0,
+        "DownloadLinkInstall": "https://github.com/Minstrel-jh/FakeName/releases/latest/download/latest.zip",
+        "DownloadLinkTesting": "https://github.com/Minstrel-jh/FakeName/releases/latest/download/latest.zip",
+        "DownloadLinkUpdate": "https://github.com/Minstrel-jh/FakeName/releases/latest/download/latest.zip",
+        "LastUpdated": "1659247509"
     }
 ]
