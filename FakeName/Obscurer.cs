@@ -91,6 +91,8 @@ internal class Obscurer : IDisposable {
     }
 
     private void OnNamePlateUpdate(NamePlateUpdateEventArgs args) {
+        PluginLog.Debug("OnNamePlateUpdate");
+        
         // only replace nameplates that have objects in the table
         // note: 
         if (!Plugin.Config.Enabled || !Plugin.NameRepository.Initialised || args.ObjectId == 0xE0000000) {
@@ -143,7 +145,12 @@ internal class Obscurer : IDisposable {
     }
 
     // note: 将text的文本改掉
-    private void ChangeName(SeString text, string name) {
+    private void ChangeName(SeString text, string name)
+    {
+
+        var textValue = text.TextValue;
+        PluginLog.Debug($"a text={textValue} name={name}");
+        
         // note: 生成了一个替换名replacement
         var replacement = Plugin.NameRepository.GetReplacement();
 
@@ -167,16 +174,13 @@ internal class Obscurer : IDisposable {
             var playerName = player.RawName()!;
             var replacement = Plugin.NameRepository.GetReplacement();
             var textValue = text.TextValue;
-            if (textValue.Contains(replacement))
-            {
-                // 已经改过了 不改
-                return false;
-            }
             if (!textValue.Contains(playerName))
             {
-                // 已经改过了 不改
+                // 如果文本中没有自己的name 就不改
                 return false;
             }
+            
+            PluginLog.Debug($"b text={textValue} name={playerName}");
             
             text.ReplacePlayerName(playerName, replacement);
             changed = true;

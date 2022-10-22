@@ -1,5 +1,6 @@
 using Dalamud.Game.Command;
 using Dalamud.Plugin;
+using FakeName.GameFunctions;
 using XivCommon;
 
 namespace FakeName;
@@ -13,7 +14,7 @@ public class Plugin : IDalamudPlugin
     internal readonly XivCommonBase Common;
     internal GameFunctions2 Functions { get; }
 
-    // private HookSetNamePlate HookSetNamePlate { get; }
+    private HookSetNamePlate HookSetNamePlate { get; }
 
     internal WindowManager WindowManager { get; }
     internal NameRepository NameRepository { get; }
@@ -30,9 +31,7 @@ public class Plugin : IDalamudPlugin
         // XivCommon
         Common = new XivCommonBase();
         Functions = new GameFunctions2(this);
-        
-        // 游戏方法
-        // HookSetNamePlate = new HookSetNamePlate(this);
+        HookSetNamePlate = new HookSetNamePlate(this);
 
         WindowManager = new WindowManager(this);
         NameRepository = new NameRepository(this);
@@ -47,7 +46,7 @@ public class Plugin : IDalamudPlugin
         NameRepository.Dispose();
         WindowManager.Dispose();
 
-        // HookSetNamePlate.Dispose();
+        HookSetNamePlate.Dispose();
         Functions.Dispose();
         Common.Dispose();
     }

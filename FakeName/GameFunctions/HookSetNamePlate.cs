@@ -1,5 +1,6 @@
 ﻿using System;
 using Dalamud.Hooking;
+using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using FakeName.Utils;
 
@@ -37,11 +38,9 @@ internal class HookSetNamePlate : IDisposable
             return Hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, fakeNamePtr,
                                  fcName, iconId);
         }
-        else
-        {
-            return Hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, name, fcName,
-                                 iconId);
-        }
+
+        return Hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, name, fcName,
+                             iconId);
     }
 
     private Plugin Plugin { get; }
