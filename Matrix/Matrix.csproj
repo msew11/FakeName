@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <Authors></Authors>
-    <Company></Company>
-    <Version>0.0.0.1</Version>
-    <Description>Matrix</Description>
-    <Copyright></Copyright>
-    <PackageProjectUrl>https://github.com/Minstrel-jh/TestPlugin</PackageProjectUrl>
-    <RootNamespace>Matrix</RootNamespace>
-  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -21,21 +12,9 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="..\Data\goat.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-  </ItemGroup>
-
   <PropertyGroup>
     <DalamudLibPath>D:\FFXIV\XIVLauncherCN\Roaming\addon\Hooks\dev\</DalamudLibPath>
   </PropertyGroup>
-
-
-    <ItemGroup>
-        <None Include="..\.editorconfig" Link=".editorconfig" />
-    </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DalamudPackager" Version="2.1.8" />

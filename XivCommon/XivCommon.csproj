@@ -1,44 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Platforms>x64</Platforms>
+        <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <Nullable>enable</Nullable>
-        <Version>5.0.0</Version>
-        <DebugType>full</DebugType>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
 
     <PropertyGroup>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <Title>XivCommon</Title>
-        <Authors>ascclemens</Authors>
-        <RepositoryUrl>https://git.sr.ht/~jkcclemens/XivCommon</RepositoryUrl>
-        <Description>A set of common functions, hooks, and events not included in Dalamud.</Description>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <DalamudLibPath>D:\FFXIV\XIVLauncherCN\Roaming\addon\Hooks\dev\</DalamudLibPath>
     </PropertyGroup>
-
-    <PropertyGroup>
-        <Dalamud>D:\FFXIV\XIVLauncherCN\Roaming\addon\Hooks\dev\</Dalamud>
-    </PropertyGroup>
-
 
     <ItemGroup>
         <Reference Include="Dalamud">
-            <HintPath>$(Dalamud)\Dalamud.dll</HintPath>
+            <HintPath>$(DalamudLibPath)\Dalamud.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="FFXIVClientStructs">
-            <HintPath>$(Dalamud)\FFXIVClientStructs.dll</HintPath>
+            <HintPath>$(DalamudLibPath)\FFXIVClientStructs.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Lumina">
-            <HintPath>$(Dalamud)\Lumina.dll</HintPath>
+            <HintPath>$(DalamudLibPath)\Lumina.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Lumina.Excel">
-            <HintPath>$(Dalamud)\Lumina.Excel.dll</HintPath>
+            <HintPath>$(DalamudLibPath)\Lumina.Excel.dll</HintPath>
             <Private>False</Private>
         </Reference>
     </ItemGroup>
