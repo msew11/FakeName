@@ -1,0 +1,20 @@
+[
+    {
+        "Author": "matrix",
+        "Name": "FakeName",
+        "Punchline": "Change your character name.",
+        "Description": "Change your character name.",
+        "InternalName": "EasyZoom",
+        "AssemblyVersion": "1.0.0.0",
+        "RepoUrl": "https://github.com/Minstrel-jh/FakeName",
+        "IconUrl": "",
+        "ApplicableVersion": "any",
+        "DalamudApiLevel": 6,
+        "IsHide": false,
+        "IsTestingExclusive": false,
+        "Tags": [],
+        "DownloadLinkInstall": "https://github.com/Minstrel-jh/FakeName/releases/download/1.0.0.0/latest.zip",
+        "DownloadLinkTesting": "https://github.com/Minstrel-jh/FakeName/releases/download/1.0.0.0/latest.zip",
+        "DownloadLinkUpdate": "https://github.com/Minstrel-jh/FakeName/releases/download/1.0.0.0/latest.zip"
+    }
+]
