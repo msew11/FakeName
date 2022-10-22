@@ -68,7 +68,7 @@ internal class Obscurer : IDisposable {
         UpdateTimer.Restart();
     }
 
-    private static readonly Regex Coords = new(@"^X: \d+. Y: \d+.(?: Z: \d+.)?$", RegexOptions.Compiled);
+    private static readonly Regex Coords = new(@"^X:\W*\d+.*Y:\W*\d+.*(?:Z:\W*\d+.*)?$", RegexOptions.Compiled);
 
     private void OnAtkTextNodeSetText(IntPtr node, IntPtr textPtr, ref SeString? overwrite) {
         // A catch-all for UI text. This is slow, so specialised methods should be preferred.
@@ -89,131 +89,6 @@ internal class Obscurer : IDisposable {
             overwrite = text;
         }
     }
-
-    // private unsafe bool ShouldObscureAppearance(GameObject* gameObj) {
-    //     if (gameObj == null) {
-    //         return false;
-    //     }
-    //
-    //     if (gameObj->ObjectKind != (byte) FFXIVClientStructs.FFXIV.Client.Game.Object.ObjectKind.Pc) {
-    //         return false;
-    //     }
-    //
-    //     var gameObject = Service.ObjectTable.CreateObjectReference((IntPtr) gameObj)!;
-    //     return gameObject is Character chara && ShouldObscureAppearance(chara);
-    // }
-
-    // private unsafe bool ShouldObscureAppearance(Character chara) {
-    //     if (!Plugin.Config.Enabled) {
-    //         return false;
-    //     }
-    //
-    //     var name = chara.RawName()!;
-    //
-    //     if (Plugin.Config.ObscureAppearancesExcludeFriends && Friends.Contains(name)) {
-    //         return false;
-    //     }
-    //
-    //     var player = *(GameObject**) Plugin.ObjectTable.Address;
-    //     if (player != null && player->ObjectID == chara.ObjectId) {
-    //         return Plugin.Config.ObscureAppearancesSelf;
-    //     }
-    //
-    //     var party = Plugin.PartyList.Select(member => member.ObjectId);
-    //     if (party.Contains(chara.ObjectId)) {
-    //         return Plugin.Config.ObscureAppearancesParty;
-    //     }
-    //
-    //     return Plugin.Config.ObscureAppearancesOthers;
-    // }
-    
-    // private unsafe void OnCharacterInitialise(GameObject* gameObj, IntPtr humanPtr, IntPtr customiseDataPtr) {
-    //     if (!ShouldObscureAppearance(gameObj)) {
-    //         return;
-    //     }
-    //
-    //     var npc = Plugin.AppearanceRepository.GetNpc(gameObj->ObjectID);
-    //
-    //     var customise = (byte*) customiseDataPtr;
-    //     customise[(int) CustomizeIndex.Race] = (byte) npc.Race.Row;
-    //     customise[(int) CustomizeIndex.Gender] = npc.Gender;
-    //     customise[(int) CustomizeIndex.ModelType] = npc.BodyType;
-    //     customise[(int) CustomizeIndex.Height] = npc.Height;
-    //     customise[(int) CustomizeIndex.Tribe] = (byte) npc.Tribe.Row;
-    //     customise[(int) CustomizeIndex.FaceType] = npc.Face;
-    //     customise[(int) CustomizeIndex.HairStyle] = npc.HairStyle;
-    //     customise[(int) CustomizeIndex.HasHighlights] = npc.HairHighlight;
-    //     customise[(int) CustomizeIndex.SkinColor] = npc.SkinColor;
-    //     customise[(int) CustomizeIndex.EyeColor] = npc.EyeColor;
-    //     customise[(int) CustomizeIndex.HairColor] = npc.HairColor;
-    //     customise[(int) CustomizeIndex.HairColor2] = npc.HairHighlightColor;
-    //     customise[(int) CustomizeIndex.FaceFeatures] = npc.FacialFeature;
-    //     customise[(int) CustomizeIndex.FaceFeaturesColor] = npc.FacialFeatureColor;
-    //     customise[(int) CustomizeIndex.Eyebrows] = npc.Eyebrows;
-    //     customise[(int) CustomizeIndex.EyeColor2] = npc.EyeHeterochromia;
-    //     customise[(int) CustomizeIndex.EyeShape] = npc.EyeShape;
-    //     customise[(int) CustomizeIndex.NoseShape] = npc.Nose;
-    //     customise[(int) CustomizeIndex.JawShape] = npc.Jaw;
-    //     customise[(int) CustomizeIndex.LipStyle] = npc.Mouth;
-    //     customise[(int) CustomizeIndex.LipColor] = npc.LipColor;
-    //     customise[(int) CustomizeIndex.RaceFeatureSize] = npc.BustOrTone1;
-    //     customise[(int) CustomizeIndex.RaceFeatureType] = npc.ExtraFeature1;
-    //     customise[(int) CustomizeIndex.BustSize] = npc.ExtraFeature2OrBust;
-    //     customise[(int) CustomizeIndex.Facepaint] = npc.FacePaint;
-    //     customise[(int) CustomizeIndex.FacepaintColor] = npc.FacePaintColor;
-    // }
-
-    // private enum EquipSlot : uint {
-    //     Head = 0,
-    //     Body = 1,
-    //     Hands = 2,
-    //     Legs = 3,
-    //     Feet = 4,
-    //     Ears = 5,
-    //     Neck = 6,
-    //     Wrists = 7,
-    //     RightRing = 8,
-    //     LeftRing = 9,
-    // }
-
-    // private unsafe void OnFlagSlotUpdate(GameObject* gameObj, uint slot, EquipData* equipData) {
-    //     if (equipData == null) {
-    //         return;
-    //     }
-    //
-    //     if (!ShouldObscureAppearance(gameObj)) {
-    //         return;
-    //     }
-    //
-    //     var chara = (FFXIVClientStructs.FFXIV.Client.Game.Character.Character*) gameObj;
-    //     var (mainHand, offHand) = Plugin.AppearanceRepository.GetHands(chara->ClassJob, gameObj->ObjectID);
-    //
-    //     var npc = Plugin.AppearanceRepository.GetNpc(gameObj->ObjectID);
-    //     var itemSlot = (EquipSlot) slot;
-    //     var info = itemSlot switch {
-    //         EquipSlot.Head => (npc.ModelHead, npc.DyeHead.Row),
-    //         EquipSlot.Body => (npc.ModelBody, npc.DyeBody.Row),
-    //         EquipSlot.Hands => (npc.ModelHands, npc.DyeHands.Row),
-    //         EquipSlot.Legs => (npc.ModelLegs, npc.DyeLegs.Row),
-    //         EquipSlot.Feet => (npc.ModelFeet, npc.DyeFeet.Row),
-    //         EquipSlot.Ears => (npc.ModelEars, npc.DyeEars.Row),
-    //         EquipSlot.Neck => (npc.ModelNeck, npc.DyeNeck.Row),
-    //         EquipSlot.Wrists => (npc.ModelWrists, npc.DyeWrists.Row),
-    //         EquipSlot.RightRing => (npc.ModelRightRing, npc.DyeRightRing.Row),
-    //         EquipSlot.LeftRing => (npc.ModelLeftRing, npc.DyeLeftRing.Row),
-    //         // EquipSlot.MainHand => (mainHand.ModelMain, npc.DyeMainHand.Row),
-    //         // EquipSlot.OffHand => (mainHand.ModelSub != 0 ? mainHand.ModelSub : offHand?.ModelMain ?? 0, npc.DyeOffHand.Row),
-    //         _ => (uint.MaxValue, uint.MaxValue),
-    //     };
-    //
-    //     if (info.Item1 == uint.MaxValue) {
-    //         return;
-    //     }
-    //
-    //     equipData->Model = (ushort) (info.Item1 & 0xFFFF);
-    //     equipData->Variant = (byte) ((info.Item1 >> 16) & 0xFF);
-    //     equipData->Dye = (byte) info.Item2;
-    // }
 
     private void OnNamePlateUpdate(NamePlateUpdateEventArgs args) {
         // only replace nameplates that have objects in the table
@@ -290,10 +165,21 @@ internal class Obscurer : IDisposable {
 
         if (player != null) {
             var playerName = player.RawName()!;
-            if (Plugin.NameRepository.GetReplacement() is { } replacement) {
-                text.ReplacePlayerName(playerName, replacement);
-                changed = true;
+            var replacement = Plugin.NameRepository.GetReplacement();
+            var textValue = text.TextValue;
+            if (textValue.Contains(replacement))
+            {
+                // 已经改过了 不改
+                return false;
             }
+            if (!textValue.Contains(playerName))
+            {
+                // 已经改过了 不改
+                return false;
+            }
+            
+            text.ReplacePlayerName(playerName, replacement);
+            changed = true;
         }
 
         return changed;
