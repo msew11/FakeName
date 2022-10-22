@@ -1,6 +1,7 @@
 {
     "Author": "matrix",
     "Name": "FakeName",
+    "Punchline": "Change your character name.",
     "Description": "Change your character name.",
     "InternalName": "FakeName",
     "ApplicableVersion": "any",
