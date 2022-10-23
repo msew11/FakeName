@@ -11,6 +11,8 @@ public class Configuration : IPluginConfiguration
     public bool Enabled { get; set; } = false;
 
     public string FakeNameText { get; set; } = "";
+    
+    public string FakeFcNameText { get; set; } = "";
 
     internal void SaveConfig()
     {

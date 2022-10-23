@@ -5,7 +5,7 @@
         "Punchline": "Change your character name.",
         "Description": "Change your character name.",
         "InternalName": "FakeName",
-        "AssemblyVersion": "1.0.0.1",
+        "AssemblyVersion": "1.0.0.2",
         "RepoUrl": "https://github.com/Minstrel-jh/FakeName",
         "IconUrl": "",
         "ApplicableVersion": "any",

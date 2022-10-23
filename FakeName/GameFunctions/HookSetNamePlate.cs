@@ -23,20 +23,22 @@ internal class HookSetNamePlate : IDisposable
     {
         // 角色名
         var localPlayer = Service.ClientState.LocalPlayer;
-        var localPlayerName = "";
+        var localName = "";
         if (localPlayer != null)
         {
-            localPlayerName = localPlayer.Name.TextValue;
+            localName = localPlayer.Name.TextValue;
         }
     
         var currentName = SeStringUtils.SeStringFromPtr(name);
     
-        if (localPlayerName == currentName.TextValue)
+        if (localName == currentName.TextValue)
         {
             var fakeName = SeStringUtils.Text(Plugin.Config.FakeNameText);
+            var fakeFcName = SeStringUtils.Text(Plugin.Config.FakeFcNameText);
             var fakeNamePtr = SeStringUtils.SeStringToPtr(fakeName);
+            var fakeFcNamePtr = SeStringUtils.SeStringToPtr(fakeFcName);
             return Hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, fakeNamePtr,
-                                 fcName, iconId);
+                                 fakeFcNamePtr, iconId);
         }
 
         return Hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, name, fcName,
