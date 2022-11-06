@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
 using Dalamud.Logging;
@@ -35,10 +34,12 @@ public class AtkTextNodeSetText
 
         this.AtkTextNodeSetTextHook.Enable();
         this.OnAtkTextNodeSetText += DealAtkTextNodeSetText;
+        //this.OnAtkTextNodeSetText += ResolvePartyMemberName;
     }
 
     public void Dispose()
     {
+        //this.OnAtkTextNodeSetText -= ResolvePartyMemberName;
         this.OnAtkTextNodeSetText -= DealAtkTextNodeSetText;
         this.AtkTextNodeSetTextHook.Disable();
         this.AtkTextNodeSetTextHook.Dispose();
@@ -71,31 +72,17 @@ public class AtkTextNodeSetText
 
         var text = Util.ReadRawSeString(textPtr);
 
-        if (text.Payloads.All(payload => payload.Type != PayloadType.RawText))
+        if (text.Payloads.Count > 20)
         {
             return;
         }
-
-        var player = Service.ClientState.LocalPlayer;
-        if (player == null)
-        {
-            return;
-        }
-
-        var playerName = player.Name.TextValue;
-        var textValue = text.TextValue;
-        var size = text.Payloads.Count;
-        var replaceName = Plugin.NameRepository.GetReplaceName();
         
-        // size 主要为了过滤掉聊天，不然所有聊天历史中的名字都会被替换，聊天的替换走ChatMessage
-        if (!textValue.Contains(playerName) || size > 10)
+        var change = Plugin.NameRepository.DealReplace(text);
+
+        if (change)
         {
-            return;
+            PluginLog.Debug($"AtkTextNodeSetText {text.TextValue}");
+            overwrite = text;
         }
-
-        PluginLog.Debug($"AtkTextNodeSetText 替换文本:{textValue} size={size.ToString()}");
-
-        text.ReplacePlayerName(playerName, replaceName);
-        overwrite = text;
     }
 }

@@ -35,23 +35,10 @@ internal class ChatMessage : IDisposable
             return;
         }
 
-        var player = Service.ClientState.LocalPlayer;
-        if (player == null)
+        var change = Plugin.NameRepository.DealReplace(text);
+        if (change)
         {
-            return;
+            PluginLog.Debug($"ChatMessage {text.TextValue}");
         }
-
-        var playerName = player.Name.TextValue;
-        var textValue = text.TextValue;
-        var size = text.Payloads.Count;
-        var replaceName = Plugin.NameRepository.GetReplaceName();
-        
-        if (!textValue.Contains(playerName))
-        {
-            return;
-        }
-
-        PluginLog.Debug($"ChatMessage 替换文本:{textValue} size={size.ToString()}");
-        text.ReplacePlayerName(playerName, replaceName);
     }
 }

@@ -9,6 +9,8 @@ public class Configuration : IPluginConfiguration
     public int Version { get; set; } = 0;
 
     public bool Enabled { get; set; } = false;
+    
+    public bool PartyMemberReplace { get; set; } = false;
 
     public string FakeNameText { get; set; } = "";
     

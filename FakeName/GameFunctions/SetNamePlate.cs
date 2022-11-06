@@ -1,7 +1,6 @@
 ﻿using System;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
-using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 
 namespace FakeName.GameFunctions;
@@ -95,79 +94,40 @@ internal class SetNamePlate : IDisposable
             return;
         }
 
-        var titleText = Util.ReadRawSeString(titlePtr);
-        var text = Util.ReadRawSeString(namePtr);
-        var fcText = Util.ReadRawSeString(fcNamePtr);
-
         var player = Service.ClientState.LocalPlayer;
         if (player == null)
         {
             return;
         }
 
-        var localName = player.Name.TextValue;
-        var localFcName = player.CompanyTag.TextValue;
+        var titleText = Util.ReadRawSeString(titlePtr);
+        var text = Util.ReadRawSeString(namePtr);
+        var fcText = Util.ReadRawSeString(fcNamePtr);
         
-        var titleTextValue = titleText.TextValue;
+        // 替换前的名字
         var textValue = text.TextValue;
-        var fcTextValue = fcText.TextValue;
-        
-        var replaceName = Plugin.NameRepository.GetReplaceName();
-        var replaceFcName = Plugin.NameRepository.GetReplaceFcName();
-        
-        if (textValue != localName)
+        var localName = player.Name.TextValue;
+
+        var change = Plugin.NameRepository.DealReplace(text);
+        if (!change)
         {
             return;
         }
-
-        // PluginLog.Debug($"SetNamePlate 替换 name:{textValue} fc:{fcTextValue}");
-        // PluginLog.Debug($"SetNamePlate 替换 title:{titleTextValue}");
-
+        
         if (textValue == localName)
         {
-            // 替换name
-            text.ReplacePlayerName(localName, replaceName);
-            
+            // 替换fc
+            var localFcName = player.CompanyTag.TextValue;
+
             if (!string.IsNullOrEmpty(localFcName))
             {
-                // 替换fc
+                var replaceFcName = Plugin.NameRepository.GetReplaceFcName();
                 fcText.ReplacePlayerName(localFcName, replaceFcName);
             }
         }
-        
-        /*if (titleTextValue == localName)
-        {
-            titleText.ReplacePlayerName(localName, replaceName);
-        }*/
 
         title = titleText;
         name = text;
         fcName = fcText;
-        
-        
-        
-
-
-        // 角色名
-        /*var localPlayer = Service.ClientState.LocalPlayer;
-        var localName = "";
-        if (localPlayer != null)
-        {
-            localName = localPlayer.Name.TextValue;
-        }
-    
-    
-        if (localName == currentName.TextValue)
-        {
-            var fakeName = SeStringUtils.Text(Plugin.Config.FakeNameText);
-            var fakeFcName = SeStringUtils.Text($"«{Plugin.Config.FakeFcNameText}»");
-            var fakeNamePtr = SeStringUtils.SeStringToPtr(fakeName);
-            var fakeFcNamePtr = SeStringUtils.SeStringToPtr(fakeFcName);
-            return SetNamePlateHook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, fakeNamePtr,
-                                 fakeFcNamePtr, iconId);
-        }
-
-        return SetNamePlateHook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, name, fcName,
-                             iconId);*/
     }
 }

@@ -41,6 +41,13 @@ internal class ConfigWindow : Window, IDisposable
                     Plugin.Config.Enabled = enabled;
                     Plugin.Config.SaveConfig();
                 }
+                
+                var partyMemberReplace = Plugin.Config.PartyMemberReplace;
+                if (ImGui.Checkbox("小队模糊(非跨服)", ref partyMemberReplace))
+                {
+                    Plugin.Config.PartyMemberReplace = partyMemberReplace;
+                    Plugin.Config.SaveConfig();
+                }
 
                 var fakeName = Plugin.Config.FakeNameText;
                 if (ImGui.InputText("角色名", ref fakeName, 100))
@@ -64,10 +71,5 @@ internal class ConfigWindow : Window, IDisposable
                 }
             }
         }
-
-        // foreach (var gameObject in Service.ObjectTable)
-        // {
-        //     ImGui.Text($"{gameObject.ObjectId.ToString()} {gameObject.Name.TextValue}");
-        // }
     }
 }
