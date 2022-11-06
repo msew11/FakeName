@@ -1,6 +1,5 @@
 ﻿using System;
 using Dalamud.Interface.Windowing;
-using Dalamud.Logging;
 using ImGuiNET;
 
 namespace FakeName.Windows;
@@ -31,6 +30,7 @@ internal class ConfigWindow : Window, IDisposable
             localName = localPlayer.Name.TextValue;
             localFcName = localPlayer.CompanyTag.TextValue;
         }
+
         if (ImGui.BeginTabBar("##tabbar"))
         {
             if (ImGui.BeginTabItem("改名"))
@@ -64,10 +64,10 @@ internal class ConfigWindow : Window, IDisposable
                 }
             }
         }
-        
-        foreach (var gameObject in Service.ObjectTable)
-        {
-            ImGui.Text($"{gameObject.ObjectId.ToString()} {gameObject.Name.TextValue}");
-        }
+
+        // foreach (var gameObject in Service.ObjectTable)
+        // {
+        //     ImGui.Text($"{gameObject.ObjectId.ToString()} {gameObject.Name.TextValue}");
+        // }
     }
 }
