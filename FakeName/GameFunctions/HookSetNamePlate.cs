@@ -34,7 +34,7 @@ internal class HookSetNamePlate : IDisposable
         if (localName == currentName.TextValue)
         {
             var fakeName = SeStringUtils.Text(Plugin.Config.FakeNameText);
-            var fakeFcName = SeStringUtils.Text(Plugin.Config.FakeFcNameText);
+            var fakeFcName = SeStringUtils.Text($"«{Plugin.Config.FakeFcNameText}»");
             var fakeNamePtr = SeStringUtils.SeStringToPtr(fakeName);
             var fakeFcNamePtr = SeStringUtils.SeStringToPtr(fakeFcName);
             return Hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, title, fakeNamePtr,

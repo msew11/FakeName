@@ -59,7 +59,7 @@ internal class ConfigWindow : Window, IDisposable
                 if (ImGui.Button("重置"))
                 {
                     Plugin.Config.FakeNameText = localName;
-                    Plugin.Config.FakeFcNameText = $"《{localFcName}》";
+                    Plugin.Config.FakeFcNameText = localFcName;
                     Plugin.Config.SaveConfig();
                 }
             }
