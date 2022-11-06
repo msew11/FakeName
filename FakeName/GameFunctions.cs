@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -227,3 +228,4 @@ internal class GameFunctions2 : IDisposable {
         this.LoadExd(excel, name, 0, 1);
     }
 }
+*/

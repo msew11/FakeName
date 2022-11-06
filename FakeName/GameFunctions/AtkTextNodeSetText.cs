@@ -86,13 +86,16 @@ public class AtkTextNodeSetText
 
         var playerName = player.Name.TextValue;
         var textValue = text.TextValue;
+        var size = text.Payloads.Count;
         var replaceName = Plugin.NameRepository.GetReplacement();
-        if (!textValue.Contains(playerName))
+        
+        // size 主要为了过滤掉聊天，不然所有聊天历史中的名字都会被替换，聊天的替换走ChatMessage
+        if (!textValue.Contains(playerName) || size > 10)
         {
             return;
         }
 
-        PluginLog.Debug($"AtkTextNodeSetText1 替换文本:{textValue}");
+        PluginLog.Debug($"AtkTextNodeSetText 替换文本:{textValue} size={size.ToString()}");
 
         text.ReplacePlayerName(playerName, replaceName);
         overwrite = text;

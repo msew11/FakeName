@@ -1,6 +1,7 @@
 using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using FakeName.GameFunctions;
+using FakeName.Services;
 
 namespace FakeName;
 
@@ -10,16 +11,13 @@ public class Plugin : IDalamudPlugin
 
     internal Configuration Config { get; }
     
-    // internal readonly XivCommonBase Common;
-    // internal GameFunctions2 Functions { get; }
-
-    // GameFunctions
-    // private HookSetNamePlate HookSetNamePlate { get; }
     private AtkTextNodeSetText AtkTextNodeSetText { get; }
+
+    internal ChatMessage ChatMessage { get; }
 
     internal WindowManager WindowManager { get; }
     internal NameRepository NameRepository { get; }
-    // private Obscurer Obscurer { get; }
+
     private Commands Commands { get; }
 
     public Plugin(DalamudPluginInterface pluginInterface, CommandManager commandManager)
@@ -28,31 +26,22 @@ public class Plugin : IDalamudPlugin
 
         // 加载配置
         this.Config = Service.Interface.GetPluginConfig() as Configuration ?? new Configuration();
-        
-        // XivCommon
-        // Common = new XivCommonBase();
-        // Functions = new GameFunctions2(this);
-        // HookSetNamePlate = new HookSetNamePlate(this);
-        this.AtkTextNodeSetText = new AtkTextNodeSetText(this);
 
         this.WindowManager = new WindowManager(this);
         this.NameRepository = new NameRepository(this);
-        // Obscurer = new Obscurer(this);
         this.Commands = new Commands(this);
+        
+        this.AtkTextNodeSetText = new AtkTextNodeSetText(this);
+        this.ChatMessage = new ChatMessage(this);
     }
 
     public void Dispose()
     {
+        ChatMessage.Dispose();
+        this.AtkTextNodeSetText.Dispose();
+        
         this.Commands.Dispose();
-        // Obscurer.Dispose();
         this.NameRepository.Dispose();
         this.WindowManager.Dispose();
-        
-        this.AtkTextNodeSetText.Dispose();
-
-        
-        // HookSetNamePlate.Dispose();
-        // Functions.Dispose();
-        // Common.Dispose();
     }
 }
