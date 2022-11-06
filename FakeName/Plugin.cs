@@ -1,7 +1,6 @@
 using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using FakeName.GameFunctions;
-using XivCommon;
 
 namespace FakeName;
 
@@ -11,14 +10,16 @@ public class Plugin : IDalamudPlugin
 
     internal Configuration Config { get; }
     
-    internal readonly XivCommonBase Common;
-    internal GameFunctions2 Functions { get; }
+    // internal readonly XivCommonBase Common;
+    // internal GameFunctions2 Functions { get; }
 
-    private HookSetNamePlate HookSetNamePlate { get; }
+    // GameFunctions
+    // private HookSetNamePlate HookSetNamePlate { get; }
+    private AtkTextNodeSetText AtkTextNodeSetText { get; }
 
     internal WindowManager WindowManager { get; }
     internal NameRepository NameRepository { get; }
-    private Obscurer Obscurer { get; }
+    // private Obscurer Obscurer { get; }
     private Commands Commands { get; }
 
     public Plugin(DalamudPluginInterface pluginInterface, CommandManager commandManager)
@@ -26,28 +27,32 @@ public class Plugin : IDalamudPlugin
         pluginInterface.Create<Service>();
 
         // 加载配置
-        Config = Service.Interface.GetPluginConfig() as Configuration ?? new Configuration();
+        this.Config = Service.Interface.GetPluginConfig() as Configuration ?? new Configuration();
         
         // XivCommon
-        Common = new XivCommonBase();
-        Functions = new GameFunctions2(this);
-        HookSetNamePlate = new HookSetNamePlate(this);
+        // Common = new XivCommonBase();
+        // Functions = new GameFunctions2(this);
+        // HookSetNamePlate = new HookSetNamePlate(this);
+        this.AtkTextNodeSetText = new AtkTextNodeSetText(this);
 
-        WindowManager = new WindowManager(this);
-        NameRepository = new NameRepository(this);
-        Obscurer = new Obscurer(this);
-        Commands = new Commands(this);
+        this.WindowManager = new WindowManager(this);
+        this.NameRepository = new NameRepository(this);
+        // Obscurer = new Obscurer(this);
+        this.Commands = new Commands(this);
     }
 
     public void Dispose()
     {
-        Commands.Dispose();
-        Obscurer.Dispose();
-        NameRepository.Dispose();
-        WindowManager.Dispose();
+        this.Commands.Dispose();
+        // Obscurer.Dispose();
+        this.NameRepository.Dispose();
+        this.WindowManager.Dispose();
+        
+        this.AtkTextNodeSetText.Dispose();
 
-        HookSetNamePlate.Dispose();
-        Functions.Dispose();
-        Common.Dispose();
+        
+        // HookSetNamePlate.Dispose();
+        // Functions.Dispose();
+        // Common.Dispose();
     }
 }
