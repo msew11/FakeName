@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
 using Dalamud.Logging;
@@ -28,6 +27,7 @@ public class AtkTextNodeSetText
 
     private event AtkTextNodeSetTextEventDelegate? OnAtkTextNodeSetText;
 
+    // Constructor
     internal AtkTextNodeSetText(Plugin plugin)
     {
         this.Plugin = plugin;
@@ -62,8 +62,6 @@ public class AtkTextNodeSetText
         this.AtkTextNodeSetTextHook.Original(node, text);
     }
 
-    private static readonly Regex Coords = new(@"^X:\W*\d+.*Y:\W*\d+.*(?:Z:\W*\d+.*)?$", RegexOptions.Compiled);
-
     private void DealAtkTextNodeSetText(IntPtr node, IntPtr textPtr, ref SeString? overwrite)
     {
         if (!Plugin.Config.Enabled)
@@ -87,7 +85,7 @@ public class AtkTextNodeSetText
         var playerName = player.Name.TextValue;
         var textValue = text.TextValue;
         var size = text.Payloads.Count;
-        var replaceName = Plugin.NameRepository.GetReplacement();
+        var replaceName = Plugin.NameRepository.GetReplaceName();
         
         // size 主要为了过滤掉聊天，不然所有聊天历史中的名字都会被替换，聊天的替换走ChatMessage
         if (!textValue.Contains(playerName) || size > 10)

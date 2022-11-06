@@ -64,5 +64,10 @@ internal class ConfigWindow : Window, IDisposable
                 }
             }
         }
+        
+        foreach (var gameObject in Service.ObjectTable)
+        {
+            ImGui.Text($"{gameObject.ObjectId.ToString()} {gameObject.Name.TextValue}");
+        }
     }
 }

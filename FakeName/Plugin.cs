@@ -11,8 +11,12 @@ public class Plugin : IDalamudPlugin
 
     internal Configuration Config { get; }
     
-    private AtkTextNodeSetText AtkTextNodeSetText { get; }
-
+    
+    //internal readonly XivCommonBase Common;
+    //internal NamePlates NamePlates { get; }
+    
+    internal AtkTextNodeSetText AtkTextNodeSetText { get; }
+    internal SetNamePlate SetNamePlate { get; }
     internal ChatMessage ChatMessage { get; }
 
     internal WindowManager WindowManager { get; }
@@ -31,14 +35,21 @@ public class Plugin : IDalamudPlugin
         this.NameRepository = new NameRepository(this);
         this.Commands = new Commands(this);
         
+        //this.Common = new XivCommonBase(Hooks.NamePlates);
+        //this.NamePlates = new NamePlates(this);
         this.AtkTextNodeSetText = new AtkTextNodeSetText(this);
+        this.SetNamePlate = new SetNamePlate(this);
         this.ChatMessage = new ChatMessage(this);
     }
 
     public void Dispose()
     {
-        ChatMessage.Dispose();
+        this.ChatMessage.Dispose();
+        this.SetNamePlate.Dispose();
         this.AtkTextNodeSetText.Dispose();
+        
+        //this.NamePlates.Dispose();
+        //this.Common.Dispose();
         
         this.Commands.Dispose();
         this.NameRepository.Dispose();

@@ -16,8 +16,13 @@ internal class NameRepository : IDisposable
 
     public void Dispose() { }
     
-    internal string GetReplacement()
+    internal string GetReplaceName()
     {
         return Plugin.Config.FakeNameText;
+    }
+    
+    internal string GetReplaceFcName()
+    {
+        return Plugin.Config.FakeFcNameText;
     }
 }

@@ -44,7 +44,7 @@ internal class ChatMessage : IDisposable
         var playerName = player.Name.TextValue;
         var textValue = text.TextValue;
         var size = text.Payloads.Count;
-        var replaceName = Plugin.NameRepository.GetReplacement();
+        var replaceName = Plugin.NameRepository.GetReplaceName();
         
         if (!textValue.Contains(playerName))
         {
