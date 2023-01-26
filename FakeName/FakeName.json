@@ -5,5 +5,5 @@
     "Description": "Change your character name.",
     "InternalName": "FakeName",
     "ApplicableVersion": "any",
-    "DalamudApiLevel": 6
+    "DalamudApiLevel": 8
 }

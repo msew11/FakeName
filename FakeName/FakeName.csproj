@@ -2,8 +2,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <AssemblyVersion>1.0.0.4</AssemblyVersion>
-        <TargetFramework>net6.0-windows</TargetFramework>
+        <AssemblyVersion>1.0.0.5</AssemblyVersion>
+	  <TargetFramework>net7.0</TargetFramework>
         <Platforms>x64</Platforms>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
@@ -14,11 +14,11 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <DalamudLibPath>D:\FFXIV\XIVLauncherCN\Roaming\addon\Hooks\dev\</DalamudLibPath>
+    <DalamudLibPath>$(AppData)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="DalamudPackager" Version="2.1.8" />
+	  <PackageReference Include="DalamudPackager" Version="2.1.10" MakeZip="true" />
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
             <Private>false</Private>
