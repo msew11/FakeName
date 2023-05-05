@@ -27,7 +27,6 @@ public class Hooker
     [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 54 41 56 41 57 48 83 EC 40 44 0F B6 E2", DetourName = nameof(SetNamePlateDetour))]
     private Hook<SetNamePlateDelegate> SetNamePlateHook { get; init; } = null!;
 
-    // Constructor
     internal unsafe Hooker()
     {
         SignatureHelper.Initialise(this);
@@ -35,7 +34,6 @@ public class Hooker
         AtkTextNodeSetTextHook.Enable();
         SetNamePlateHook.Enable();
         Service.ChatGui.ChatMessage += OnChatMessage;
-
     }
 
     public unsafe void Dispose()

@@ -16,7 +16,7 @@ internal static class Replacer
 
         try
         {
-            var str = SeString.Parse(StdString.ReadFromPointer(seStringPtr).RawData);
+            var str = GetSeStringFromPtr(seStringPtr);
             if (ChangeSeString(ref str))
             {
                 var bytes = str.Encode();
@@ -38,7 +38,21 @@ internal static class Replacer
         }
 
     }
-    
+
+    internal static SeString GetSeStringFromPtr(IntPtr seStringPtr)
+    {
+        byte b;
+        var offset = 0;
+        unsafe
+        {
+            while ((b = *(byte*)(seStringPtr + offset)) != 0)
+                offset++;
+        }
+        var bytes = new byte[offset];
+        Marshal.Copy(seStringPtr, bytes, 0, offset);
+        return SeString.Parse(bytes);
+    }
+
     public static bool ChangeSeString(ref SeString seString)
     {
         if (!Service.Config.Enabled) return false;
@@ -82,10 +96,11 @@ internal static class Replacer
 
         return new string[]
         {
-            name, first, last,
+            name, 
             $"{first} {lastShort}",
             $"{firstShort} {last}",
             $"{firstShort} {lastShort}",
+            first, last,
         };
     }
 
