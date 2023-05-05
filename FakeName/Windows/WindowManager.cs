@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using Dalamud.Interface.Windowing;
-using FakeName.Windows;
 
-namespace FakeName;
+namespace FakeName.Windows;
 
 internal class WindowManager : IDisposable
 {
@@ -22,10 +21,7 @@ internal class WindowManager : IDisposable
     {
         Service.Interface.UiBuilder.Draw -= DrawUi;
         Service.Interface.UiBuilder.OpenConfigUi -= ConfigWindow.Open;
-        
         WindowSystem.RemoveAllWindows();
-        
-        ConfigWindow.Dispose();
     }
 
     private void DrawUi()

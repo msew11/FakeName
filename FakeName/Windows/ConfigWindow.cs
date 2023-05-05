@@ -1,75 +1,45 @@
-﻿using System;
+using System;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 
 namespace FakeName.Windows;
 
-internal class ConfigWindow : Window, IDisposable
+internal class ConfigWindow : Window
 {
-    private Plugin Plugin { get; }
-
-    public ConfigWindow(Plugin plugin) : base("Config")
+    public ConfigWindow(Plugin plugin) : base("Fake Name")
     {
-        Plugin = plugin;
     }
 
-    public void Dispose() { }
-
-    public void Open()
-    {
-        IsOpen = true;
-    }
+    public void Open() => IsOpen = true;
 
     public override void Draw()
     {
         var localPlayer = Service.ClientState.LocalPlayer;
         var localName = "";
-        var localFcName = "";
         if (localPlayer != null)
         {
             localName = localPlayer.Name.TextValue;
-            localFcName = localPlayer.CompanyTag.TextValue;
         }
 
-        if (ImGui.BeginTabBar("##tabbar"))
+        if (ImGui.Checkbox("Enable", ref Service.Config.Enabled))
         {
-            if (ImGui.BeginTabItem("改名"))
-            {
-                var enabled = Plugin.Config.Enabled;
-                if (ImGui.Checkbox("Enable", ref enabled))
-                {
-                    Plugin.Config.Enabled = enabled;
-                    Plugin.Config.SaveConfig();
-                }
-                
-                var partyMemberReplace = Plugin.Config.PartyMemberReplace;
-                if (ImGui.Checkbox("小队模糊(非跨服)", ref partyMemberReplace))
-                {
-                    Plugin.Config.PartyMemberReplace = partyMemberReplace;
-                    Plugin.Config.SaveConfig();
-                }
+            Service.Config.SaveConfig();
+        }
 
-                var fakeName = Plugin.Config.FakeNameText;
-                if (ImGui.InputText("角色名", ref fakeName, 100))
-                {
-                    Plugin.Config.FakeNameText = fakeName;
-                    Plugin.Config.SaveConfig();
-                }
+        if (ImGui.Checkbox("Change Party Member's Name", ref Service.Config.PartyMemberReplace))
+        {
+            Service.Config.SaveConfig();
+        }
 
-                var fakeFcName = Plugin.Config.FakeFcNameText;
-                if (ImGui.InputText("部队简称", ref fakeFcName, 100))
-                {
-                    Plugin.Config.FakeFcNameText = fakeFcName;
-                    Plugin.Config.SaveConfig();
-                }
+        if (ImGui.InputText("Character Name", ref Service.Config.FakeNameText, 100))
+        {
+            Service.Config.SaveConfig();
+        }
 
-                if (ImGui.Button("重置"))
-                {
-                    Plugin.Config.FakeNameText = localName;
-                    Plugin.Config.FakeFcNameText = localFcName;
-                    Plugin.Config.SaveConfig();
-                }
-            }
+        if (ImGui.Button("Reset"))
+        {
+            Service.Config.FakeNameText = localName;
+            Service.Config.SaveConfig();
         }
     }
 }

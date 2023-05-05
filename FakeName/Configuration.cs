@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Dalamud.Configuration;
 
 namespace FakeName;
@@ -8,14 +8,12 @@ public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 0;
 
-    public bool Enabled { get; set; } = false;
+    public bool Enabled = false;
     
-    public bool PartyMemberReplace { get; set; } = false;
+    public bool PartyMemberReplace = false;
 
-    public string FakeNameText { get; set; } = "";
+    public string FakeNameText = "";
     
-    public string FakeFcNameText { get; set; } = "";
-
     internal void SaveConfig()
     {
         Service.Interface.SavePluginConfig(this);

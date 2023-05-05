@@ -1,58 +1,44 @@
 using Dalamud.Game.Command;
+using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin;
-using FakeName.GameFunctions;
-using FakeName.Services;
+using FakeName.Windows;
+using System.Linq;
 
 namespace FakeName;
 
 public class Plugin : IDalamudPlugin
 {
     public string Name => "FakeName";
-
-    internal Configuration Config { get; }
     
-    
-    //internal readonly XivCommonBase Common;
-    //internal NamePlates NamePlates { get; }
-    
-    internal AtkTextNodeSetText AtkTextNodeSetText { get; }
-    internal SetNamePlate SetNamePlate { get; }
-    internal ChatMessage ChatMessage { get; }
+    internal Hooker AtkTextNodeSetText { get; }
 
     internal WindowManager WindowManager { get; }
-    internal NameRepository NameRepository { get; }
-
-    private Commands Commands { get; }
 
     public Plugin(DalamudPluginInterface pluginInterface, CommandManager commandManager)
     {
         pluginInterface.Create<Service>();
+        Service.Config = Service.Interface.GetPluginConfig() as Configuration ?? new Configuration();
 
-        // 加载配置
-        this.Config = Service.Interface.GetPluginConfig() as Configuration ?? new Configuration();
-
-        this.WindowManager = new WindowManager(this);
-        this.NameRepository = new NameRepository(this);
-        this.Commands = new Commands(this);
+        WindowManager = new WindowManager(this);
         
-        //this.Common = new XivCommonBase(Hooks.NamePlates);
-        //this.NamePlates = new NamePlates(this);
-        this.AtkTextNodeSetText = new AtkTextNodeSetText(this);
-        this.SetNamePlate = new SetNamePlate(this);
-        this.ChatMessage = new ChatMessage(this);
+        AtkTextNodeSetText = new Hooker();
+
+        Service.CommandManager.AddHandler("/fakename", new CommandInfo(this.OnCommand)
+        {
+            HelpMessage = "打开FakeName",
+        });
     }
 
     public void Dispose()
     {
-        this.ChatMessage.Dispose();
-        this.SetNamePlate.Dispose();
-        this.AtkTextNodeSetText.Dispose();
-        
-        //this.NamePlates.Dispose();
-        //this.Common.Dispose();
-        
-        this.Commands.Dispose();
-        this.NameRepository.Dispose();
-        this.WindowManager.Dispose();
+        Service.CommandManager.RemoveHandler("/fakename");
+
+        AtkTextNodeSetText.Dispose();
+        WindowManager.Dispose();
+    }
+
+    private void OnCommand(string command, string arguments)
+    {
+        WindowManager.ConfigWindow.Open();
     }
 }

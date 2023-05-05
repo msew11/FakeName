@@ -5,12 +5,7 @@
         <AssemblyVersion>1.0.0.5</AssemblyVersion>
         <TargetFramework>net7.0-windows</TargetFramework>
         <Platforms>x64</Platforms>
-        <Nullable>enable</Nullable>
-        <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -18,7 +13,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-	  <PackageReference Include="DalamudPackager" Version="2.1.10" MakeZip="true" />
+	  <PackageReference Include="DalamudPackager" Version="2.1.11" MakeZip="true" />
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
             <Private>false</Private>
