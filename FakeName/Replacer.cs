@@ -1,6 +1,7 @@
 using Dalamud.Game.Libc;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Logging;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,38 +12,33 @@ internal static class Replacer
 {
     public static IntPtr ChangeName(IntPtr seStringPtr)
     {
-        var str = SeStringFromPtr(seStringPtr);
-        if(ChangeSeString(ref str))
+        if (seStringPtr == IntPtr.Zero) return seStringPtr;
+
+        try
         {
-            FreePtr(seStringPtr);
-            return SeStringToPtr(str);
+            var str = SeString.Parse(StdString.ReadFromPointer(seStringPtr).RawData);
+            if (ChangeSeString(ref str))
+            {
+                var bytes = str.Encode();
+                var pointer = Marshal.AllocHGlobal(bytes.Length + 1);
+                Marshal.Copy(bytes, 0, pointer, bytes.Length);
+                Marshal.WriteByte(pointer, bytes.Length, 0);
+
+                return pointer;
+            }
+            else
+            {
+                return seStringPtr;
+            }
         }
-        else
+        catch (Exception ex)
         {
+            PluginLog.Error(ex, "Something wrong with change name!");
             return seStringPtr;
         }
+
     }
     
-    static SeString SeStringFromPtr(IntPtr seStringPtr)
-    {
-        return SeString.Parse(StdString.ReadFromPointer(seStringPtr).RawData);
-    }
-
-    public static IntPtr SeStringToPtr(SeString seString)
-    {
-        var bytes = seString.Encode();
-        var pointer = Marshal.AllocHGlobal(bytes.Length + 1);
-        Marshal.Copy(bytes, 0, pointer, bytes.Length);
-        Marshal.WriteByte(pointer, bytes.Length, 0);
-
-        return pointer;
-    }
-
-    public static void FreePtr(IntPtr seStringPtr)
-    {
-        Marshal.FreeHGlobal(seStringPtr);
-    }
-
     public static bool ChangeSeString(ref SeString seString)
     {
         if (!Service.Config.Enabled) return false;

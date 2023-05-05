@@ -8,7 +8,7 @@ public class Plugin : IDalamudPlugin
 {
     public string Name => "FakeName";
     
-    internal Hooker AtkTextNodeSetText { get; }
+    internal Hooker Hooker { get; }
 
     internal WindowManager WindowManager { get; }
 
@@ -19,7 +19,7 @@ public class Plugin : IDalamudPlugin
 
         WindowManager = new WindowManager();
         
-        AtkTextNodeSetText = new Hooker();
+        Hooker = new Hooker();
 
         Service.CommandManager.AddHandler("/fakename", new CommandInfo(OnCommand)
         {
@@ -31,7 +31,7 @@ public class Plugin : IDalamudPlugin
     {
         Service.CommandManager.RemoveHandler("/fakename");
 
-        AtkTextNodeSetText.Dispose();
+        Hooker.Dispose();
         WindowManager.Dispose();
     }
 
