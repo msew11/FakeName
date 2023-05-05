@@ -75,8 +75,8 @@ internal static class Replacer
                     var jobData = member.ClassJob.GameData;
                     if (jobData == null) continue;
 
-                    var nickName = string.Join(' ', memberName.Split(' ').Select(s => s.ToUpper()[0] + "."));
-                    var memberReplace = $"{jobData.Name.RawString}[{nickName}]";
+                    var nickName = string.Join(" . ", memberName.Split(' ').Select(s => s.ToUpper()[0]));
+                    var memberReplace = $"{jobData.Abbreviation.RawString} [{nickName}]";
 
                     result = ReplacePlayerName(seString, GetNames(memberName), memberReplace) || result;
                 }
