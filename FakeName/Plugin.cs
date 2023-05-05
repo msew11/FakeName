@@ -1,8 +1,6 @@
 using Dalamud.Game.Command;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin;
 using FakeName.Windows;
-using System.Linq;
 
 namespace FakeName;
 
@@ -19,13 +17,13 @@ public class Plugin : IDalamudPlugin
         pluginInterface.Create<Service>();
         Service.Config = Service.Interface.GetPluginConfig() as Configuration ?? new Configuration();
 
-        WindowManager = new WindowManager(this);
+        WindowManager = new WindowManager();
         
         AtkTextNodeSetText = new Hooker();
 
-        Service.CommandManager.AddHandler("/fakename", new CommandInfo(this.OnCommand)
+        Service.CommandManager.AddHandler("/fakename", new CommandInfo(OnCommand)
         {
-            HelpMessage = "打开FakeName",
+            HelpMessage = "Open a config window about fake name.",
         });
     }
 

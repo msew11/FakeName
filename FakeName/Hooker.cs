@@ -1,9 +1,8 @@
-using System;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
-using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
+using System;
 
 namespace FakeName;
 

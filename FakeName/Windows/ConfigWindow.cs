@@ -1,4 +1,3 @@
-using System;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 
@@ -6,7 +5,7 @@ namespace FakeName.Windows;
 
 internal class ConfigWindow : Window
 {
-    public ConfigWindow(Plugin plugin) : base("Fake Name")
+    public ConfigWindow() : base("Fake Name")
     {
     }
 

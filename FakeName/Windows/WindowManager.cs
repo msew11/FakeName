@@ -1,5 +1,5 @@
-using System;
 using Dalamud.Interface.Windowing;
+using System;
 
 namespace FakeName.Windows;
 
@@ -8,9 +8,9 @@ internal class WindowManager : IDisposable
     internal readonly WindowSystem WindowSystem = new("FakeName");
     internal ConfigWindow ConfigWindow { get; }
 
-    public WindowManager(Plugin plugin)
+    public WindowManager()
     {
-        ConfigWindow = new ConfigWindow(plugin);
+        ConfigWindow = new ConfigWindow();
         WindowSystem.AddWindow(ConfigWindow);
 
         Service.Interface.UiBuilder.Draw += DrawUi;

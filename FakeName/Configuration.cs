@@ -1,5 +1,5 @@
-using System;
 using Dalamud.Configuration;
+using System;
 
 namespace FakeName;
 
