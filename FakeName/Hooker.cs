@@ -18,8 +18,7 @@ public class Hooker
 
     private delegate void SetNamePlateDelegate(
     IntPtr addon, bool isPrefixTitle, bool displayTitle,
-    IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, int iconId
-);
+    IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, int iconId);
 
     /// <summary>
     /// https://github.com/Haplo064/JobIcons/blob/master/PluginAddressResolver.cs#L34
