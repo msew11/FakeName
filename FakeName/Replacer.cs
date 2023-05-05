@@ -36,10 +36,9 @@ internal static class Replacer
             PluginLog.Error(ex, "Something wrong with change name!");
             return seStringPtr;
         }
-
     }
 
-    internal static SeString GetSeStringFromPtr(IntPtr seStringPtr)
+    private static SeString GetSeStringFromPtr(IntPtr seStringPtr)
     {
         byte b;
         var offset = 0;
@@ -55,33 +54,41 @@ internal static class Replacer
 
     public static bool ChangeSeString(ref SeString seString)
     {
-        if (!Service.Config.Enabled) return false;
-
-        if (seString.Payloads.All(payload => payload.Type != PayloadType.RawText)) return false;
-
-        var player = Service.ClientState.LocalPlayer;
-        if (player == null) return false;
-
-        var result = ReplacePlayerName(seString, GetNames(player.Name.TextValue), Service.Config.FakeNameText);
-
-        if (Service.Config.PartyMemberReplace)
+        try
         {
-            foreach (var member in Service.PartyList)
+            if (!Service.Config.Enabled) return false;
+
+            if (seString.Payloads.All(payload => payload.Type != PayloadType.RawText)) return false;
+
+            var player = Service.ClientState.LocalPlayer;
+            if (player == null) return false;
+
+            var result = ReplacePlayerName(seString, GetNames(player.Name.TextValue), Service.Config.FakeNameText);
+
+            if (Service.Config.PartyMemberReplace)
             {
-                var memberName = member.Name.TextValue;
-                if (memberName == player.Name.TextValue) continue;
+                foreach (var member in Service.PartyList)
+                {
+                    var memberName = member.Name.TextValue;
+                    if (memberName == player.Name.TextValue) continue;
 
-                var jobData = member.ClassJob.GameData;
-                if (jobData == null) continue;
+                    var jobData = member.ClassJob.GameData;
+                    if (jobData == null) continue;
 
-                var nickName = string.Join(' ', memberName.Split(' ').Select(s => s.ToUpper()[0] + "."));
-                var memberReplace = $"{jobData.Name.RawString}[{nickName}]";
+                    var nickName = string.Join(' ', memberName.Split(' ').Select(s => s.ToUpper()[0] + "."));
+                    var memberReplace = $"{jobData.Name.RawString}[{nickName}]";
 
-                result = ReplacePlayerName(seString, GetNames(memberName), memberReplace) || result;
+                    result = ReplacePlayerName(seString, GetNames(memberName), memberReplace) || result;
+                }
             }
-        }
 
-        return result;
+            return result;
+        }
+        catch(Exception ex)
+        {
+            PluginLog.Error(ex, "Something wrong with replacement!");
+            return false;
+        }
     }
 
     private static string[] GetNames(string name)
