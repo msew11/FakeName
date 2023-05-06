@@ -21,10 +21,17 @@ internal static class Replacer
             {
                 var bytes = str.Encode();
                 var pointer = Marshal.AllocHGlobal(bytes.Length + 1);
-                Marshal.Copy(bytes, 0, pointer, bytes.Length);
-                Marshal.WriteByte(pointer, bytes.Length, 0);
+                try
+                {
+                    Marshal.Copy(bytes, 0, pointer, bytes.Length);
+                    Marshal.WriteByte(pointer, bytes.Length, 0);
 
-                return pointer;
+                    return pointer;
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(pointer);
+                }
             }
             else
             {

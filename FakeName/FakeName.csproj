@@ -6,6 +6,7 @@
         <TargetFramework>net7.0-windows</TargetFramework>
         <PlatformTarget>x64</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Authors>ArchiTed</Authors>
     </PropertyGroup>
 
     <PropertyGroup>
