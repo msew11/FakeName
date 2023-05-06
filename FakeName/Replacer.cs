@@ -47,11 +47,10 @@ internal static class Replacer
 
     private static SeString GetSeStringFromPtr(IntPtr seStringPtr)
     {
-        byte b;
         var offset = 0;
         unsafe
         {
-            while ((b = *(byte*)(seStringPtr + offset)) != 0)
+            while (*(byte*)(seStringPtr + offset) != 0)
                 offset++;
         }
         var bytes = new byte[offset];
