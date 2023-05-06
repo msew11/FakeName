@@ -120,15 +120,14 @@ internal static class Replacer
 
     private static bool ReplacePlayerName(this SeString text, string[] names, string replacement)
     {
-        var result = false;
         foreach (var name in names)
         {
             if(ReplacePlayerName(text, name, replacement))
             {
-                result = true;
+                return true;
             }
         }
-        return result;
+        return false;
     }
 
     private static bool ReplacePlayerName(this SeString text, string name, string replacement)
@@ -140,10 +139,12 @@ internal static class Replacer
         {
             if (payLoad is TextPayload load)
             {
+                if (string.IsNullOrEmpty(load.Text)) continue;
+
                 var t = load.Text.Replace(name, replacement);
                 if (t == load.Text) continue;
                 load.Text = t;
-                return true;
+                result = true;
             }
         }
         return result;
