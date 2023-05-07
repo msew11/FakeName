@@ -16,7 +16,7 @@
   "LoadSync": false,
   "CanUnloadAsync": false,
   "LoadPriority": 0,
-  "IconUrl": "https://raw.githubusercontent.com/ArchiDog1998/FakeName/main/docs/RotationSolverIcon_128.png",
+  "IconUrl": "https://raw.githubusercontent.com/ArchiDog1998/FakeName/main/icon.png",
   "Punchline": "Show a fake name on your game ui.",
   "AcceptsFeedback": true
 }

@@ -1,4 +1,4 @@
-# FakeName
+# ![](icon.png)FakeName
 
 ![Github Latest Releases](https://img.shields.io/github/downloads/ArchiDog1998/FakeName/latest/total.svg?style=for-the-badge)
 ![Github All Releases](https://img.shields.io/github/downloads/ArchiDog1998/FakeName/total.svg?style=for-the-badge)
