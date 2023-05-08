@@ -10,7 +10,7 @@ public class Configuration : IPluginConfiguration
 
     public bool Enabled = false;
     
-    public bool PartyMemberReplace = false;
+    public bool AllPlayerReplace = false;
 
     public string FakeNameText = "";
     

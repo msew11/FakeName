@@ -1,4 +1,4 @@
-using Dalamud.Game.Libc;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Logging;
@@ -19,19 +19,7 @@ internal static class Replacer
             var str = GetSeStringFromPtr(seStringPtr);
             if (ChangeSeString(ref str))
             {
-                var bytes = str.Encode();
-                var pointer = Marshal.AllocHGlobal(bytes.Length + 1);
-                try
-                {
-                    Marshal.Copy(bytes, 0, pointer, bytes.Length);
-                    Marshal.WriteByte(pointer, bytes.Length, 0);
-
-                    return pointer;
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(pointer);
-                }
+                return GetPtrFromSeString(str);
             }
             else
             {
@@ -45,7 +33,24 @@ internal static class Replacer
         }
     }
 
-    private static SeString GetSeStringFromPtr(IntPtr seStringPtr)
+    public static IntPtr GetPtrFromSeString(SeString str)
+    {
+        var bytes = str.Encode();
+        var pointer = Marshal.AllocHGlobal(bytes.Length + 1);
+        try
+        {
+            Marshal.Copy(bytes, 0, pointer, bytes.Length);
+            Marshal.WriteByte(pointer, bytes.Length, 0);
+
+            return pointer;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(pointer);
+        }
+    }
+
+    public static SeString GetSeStringFromPtr(IntPtr seStringPtr)
     {
         var offset = 0;
         unsafe
@@ -62,8 +67,6 @@ internal static class Replacer
     {
         try
         {
-            if (!Service.Config.Enabled) return false;
-
             if (seString.Payloads.All(payload => payload.Type != PayloadType.RawText)) return false;
 
             var player = Service.ClientState.LocalPlayer;
@@ -71,20 +74,20 @@ internal static class Replacer
 
             var result = ReplacePlayerName(seString, GetNames(player.Name.TextValue), Service.Config.FakeNameText);
 
-            if (Service.Config.PartyMemberReplace)
+            if (Service.Config.AllPlayerReplace)
             {
-                foreach (var member in Service.PartyList)
+                foreach (var obj in Service.ObjectTable)
                 {
+                    if (obj is not PlayerCharacter member) continue;
                     var memberName = member.Name.TextValue;
                     if (memberName == player.Name.TextValue) continue;
 
                     var jobData = member.ClassJob.GameData;
                     if (jobData == null) continue;
 
-                    var nickName = string.Join(" . ", memberName.Split(' ').Select(s => s.ToUpper()[0]));
-                    var memberReplace = $"{jobData.Abbreviation.RawString} [{nickName}]";
+                    var nickName = ChangeName(memberName);
 
-                    result = ReplacePlayerName(seString, GetNames(memberName), memberReplace) || result;
+                    result = ReplacePlayerName(seString, memberName, nickName) || result;
                 }
             }
 
@@ -97,23 +100,23 @@ internal static class Replacer
         }
     }
 
+    public static string ChangeName(string str)
+    {
+        if(string.IsNullOrEmpty(str)) return str;
+        return string.Join(" . ", str.Split(' ').Select(s => s.ToUpper().FirstOrDefault()));
+    }
+
     private static string[] GetNames(string name)
     {
         var names = name.Split(' ');
         if (names.Length != 2) return new string[] { name };
 
         var first = names[0];
-        var last = names[1];
-        var firstShort = first.ToUpper()[0] + ".";
-        var lastShort = last.ToUpper()[0] + ".";
 
         return new string[]
         {
             name, 
-            $"{first} {lastShort}",
-            $"{firstShort} {last}",
-            $"{firstShort} {lastShort}",
-            first, last,
+            first,
         };
     }
 

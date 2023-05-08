@@ -1,4 +1,5 @@
 using Dalamud.Game.ClientState;
+using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.ClientState.Party;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui;
@@ -25,4 +26,7 @@ internal class Service
 
     [PluginService]
     internal static PartyList PartyList { get; private set; }
+
+    [PluginService]
+    internal static ObjectTable ObjectTable { get; private set; }
 }

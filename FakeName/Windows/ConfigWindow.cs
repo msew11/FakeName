@@ -25,7 +25,7 @@ internal class ConfigWindow : Window
             Service.Config.SaveConfig();
         }
 
-        if (ImGui.Checkbox("Change Party Member's Name", ref Service.Config.PartyMemberReplace))
+        if (ImGui.Checkbox("Change All Player's Name", ref Service.Config.AllPlayerReplace))
         {
             Service.Config.SaveConfig();
         }
