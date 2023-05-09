@@ -1,10 +1,13 @@
-using Dalamud.Game.Text;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace FakeName;
 
@@ -27,18 +30,59 @@ public class Hooker
     [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 54 41 56 41 57 48 83 EC 40 44 0F B6 E2", DetourName = nameof(SetNamePlateDetour))]
     private Hook<SetNamePlateDelegate> SetNamePlateHook { get; init; }
 
+    public static Dictionary<string[], string> Replacement { get; } = new Dictionary<string[], string>();
+
     internal unsafe Hooker()
     {
         SignatureHelper.Initialise(this);
 
         AtkTextNodeSetTextHook.Enable();
         SetNamePlateHook.Enable();
+
+        Service.Framework.Update += Framework_Update;
     }
 
     public unsafe void Dispose()
     {
         AtkTextNodeSetTextHook.Dispose();
         SetNamePlateHook.Dispose();
+        Service.Framework.Update -= Framework_Update;
+    }
+
+    private void Framework_Update(Dalamud.Game.Framework framework)
+    {
+        var player = Service.ClientState.LocalPlayer;
+        if (player == null) return;
+
+        Replacement.Clear();
+        Replacement[GetNamesSimple(player.Name.TextValue)] = Service.Config.FakeNameText;
+
+        if (Service.Config.AllPlayerReplace)
+        {
+            foreach (var obj in Service.ObjectTable)
+            {
+                if (obj is not PlayerCharacter member) continue;
+                var memberName = member.Name.TextValue;
+                if (memberName == player.Name.TextValue) continue;
+
+                Replacement[new string[] { memberName }] = GetChangedName(memberName);
+            }
+        }
+    }
+
+
+    private static string[] GetNamesSimple(string name)
+    {
+        var names = name.Split(' ');
+        if (names.Length != 2) return new string[] { name };
+
+        var first = names[0];
+
+        return new string[]
+        {
+            name,
+            first,
+        };
     }
 
     private void AtkTextNodeSetTextDetour(IntPtr node, IntPtr text)
@@ -48,8 +92,7 @@ public class Hooker
             AtkTextNodeSetTextHook.Original(node,text);
             return;
         }
-
-        AtkTextNodeSetTextHook.Original(node, Replacer.ChangeName(text));
+        AtkTextNodeSetTextHook.Original(node, ChangeName(text));
     }
 
     private unsafe void SetNamePlateDetour(IntPtr namePlateObjectPtr, bool isPrefixTitle,
@@ -64,11 +107,11 @@ public class Hooker
                 return;
             }
 
-            var nameSe = Replacer.GetSeStringFromPtr(namePtr).TextValue;
-            if (Service.ClientState.LocalPlayer != null && GetNames(Service.ClientState.LocalPlayer.Name.TextValue).Contains(nameSe))
+            var nameSe = GetSeStringFromPtr(namePtr).TextValue;
+            if (Service.ClientState.LocalPlayer != null && GetNamesFull(Service.ClientState.LocalPlayer.Name.TextValue).Contains(nameSe))
             {
                 SetNamePlateHook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle,
-                    titlePtr, Replacer.GetPtrFromSeString(Service.Config.FakeNameText), fcNamePtr, iconId);
+                    titlePtr, GetPtrFromSeString(Service.Config.FakeNameText), fcNamePtr, iconId);
                 return;
             }
 
@@ -80,7 +123,7 @@ public class Hooker
             }
 
             SetNamePlateHook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle,
-                titlePtr, Replacer.GetPtrFromSeString(Replacer.ChangeName(nameSe)), fcNamePtr, iconId);
+                titlePtr, GetPtrFromSeString(GetChangedName(nameSe)), fcNamePtr, iconId);
         }
         catch (Exception ex)
         {
@@ -88,7 +131,8 @@ public class Hooker
         }
     }
 
-    private static string[] GetNames(string name)
+
+    private static string[] GetNamesFull(string name)
     {
         var names = name.Split(' ');
         if (names.Length != 2) return new string[] { name };
@@ -106,5 +150,112 @@ public class Hooker
             $"{firstShort} {lastShort}",
             first, last,
         };
+    }
+
+    public static IntPtr ChangeName(IntPtr seStringPtr)
+    {
+        if (seStringPtr == IntPtr.Zero) return seStringPtr;
+
+        try
+        {
+            var str = GetSeStringFromPtr(seStringPtr);
+            if (ChangeSeString(str))
+            {
+                return GetPtrFromSeString(str);
+            }
+            else
+            {
+                return seStringPtr;
+            }
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "Something wrong with change name!");
+            return seStringPtr;
+        }
+    }
+
+    public static IntPtr GetPtrFromSeString(SeString str)
+    {
+        var bytes = str.Encode();
+        var pointer = Marshal.AllocHGlobal(bytes.Length + 1);
+        try
+        {
+            Marshal.Copy(bytes, 0, pointer, bytes.Length);
+            Marshal.WriteByte(pointer, bytes.Length, 0);
+
+            return pointer;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(pointer);
+        }
+    }
+
+    public static SeString GetSeStringFromPtr(IntPtr seStringPtr)
+    {
+        var offset = 0;
+        unsafe
+        {
+            while (*(byte*)(seStringPtr + offset) != 0)
+                offset++;
+        }
+        var bytes = new byte[offset];
+        Marshal.Copy(seStringPtr, bytes, 0, offset);
+        return SeString.Parse(bytes);
+    }
+
+    public static bool ChangeSeString(SeString seString)
+    {
+        try
+        {
+            if (seString.Payloads.All(payload => payload.Type != PayloadType.RawText)) return false;
+
+            return Replacement.Any(pair => ReplacePlayerName(seString, pair.Key, pair.Value));
+        }
+        catch (Exception ex)
+        {
+            PluginLog.Error(ex, "Something wrong with replacement!");
+            return false;
+        }
+    }
+
+    public static string GetChangedName(string str)
+    {
+        if (string.IsNullOrEmpty(str)) return str;
+        return string.Join(" . ", str.Split(' ').Select(s => s.ToUpper().FirstOrDefault()));
+    }
+
+    private static bool ReplacePlayerName(SeString text, string[] names, string replacement)
+    {
+        foreach (var name in names)
+        {
+            if (ReplacePlayerName(text, name, replacement))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static bool ReplacePlayerName(SeString text, string name, string replacement)
+    {
+        if (string.IsNullOrEmpty(name)) return false;
+        if (text.Payloads.Count > 10) return false;
+
+        var result = false;
+        foreach (var payLoad in text.Payloads)
+        {
+            if (payLoad is TextPayload load)
+            {
+                if (string.IsNullOrEmpty(load.Text)) continue;
+
+                var t = load.Text.Replace(name, replacement);
+                if (t == load.Text) continue;
+                load.Text = t;
+                result = true;
+            }
+        }
+        return result;
     }
 }
