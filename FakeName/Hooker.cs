@@ -51,6 +51,7 @@ public class Hooker
 
     private void Framework_Update(Dalamud.Game.Framework framework)
     {
+        if (!Service.Condition.Any()) return;
         var player = Service.ClientState.LocalPlayer;
         if (player == null) return;
 

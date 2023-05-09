@@ -1,9 +1,0 @@
-{
-    "Author": "ArchiTed, matrix",
-    "Name": "Fake Name",
-    "Punchline": "Show a fake name on your game ui.",
-    "Description": "Show a fake name on your game ui.",
-    "InternalName": "FakeName",
-    "ApplicableVersion": "any",
-    "DalamudApiLevel": 8
-}

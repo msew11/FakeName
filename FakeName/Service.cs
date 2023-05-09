@@ -1,5 +1,6 @@
 using Dalamud.Game;
 using Dalamud.Game.ClientState;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Command;
 using Dalamud.IoC;
@@ -24,4 +25,7 @@ internal class Service
     internal static ObjectTable ObjectTable { get; private set; }
     [PluginService]
     public static Framework Framework  { get; private set; }
+
+    [PluginService]
+    public static Condition Condition { get; private set; }
 }
