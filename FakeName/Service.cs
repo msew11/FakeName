@@ -24,5 +24,4 @@ internal class Service
     internal static ObjectTable ObjectTable { get; private set; }
     [PluginService]
     public static Framework Framework  { get; private set; }
-
 }
