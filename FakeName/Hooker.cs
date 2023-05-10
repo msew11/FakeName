@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-
 namespace FakeName;
 
 public class Hooker
@@ -85,6 +84,11 @@ public class Hooker
             Replacement[new string[] { memberName }] = GetChangedName(memberName);
         }
 
+        foreach (var obj in Service.Config.FriendList)
+        {
+            Replacement[new string[] { obj }] = GetChangedName(obj);
+        }
+
         var friendList = (AddonFriendList*)Service.GameGui.GetAddonByName("FriendList", 1);
         if (friendList == null) return;
 
@@ -93,7 +97,11 @@ public class Hooker
         {
             var item = list->ItemRendererList[i];
             var textNode = item.AtkComponentListItemRenderer->AtkComponentButton.ButtonTextNode;
-            textNode->SetText(GetChangedName(textNode->NodeText.ToString()));
+
+            if (Service.Config.FriendList.Add(textNode->NodeText.ToString()))
+            {
+                Service.Config.SaveConfig();
+            }
         }
     }
 
