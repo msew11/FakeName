@@ -4,6 +4,8 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
 using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +42,7 @@ public class Hooker
         SetNamePlateHook.Enable();
 
         Service.Framework.Update += Framework_Update;
+        Service.ClientState.Login += ClientState_Login;
     }
 
     public unsafe void Dispose()
@@ -47,9 +50,22 @@ public class Hooker
         AtkTextNodeSetTextHook.Dispose();
         SetNamePlateHook.Dispose();
         Service.Framework.Update -= Framework_Update;
+        Service.ClientState.Login -= ClientState_Login;
     }
 
-    private void Framework_Update(Dalamud.Game.Framework framework)
+    private void ClientState_Login(object sender, EventArgs e)
+    {
+        var player = Service.ClientState.LocalPlayer;
+        if (player == null) return;
+
+        if (!Service.Config.CharacterNames.Contains(player.Name.TextValue))
+        {
+            Service.Config.CharacterNames.Add(player.Name.TextValue);
+            Service.Config.SaveConfig();
+        }
+    }
+
+    private unsafe void Framework_Update(Dalamud.Game.Framework framework)
     {
         if (!Service.Condition.Any()) return;
         var player = Service.ClientState.LocalPlayer;
@@ -58,19 +74,28 @@ public class Hooker
         Replacement.Clear();
         Replacement[GetNamesSimple(player.Name.TextValue)] = Service.Config.FakeNameText;
 
-        if (Service.Config.AllPlayerReplace)
-        {
-            foreach (var obj in Service.ObjectTable)
-            {
-                if (obj is not PlayerCharacter member) continue;
-                var memberName = member.Name.TextValue;
-                if (memberName == player.Name.TextValue) continue;
+        if (!Service.Config.AllPlayerReplace) return;
 
-                Replacement[new string[] { memberName }] = GetChangedName(memberName);
-            }
+        foreach (var obj in Service.ObjectTable)
+        {
+            if (obj is not PlayerCharacter member) continue;
+            var memberName = member.Name.TextValue;
+            if (memberName == player.Name.TextValue) continue;
+
+            Replacement[new string[] { memberName }] = GetChangedName(memberName);
+        }
+
+        var friendList = (AddonFriendList*)Service.GameGui.GetAddonByName("FriendList", 1);
+        if (friendList == null) return;
+
+        var list = friendList->FriendList;
+        for (int i = 0; i < list->ListLength; i++)
+        {
+            var item = list->ItemRendererList[i];
+            var textNode = item.AtkComponentListItemRenderer->AtkComponentButton.ButtonTextNode;
+            textNode->SetText(GetChangedName(textNode->NodeText.ToString()));
         }
     }
-
 
     private static string[] GetNamesSimple(string name)
     {
@@ -212,7 +237,8 @@ public class Hooker
         {
             if (seString.Payloads.All(payload => payload.Type != PayloadType.RawText)) return false;
 
-            return Replacement.Any(pair => ReplacePlayerName(seString, pair.Key, pair.Value));
+            return Replacement.Any(pair => ReplacePlayerName(seString, pair.Key, pair.Value))
+                || ReplacePlayerName(seString, Service.Config.CharacterNames, Service.Config.FakeNameText);
         }
         catch (Exception ex)
         {
@@ -224,10 +250,12 @@ public class Hooker
     public static string GetChangedName(string str)
     {
         if (string.IsNullOrEmpty(str)) return str;
-        return string.Join(" . ", str.Split(' ').Select(s => s.ToUpper().FirstOrDefault()));
+        var lt = str.Split(' ');
+        if (lt.Length != 2) return str;
+        return string.Join(" . ", lt.Select(s => s.ToUpper().FirstOrDefault()));
     }
 
-    private static bool ReplacePlayerName(SeString text, string[] names, string replacement)
+    private static bool ReplacePlayerName(SeString text, IEnumerable<string> names, string replacement)
     {
         foreach (var name in names)
         {

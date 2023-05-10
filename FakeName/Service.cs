@@ -3,6 +3,7 @@ using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Game.Command;
+using Dalamud.Game.Gui;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 
@@ -28,4 +29,9 @@ internal class Service
 
     [PluginService]
     public static Condition Condition { get; private set; }
+
+
+    [PluginService]
+    public static GameGui GameGui { get; private set; }
+
 }

@@ -1,5 +1,6 @@
 using Dalamud.Configuration;
 using System;
+using System.Collections.Generic;
 
 namespace FakeName;
 
@@ -13,6 +14,8 @@ public class Configuration : IPluginConfiguration
     public bool AllPlayerReplace = false;
 
     public string FakeNameText = "";
+
+    public HashSet<string> CharacterNames = new HashSet<string>();
     
     internal void SaveConfig()
     {
