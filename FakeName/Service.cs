@@ -12,28 +12,27 @@ namespace FakeName;
 
 internal class Service
 {
+    [PluginService]
+    internal static DalamudPluginInterface Interface { get; private set; } = null;
 
     [PluginService]
-    internal static DalamudPluginInterface Interface { get; private set; }
-
-    [PluginService]
-    internal static ChatGui ChatGui { get; private set; }
+    internal static ChatGui ChatGui { get; private set; } = null;
     
     [PluginService]
-    internal static ClientState ClientState { get; private set; }
+    internal static ClientState ClientState { get; private set; } = null;
 
     [PluginService]
-    internal static CommandManager CommandManager { get; private set; }
+    internal static CommandManager CommandManager { get; private set; } = null;
 
     [PluginService]
-    internal static Condition Condition { get; private set; }
+    internal static Condition Condition { get; private set; } = null;
+    
+    [PluginService]
+    internal static Framework Framework { get; private set; } = null;
 
     [PluginService]
-    internal static Framework Framework { get; private set; }
+    internal static PartyList PartyList { get; private set; } = null;
 
     [PluginService]
-    internal static PartyList PartyList { get; private set; }
-
-    [PluginService]
-    internal static ObjectTable ObjectTable { get; private set; }
+    internal static ObjectTable ObjectTable { get; private set; } = null;
 }
