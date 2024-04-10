@@ -1,5 +1,5 @@
-using Dalamud.Game.Command;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using FakeName.GameFunctions;
 using FakeName.Services;
 
@@ -24,7 +24,7 @@ public class Plugin : IDalamudPlugin
 
     private Commands Commands { get; }
 
-    public Plugin(DalamudPluginInterface pluginInterface, CommandManager commandManager)
+    public Plugin(DalamudPluginInterface pluginInterface, ICommandManager commandManager)
     {
         pluginInterface.Create<Service>();
 

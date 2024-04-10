@@ -9,7 +9,7 @@
         "RepoUrl": "https://github.com/Minstrel-jh/FakeName",
         "IconUrl": "",
         "ApplicableVersion": "any",
-        "DalamudApiLevel": 7,
+        "DalamudApiLevel": 9,
         "IsHide": false,
         "IsTestingExclusive": false,
         "DownloadCount": 0,

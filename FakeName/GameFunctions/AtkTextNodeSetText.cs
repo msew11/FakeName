@@ -30,7 +30,7 @@ public class AtkTextNodeSetText
     internal AtkTextNodeSetText(Plugin plugin)
     {
         this.Plugin = plugin;
-        SignatureHelper.Initialise(this);
+        Service.Hook.InitializeFromAttributes(this);
 
         this.AtkTextNodeSetTextHook.Enable();
         this.OnAtkTextNodeSetText += DealAtkTextNodeSetText;

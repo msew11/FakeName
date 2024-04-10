@@ -37,8 +37,8 @@ internal class SetNamePlate : IDisposable
     public SetNamePlate(Plugin plugin)
     {
         Plugin = plugin;
-
-        SignatureHelper.Initialise(this);
+        
+        Service.Hook.InitializeFromAttributes(this);
         // SeStringUtils.Initialize();
 
         SetNamePlateHook.Enable();
