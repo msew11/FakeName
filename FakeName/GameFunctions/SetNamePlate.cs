@@ -12,13 +12,13 @@ internal class SetNamePlate : IDisposable
     private static class Signatures
     {
         internal const string SetNamePlate =
-            "48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 54 41 56 41 57 48 83 EC 40 44 0F B6 E2";
+            "E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 48 8B 5C 24 ?? 45 38 BE";
     }
 
     // Hook
     private delegate void SetNamePlateDelegate(
         IntPtr addon, bool isPrefixTitle, bool displayTitle,
-        IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, int iconId
+        IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, IntPtr prefixOrWhatever, int iconId
     );
 
     [Signature(Signatures.SetNamePlate, DetourName = nameof(SetNamePlateDetour))]
@@ -27,7 +27,7 @@ internal class SetNamePlate : IDisposable
     // Event
     private delegate void SetNamePlateEventDelegate(
         IntPtr namePlateObjectPtr, bool isPrefixTitle, bool displayTitle,
-        IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, int iconId,
+        IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, IntPtr prefixOrWhatever, int iconId,
         ref SeString? title, ref SeString? name, ref SeString? fcName
     );
 
@@ -54,14 +54,14 @@ internal class SetNamePlate : IDisposable
 
     private unsafe void SetNamePlateDetour(
         IntPtr namePlateObjectPtr, bool isPrefixTitle, bool displayTitle,
-        IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, int iconId)
+        IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr,  IntPtr prefixOrWhatever, int iconId)
     {
         SeString? title = null;
         SeString? name = null;
         SeString? fcName = null;
         this.OnSetNamePlate?.Invoke(
             namePlateObjectPtr, isPrefixTitle, displayTitle,
-            titlePtr, namePtr, fcNamePtr, iconId,
+            titlePtr, namePtr, fcNamePtr, prefixOrWhatever, iconId,
             ref title, ref name, ref fcName
         );
 
@@ -71,7 +71,7 @@ internal class SetNamePlate : IDisposable
             {
                 this.SetNamePlateHook.Original(
                     namePlateObjectPtr, isPrefixTitle, displayTitle,
-                    (IntPtr)newTitle, (IntPtr)newName, (IntPtr)newFcName, iconId
+                    (IntPtr)newTitle, (IntPtr)newName, (IntPtr)newFcName, prefixOrWhatever, iconId
                 );
             }
             return;
@@ -79,13 +79,13 @@ internal class SetNamePlate : IDisposable
 
         this.SetNamePlateHook.Original(
             namePlateObjectPtr, isPrefixTitle, displayTitle,
-            titlePtr, namePtr, fcNamePtr, iconId
+            titlePtr, namePtr, fcNamePtr, prefixOrWhatever, iconId
         );
     }
 
     private void DealSetNamePlateEvent(
         IntPtr namePlateObjectPtr, bool isPrefixTitle, bool displayTitle,
-        IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, int iconId,
+        IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, IntPtr prefixOrWhatever, int iconId,
         ref SeString? title, ref SeString? name, ref SeString? fcName
     )
     {

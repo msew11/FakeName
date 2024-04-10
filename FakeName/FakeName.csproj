@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Version>1.6.4.1</Version>
+    </PropertyGroup>
 
     <PropertyGroup>
-        <AssemblyVersion>1.6.3.1</AssemblyVersion>
-        <TargetFramework>net6.0-windows</TargetFramework>
+        <TargetFramework>net7.0-windows</TargetFramework>
         <Platforms>x64</Platforms>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
@@ -11,15 +13,28 @@
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <OutputPath>bin\</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup>
-        <DalamudLibPath>D:\FFXIV\XIVLauncherCN\Roaming\addon\Hooks\dev\</DalamudLibPath>
-        <OutputPath>G:\FFXIV\devPlugins\FakeName\</OutputPath>
+        <DalamudLibPath>G:\FFXIV\XIVLauncherCN\Roaming\addon\Hooks\dev\</DalamudLibPath>
+        <DevPluginsPath>G:\FFXIV\devPlugins\</DevPluginsPath>
+        <PluginsRepoPath>D:\DalamudProj\DalamudPlugins\plugins\</PluginsRepoPath>
     </PropertyGroup>
 
+    <Target Name="CopyCustomContent" AfterTargets="DefaultDalamudPackagerRelease">
+        <ItemGroup>
+            <PluginDevFiles Include="bin/**" Exclude="bin/$(ProjectName)/**" />
+        </ItemGroup>
+        <ItemGroup>
+            <PluginPubFiles Include="bin\$(ProjectName)\**" />
+        </ItemGroup>
+        <Copy SourceFiles="@(PluginDevFiles)" DestinationFolder="$(DevPluginsPath)$(ProjectName)\"/>
+        <Copy SourceFiles="@(PluginPubFiles)" DestinationFolder="$(PluginsRepoPath)$(ProjectName)\" />
+    </Target>
+
     <ItemGroup>
-        <PackageReference Include="DalamudPackager" Version="2.1.8" />
+        <PackageReference Include="DalamudPackager" Version="2.1.10" />
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
             <Private>false</Private>

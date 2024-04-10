@@ -1,8 +1,12 @@
 {
+    "Author": "ArchiTed, msew11",
     "Name": "FakeName",
-    "Author": "matrix",
-    "Punchline": "Change your character name.",
-    "Description": "Change your character name.",
-    "RepoUrl": "https://github.com/ms-enternalwind/FakeName",
-    "DalamudApiLevel": 7
+    "Punchline": "Show a fake name on your game ui.",
+    "Description": "Show a fake name on your game ui.",
+    "InternalName": "FakeName",
+    "ApplicableVersion": "any",
+    "repoUrl": "https://github.com/msew11/FakeName",
+    "IconUrl": "https://raw.githubusercontent.com/msew11/FakeName/master/icon.png",
+    "DalamudApiLevel": 8
 }
+
