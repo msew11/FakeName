@@ -15,6 +15,7 @@
 
     <PropertyGroup>
         <DalamudLibPath>D:\FFXIV\XIVLauncherCN\Roaming\addon\Hooks\dev\</DalamudLibPath>
+        <OutputPath>G:\FFXIV\devPlugins\FakeName\</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
