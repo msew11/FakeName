@@ -7,6 +7,13 @@
     "ApplicableVersion": "any",
     "repoUrl": "https://github.com/msew11/FakeName",
     "IconUrl": "https://raw.githubusercontent.com/msew11/FakeName/master/icon.png",
+    "Tags": [
+        "name",
+        "ui"
+    ],
+    "CategoryTags": [
+        "ui"
+    ],
     "DalamudApiLevel": 9
 }
 

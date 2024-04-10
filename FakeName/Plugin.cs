@@ -1,7 +1,9 @@
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using FakeName.Config;
 using FakeName.GameFunctions;
 using FakeName.Services;
+using FakeName.Windows;
 
 namespace FakeName;
 
@@ -9,7 +11,7 @@ public class Plugin : IDalamudPlugin
 {
     public string Name => "FakeName";
 
-    internal Configuration Config { get; }
+    internal PluginConfig Config { get; }
     
     
     //internal readonly XivCommonBase Common;
@@ -29,9 +31,9 @@ public class Plugin : IDalamudPlugin
         pluginInterface.Create<Service>();
 
         // 加载配置
-        this.Config = Service.Interface.GetPluginConfig() as Configuration ?? new Configuration();
+        this.Config = Service.Interface.GetPluginConfig() as PluginConfig ?? new PluginConfig();
 
-        this.WindowManager = new WindowManager(this);
+        this.WindowManager = new WindowManager(this, Config);
         this.NameRepository = new NameRepository(this);
         this.Commands = new Commands(this);
         
