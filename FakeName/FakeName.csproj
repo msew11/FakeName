@@ -17,7 +17,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <DalamudLibPath>G:\FFXIV\XIVLauncherCN\Roaming\addon\Hooks\dev\</DalamudLibPath>
+        <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
         <DevPluginsPath>G:\FFXIV\Dalamud Related\_devPlugins\</DevPluginsPath>
         <PluginsRepoPath>D:\DalamudProj\DalamudPlugins\plugins\</PluginsRepoPath>
     </PropertyGroup>
@@ -63,7 +63,6 @@
             <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
             <Private>false</Private>
         </Reference>
-
 
     </ItemGroup>
 

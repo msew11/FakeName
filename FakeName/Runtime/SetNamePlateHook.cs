@@ -9,7 +9,7 @@ using FakeName.Utils;
 
 namespace FakeName.Runtime;
 
-internal class NamePlateUpdater : IDisposable
+internal class SetNamePlateHook : IDisposable
 {
     private readonly Plugin plugin;
     private readonly PluginConfig config;
@@ -17,7 +17,7 @@ internal class NamePlateUpdater : IDisposable
     [Signature(Signatures.SetNamePlate, DetourName = nameof(SetNamePlateDetour))]
     private readonly Hook<SetNamePlateDelegate> hook = null!;
 
-    public NamePlateUpdater(Plugin plugin, PluginConfig config)
+    public SetNamePlateHook(Plugin plugin, PluginConfig config)
     {
         this.plugin = plugin;
         this.config = config;
@@ -38,7 +38,7 @@ internal class NamePlateUpdater : IDisposable
     {
         try
         {
-            return DealSetNamePlateEvent(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
+            return SetNamePlate(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
         catch (Exception ex)
         {
@@ -47,7 +47,7 @@ internal class NamePlateUpdater : IDisposable
         }
     }
 
-    private unsafe IntPtr DealSetNamePlateEvent(
+    private unsafe IntPtr SetNamePlate(
         IntPtr namePlateObjectPtr, bool isPrefixTitle, bool displayTitle,
         IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, IntPtr prefix, int iconId
     ) {
@@ -66,12 +66,14 @@ internal class NamePlateUpdater : IDisposable
 
         if (!npObject.IsPlayer)
         {
+            //Service.Log.Debug($"非玩家");
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
 
         var character = (PlayerCharacter?) Service.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == actorId);
         if (character == null)
         {
+            //Service.Log.Debug($"非玩家");
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
 
@@ -83,9 +85,10 @@ internal class NamePlateUpdater : IDisposable
         if (!string.IsNullOrEmpty(characterConfig.FakeNameText))
         {
             var nameText = SeStringUtils.ReadRawSeString(namePtr);
-            Service.Log.Debug($"[FakeName]替换了角色名称:{nameText.TextValue}=>{characterConfig.FakeNameText} np:{npInfo.Name}");
-            nameText.ReplaceSeStringText(character.Name.TextValue, characterConfig.FakeNameText);
+            // Service.Log.Debug($"角色Id:{actorId}");
+            // Service.Log.Debug($"替换了角色名称:{nameText.TextValue}=>{characterConfig.FakeNameText} np:{npInfo.Name}");
             
+            nameText.ReplaceSeStringText(character.Name.TextValue, characterConfig.FakeNameText);
             fixed (byte* newNamePtr = nameText.Encode().Terminate())
             {
                 namePtr = (IntPtr)newNamePtr;
@@ -95,9 +98,9 @@ internal class NamePlateUpdater : IDisposable
         if (!string.IsNullOrEmpty(characterConfig.FakeFcNameText))
         {
             var fcNameText = SeStringUtils.ReadRawSeString(fcNamePtr);
-            Service.Log.Debug($"[FakeName]替换了部队简称:{fcNameText.TextValue}=>{characterConfig.FakeFcNameText} np:{npInfo.FcName}");
-            fcNameText.ReplaceSeStringText(character.CompanyTag.TextValue, characterConfig.FakeFcNameText);
+            // Service.Log.Debug($"替换了部队简称:{fcNameText.TextValue}=>{characterConfig.FakeFcNameText} np:{npInfo.FcName}");
             
+            fcNameText.ReplaceSeStringText(character.CompanyTag.TextValue, characterConfig.FakeFcNameText);
             fixed (byte* newFcNamePtr = fcNameText.Encode().Terminate())
             {
                 fcNamePtr = (IntPtr)newFcNamePtr;

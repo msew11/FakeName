@@ -109,6 +109,7 @@ internal class ConfigWindow : Window
         if (ImGui.InputText("角色名", ref fakeName, 100))
         {
             characterConfig.FakeNameText = fakeName;
+            Service.Interface.SavePluginConfig(config);
             modified = true;
         }
 
@@ -116,6 +117,7 @@ internal class ConfigWindow : Window
         if (ImGui.InputText("部队简称", ref fakeFcName, 100))
         {
             characterConfig.FakeFcNameText = fakeFcName;
+            Service.Interface.SavePluginConfig(config);
             modified = true;
         }
     }
