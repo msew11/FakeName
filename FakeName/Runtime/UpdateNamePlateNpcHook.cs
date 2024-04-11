@@ -61,17 +61,8 @@ internal class UpdateNamePlateNpcHook : IDisposable
 
         if (gameObject->ObjectKind != 9)
         {
-            if (gameObject->ObjectKind != 3)
-            {
-                Service.Log.Debug($":{gameObject->ObjectKind}");
-                Service.Log.Debug($":{namePlateInfo->Name}");
-            }
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
-        
-        
-        Service.Log.Debug($":{gameObject->ObjectKind}");
-        Service.Log.Debug($":{namePlateInfo->Name}");
         
         var actorId = namePlateInfo->ObjectID.ObjectID;
         if (actorId == 0xE0000000)
