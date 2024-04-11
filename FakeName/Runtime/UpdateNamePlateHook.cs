@@ -3,7 +3,6 @@ using System.Linq;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using FakeName.Api;
 using FakeName.Config;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -44,7 +43,7 @@ internal class UpdateNamePlateHook : IDisposable
         }
         catch (Exception ex)
         {
-            Service.Log.Error(ex, "[FakeName]UpdateNamePlateDetour encountered a critical error");
+            Service.Log.Error(ex, "UpdateNamePlateDetour encountered a critical error");
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
         }
     }

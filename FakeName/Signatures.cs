@@ -5,11 +5,14 @@ using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
-namespace FakeName.Api;
+namespace FakeName;
 
 [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Ansi)]
 public delegate IntPtr SetNamePlateDelegate(IntPtr addon, bool isPrefixTitle, bool displayTitle, IntPtr title,
                                             IntPtr name, IntPtr fcName, IntPtr prefix, int iconId);
+
+[UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Ansi)]
+public delegate void AtkTextNodeSetTextDelegate(IntPtr node, IntPtr text);
 
 [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Ansi)]
 public unsafe delegate void* UpdateNameplateNpcDelegate(
@@ -25,6 +28,8 @@ public static class Signatures
 {
     public const string SetNamePlate =
         "E8 ?? ?? ?? ?? E9 ?? ?? ?? ?? 48 8B 5C 24 ?? 45 38 BE";
+    
+    public const string AtkTextNodeSetText = "E8 ?? ?? ?? ?? 8D 4E 32";
 
     // from: https://github.com/Caraxi/Honorific/blob/master/Plugin.cs
     public const string UpdateNamePlateNpc =
