@@ -17,7 +17,8 @@ public class Plugin : IDalamudPlugin
     //internal NamePlates NamePlates { get; }
     
     //internal AtkTextNodeSetText AtkTextNodeSetText { get; }
-    internal SetNamePlateHook SetNamePlateHook { get; }
+    // internal SetNamePlateHook SetNamePlateHook { get; }
+    internal UpdateNamePlateHook UpdateNamePlateHook { get; }
     internal UpdateNamePlateNpcHook UpdateNamePlateNpcHook { get; }
     // internal ChatMessage ChatMessage { get; }
 
@@ -40,7 +41,8 @@ public class Plugin : IDalamudPlugin
         //this.Common = new XivCommonBase(Hooks.NamePlates);
         //this.NamePlates = new NamePlates(this);
         //this.AtkTextNodeSetText = new AtkTextNodeSetText(this);
-        this.SetNamePlateHook = new SetNamePlateHook(this, Config);
+        // this.SetNamePlateHook = new SetNamePlateHook(this, Config);
+        this.UpdateNamePlateHook = new UpdateNamePlateHook(this, Config);
         this.UpdateNamePlateNpcHook = new UpdateNamePlateNpcHook(this, Config);
         // his.ChatMessage = new ChatMessage(this);
     }
@@ -48,7 +50,8 @@ public class Plugin : IDalamudPlugin
     public void Dispose()
     {
         // this.ChatMessage.Dispose();
-        this.SetNamePlateHook.Dispose();
+        // this.SetNamePlateHook.Dispose();
+        this.UpdateNamePlateHook.Dispose();
         this.UpdateNamePlateNpcHook.Dispose();
         //this.AtkTextNodeSetText.Dispose();
         
