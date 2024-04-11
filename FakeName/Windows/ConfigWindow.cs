@@ -89,6 +89,14 @@ internal class ConfigWindow : Window
 
                 DrawCharacterView(selectedCharaCfg, activePlayer, ref modified);
             }
+            else
+            {
+                ImGui.Text("FakeName Options");
+                ImGui.Separator();
+
+                ImGui.Checkbox("Enable", ref config.Enabled);
+                // ImGui.Checkbox("小队模糊(非跨服)", ref config.PartyMemberReplace);
+            }
         }
         ImGui.EndChild();
     }
@@ -141,54 +149,6 @@ internal class ConfigWindow : Window
             }
 
             ImGuiHelpers.ScaledDummy(10);
-        }
-    }
-
-    // 旧的
-    public void DrawSettingTag()
-    {
-        var localPlayer = Service.ClientState.LocalPlayer;
-        var localName = "";
-        var localFcName = "";
-        if (localPlayer != null)
-        {
-            localName = localPlayer.Name.TextValue;
-            localFcName = localPlayer.CompanyTag.TextValue;
-        }
-        
-        var enabled = plugin.Config.Enabled;
-        if (ImGui.Checkbox("Enable", ref enabled))
-        {
-            plugin.Config.Enabled = enabled;
-            plugin.Config.SaveConfig();
-        }
-                
-        var partyMemberReplace = plugin.Config.PartyMemberReplace;
-        if (ImGui.Checkbox("小队模糊(非跨服)", ref partyMemberReplace))
-        {
-            plugin.Config.PartyMemberReplace = partyMemberReplace;
-            plugin.Config.SaveConfig();
-        }
-
-        var fakeName = plugin.Config.FakeNameText;
-        if (ImGui.InputText("角色名", ref fakeName, 100))
-        {
-            plugin.Config.FakeNameText = fakeName;
-            plugin.Config.SaveConfig();
-        }
-
-        var fakeFcName = plugin.Config.FakeFcNameText;
-        if (ImGui.InputText("部队简称", ref fakeFcName, 100))
-        {
-            plugin.Config.FakeFcNameText = fakeFcName;
-            plugin.Config.SaveConfig();
-        }
-
-        if (ImGui.Button("重置"))
-        {
-            plugin.Config.FakeNameText = localName;
-            plugin.Config.FakeFcNameText = localFcName;
-            plugin.Config.SaveConfig();
         }
     }
 }

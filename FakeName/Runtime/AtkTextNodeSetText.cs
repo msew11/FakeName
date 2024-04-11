@@ -1,10 +1,10 @@
 ﻿using System;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
-using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
+using FakeName.Utils;
 
-namespace FakeName.GameFunctions;
+namespace FakeName.Runtime;
 
 public class AtkTextNodeSetText
 {
@@ -70,7 +70,7 @@ public class AtkTextNodeSetText
             return;
         }
 
-        var text = Util.ReadRawSeString(textPtr);
+        var text = SeStringUtils.ReadRawSeString(textPtr);
 
         if (text.Payloads.Count > 20)
         {
@@ -81,7 +81,7 @@ public class AtkTextNodeSetText
 
         if (change)
         {
-            PluginLog.Debug($"AtkTextNodeSetText {text.TextValue}");
+            Service.Log.Debug($"AtkTextNodeSetText {text.TextValue}");
             overwrite = text;
         }
     }

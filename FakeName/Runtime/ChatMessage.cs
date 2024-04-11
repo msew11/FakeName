@@ -1,9 +1,8 @@
 ﻿using System;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Logging;
 
-namespace FakeName.Services;
+namespace FakeName.Runtime;
 
 internal class ChatMessage : IDisposable
 {
@@ -38,7 +37,7 @@ internal class ChatMessage : IDisposable
         var change = Plugin.NameRepository.DealReplace(text);
         if (change)
         {
-            PluginLog.Debug($"ChatMessage {text.TextValue}");
+            Service.Log.Debug($"ChatMessage {text.TextValue}");
         }
     }
 }

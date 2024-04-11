@@ -1,8 +1,7 @@
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using FakeName.Config;
-using FakeName.GameFunctions;
-using FakeName.Services;
+using FakeName.Runtime;
 using FakeName.Windows;
 
 namespace FakeName;
@@ -10,16 +9,16 @@ namespace FakeName;
 public class Plugin : IDalamudPlugin
 {
     public string Name => "FakeName";
-
+    
     internal PluginConfig Config { get; }
     
     
     //internal readonly XivCommonBase Common;
     //internal NamePlates NamePlates { get; }
     
-    internal AtkTextNodeSetText AtkTextNodeSetText { get; }
-    internal SetNamePlate SetNamePlate { get; }
-    internal ChatMessage ChatMessage { get; }
+    //internal AtkTextNodeSetText AtkTextNodeSetText { get; }
+    internal NamePlateUpdater NamePlateUpdater { get; }
+    // internal ChatMessage ChatMessage { get; }
 
     internal WindowManager WindowManager { get; }
     internal NameRepository NameRepository { get; }
@@ -39,16 +38,16 @@ public class Plugin : IDalamudPlugin
         
         //this.Common = new XivCommonBase(Hooks.NamePlates);
         //this.NamePlates = new NamePlates(this);
-        this.AtkTextNodeSetText = new AtkTextNodeSetText(this);
-        this.SetNamePlate = new SetNamePlate(this);
-        this.ChatMessage = new ChatMessage(this);
+        //this.AtkTextNodeSetText = new AtkTextNodeSetText(this);
+        this.NamePlateUpdater = new NamePlateUpdater(this, Config);
+        // his.ChatMessage = new ChatMessage(this);
     }
 
     public void Dispose()
     {
-        this.ChatMessage.Dispose();
-        this.SetNamePlate.Dispose();
-        this.AtkTextNodeSetText.Dispose();
+        // this.ChatMessage.Dispose();
+        this.NamePlateUpdater.Dispose();
+        //this.AtkTextNodeSetText.Dispose();
         
         //this.NamePlates.Dispose();
         //this.Common.Dispose();

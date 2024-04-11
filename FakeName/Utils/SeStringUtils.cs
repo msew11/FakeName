@@ -1,88 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 
 namespace FakeName.Utils;
 
-public static class SeStringUtils
-{
-    public static IntPtr emptyPtr;
-
-    public static void Initialize()
-    {
-        emptyPtr = SeStringToPtr(Text(""));
-    }
-
-    public static void Dispose() { }
-
-    public static SeString SeStringFromPtr(IntPtr seStringPtr)
-    {
-        byte b;
-        var offset = 0;
-
-        unsafe
-        {
-            while ((b = *(byte*) (seStringPtr + offset)) != 0)
-            {
-                offset++;
-            }
+internal static class SeStringUtils {
+    internal static void ReplaceSeStringText(this SeString seString, string text, string replacement) {
+        if (string.IsNullOrEmpty(text)) {
+            return;
         }
 
-        var bytes = new byte[offset];
-        Marshal.Copy(seStringPtr, bytes, 0, offset);
+        foreach (var payload in seString.Payloads) {
+            switch (payload) {
+                // case PlayerPayload pp:
+                //     if (pp.PlayerName.Contains(name)) {
+                //         pp.PlayerName = pp.PlayerName.Replace(name, replacement);
+                //     }
+                //
+                //     break;
+                case TextPayload txt:
+                    txt.Text = txt.Text.Replace(text, replacement);
 
+                    break;
+            }
+        }
+    }
+
+    internal static unsafe string? RawName(this GameObject obj) {
+        var gameObj = (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*) obj.Address;
+        return Marshal.PtrToStringUTF8((IntPtr) gameObj->Name);
+    }
+
+    internal static byte[] Terminate(this byte[] bs) {
+        var terminated = new byte[bs.Length + 1];
+        Array.Copy(bs, terminated, bs.Length);
+        terminated[^1] = 0;
+        return terminated;
+    }
+
+    internal static SeString ReadRawSeString(IntPtr ptr) {
+        var bytes = ReadRawBytes(ptr);
         return SeString.Parse(bytes);
     }
 
-    public static IntPtr SeStringToPtr(SeString seString)
-    {
-        var bytes = seString.Encode();
-        var pointer = Marshal.AllocHGlobal(bytes.Length + 1);
-        Marshal.Copy(bytes, 0, pointer, bytes.Length);
-        Marshal.WriteByte(pointer, bytes.Length, 0);
-
-        return pointer;
-    }
-
-    public static void FreePtr(IntPtr seStringPtr)
-    {
-        if (seStringPtr != emptyPtr)
-        {
-            Marshal.FreeHGlobal(seStringPtr);
-        }
-    }
-
-    public static SeString Text(string rawText)
-    {
-        var seString = new SeString(new List<Payload>());
-        seString.Append(new TextPayload(rawText));
-
-        return seString;
-    }
-
-    public static SeString Text(string text, ushort color)
-    {
-        var seString = new SeString(new List<Payload>());
-        seString.Append(new UIForegroundPayload(color));
-        seString.Append(new TextPayload(text));
-        seString.Append(UIForegroundPayload.UIForegroundOff);
-
-        return seString;
-    }
-
-    public static SeString Icon(BitmapFontIcon icon, string prefix = null)
-    {
-        var seString = new SeString(new List<Payload>());
-
-        if (prefix != null)
-        {
-            seString.Append(new TextPayload(prefix));
+    private static unsafe byte[] ReadRawBytes(IntPtr ptr) {
+        if (ptr == IntPtr.Zero) {
+            return Array.Empty<byte>();
         }
 
-        seString.Append(new IconPayload(icon));
+        var bytes = new List<byte>();
 
-        return seString;
+        var bytePtr = (byte*) ptr;
+        while (*bytePtr != 0) {
+            bytes.Add(*bytePtr);
+            bytePtr += 1;
+        }
+
+        return bytes.ToArray();
     }
 }

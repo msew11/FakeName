@@ -63,7 +63,11 @@
             <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
             <Private>false</Private>
         </Reference>
+
+
     </ItemGroup>
+
+
 
 
 </Project>

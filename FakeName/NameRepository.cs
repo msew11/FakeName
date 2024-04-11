@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Dalamud.Game.Text.SeStringHandling;
+using FakeName.Utils;
 
 namespace FakeName;
 
@@ -71,7 +72,7 @@ internal class NameRepository : IDisposable
                     continue;
                 }
 
-                text.ReplacePlayerName(memberName, memberReplace);
+                text.ReplaceSeStringText(memberName, memberReplace);
                 change = true;
             }
         }
@@ -81,7 +82,7 @@ internal class NameRepository : IDisposable
             return change;
         }
         
-        text.ReplacePlayerName(localPlayerName, replaceName);
+        text.ReplaceSeStringText(localPlayerName, replaceName);
         return true;
     }
 }
