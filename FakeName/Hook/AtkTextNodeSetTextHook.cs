@@ -5,7 +5,7 @@ using Dalamud.Utility.Signatures;
 using FakeName.Config;
 using FakeName.Utils;
 
-namespace FakeName.Runtime;
+namespace FakeName.Hook;
 
 public class AtkTextNodeSetTextHook
 {
@@ -94,7 +94,7 @@ public class AtkTextNodeSetTextHook
                     }
                     else if (txt.Text.Contains(charaName))
                     {
-                        Service.Log.Debug($"包含角色名的文本:{txt.Text}");
+                        Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
                     }
                     
                     break;

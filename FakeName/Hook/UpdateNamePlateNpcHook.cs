@@ -8,7 +8,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
-namespace FakeName.Runtime;
+namespace FakeName.Hook;
 
 internal class UpdateNamePlateNpcHook : IDisposable
 {

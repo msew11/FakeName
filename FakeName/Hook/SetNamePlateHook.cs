@@ -6,7 +6,7 @@ using Dalamud.Utility.Signatures;
 using FakeName.Config;
 using FakeName.Utils;
 
-namespace FakeName.Runtime;
+namespace FakeName.Hook;
 
 internal class SetNamePlateHook : IDisposable
 {

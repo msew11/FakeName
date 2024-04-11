@@ -3,28 +3,31 @@ using System.Linq;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
+using FakeName.Component;
 using FakeName.Config;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
-namespace FakeName.Runtime;
+namespace FakeName.Hook;
 
 internal class UpdateNamePlateHook : IDisposable
 {
     private readonly Plugin plugin;
     private readonly PluginConfig config;
 
+    private readonly DutyComponent dutyComponent;
+
     [Signature(Signatures.UpdateNamePlate, DetourName = nameof(UpdateNamePlateDetour))]
     private readonly Hook<UpdateNamePlateDelegate> hook = null!;
 
-    public UpdateNamePlateHook(Plugin plugin, PluginConfig config)
+    public UpdateNamePlateHook(Plugin plugin, PluginConfig config, DutyComponent dutyComponent)
     {
         this.plugin = plugin;
         this.config = config;
+        this.dutyComponent = dutyComponent;
 
         Service.Hook.InitializeFromAttributes(this);
-
         hook.Enable();
     }
 
@@ -87,12 +90,13 @@ internal class UpdateNamePlateHook : IDisposable
         }
         
         
-        if (character.CurrentWorld.Id == character.HomeWorld.Id)
+        if (character.CurrentWorld.Id == character.HomeWorld.Id && !dutyComponent.InDuty)
         {
             var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $"«{characterConfig.FakeFcNameText}»" : characterConfig.FakeNameText;
             if (!namePlateInfo->FcName.ToString().Equals(newFcName))
             {
-                Service.Log.Debug($"替换了部队简称：{namePlateInfo->FcName}->{newFcName}");
+                Service.Log.Debug($"替换了部队简称：{namePlateInfo->FcName}->{newFcName} tag:{Service.ClientState.TerritoryType} duty:{Service.DutyState.IsDutyStarted}");
+                
                 namePlateInfo->FcName.SetString(newFcName);
             }
         }

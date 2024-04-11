@@ -2,7 +2,7 @@
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 
-namespace FakeName.Runtime;
+namespace FakeName.Hook;
 
 internal class ChatMessage : IDisposable
 {
@@ -34,10 +34,10 @@ internal class ChatMessage : IDisposable
             return;
         }
 
-        var change = Plugin.NameRepository.DealReplace(text);
-        if (change)
-        {
-            Service.Log.Debug($"ChatMessage {text.TextValue}");
-        }
+        // var change = Plugin.NameRepository.DealReplace(text);
+        // if (change)
+        // {
+        //     Service.Log.Debug($"ChatMessage {text.TextValue}");
+        // }
     }
 }

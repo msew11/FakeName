@@ -22,4 +22,6 @@ internal class Service
     [PluginService] public static IPluginLog Log { get; private set; } = null!;
     [PluginService] public static IGameGui GameGui { get; private set; } = null!;
     [PluginService] public static ISigScanner SigScanner { get; private set; } = null!;
+    [PluginService] public static IDutyState DutyState { get; private set; } = null!;
+    [PluginService] public static IDataManager DataManager { get; private set; } = null!;
 }
