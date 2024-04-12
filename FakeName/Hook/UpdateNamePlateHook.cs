@@ -90,9 +90,9 @@ internal class UpdateNamePlateHook : IDisposable
         }
         
         
-        if (character.CurrentWorld.Id == character.HomeWorld.Id && !dutyComponent.InDuty)
+        if (character.CurrentWorld.Id == character.HomeWorld.Id && !dutyComponent.InDuty && character.CompanyTag.TextValue.Length > 0)
         {
-            var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $"«{characterConfig.FakeFcNameText}»" : characterConfig.FakeNameText;
+            var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $"«{characterConfig.FakeFcNameText}»" : $"«{character.CompanyTag.TextValue}»";
             if (!namePlateInfo->FcName.ToString().Equals(newFcName))
             {
                 Service.Log.Debug($"替换了部队简称：{namePlateInfo->FcName}->{newFcName} tag:{Service.ClientState.TerritoryType} duty:{Service.DutyState.IsDutyStarted}");
