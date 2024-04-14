@@ -69,6 +69,12 @@ public class AtkTextNodeSetTextHook
             return;
         }
 
+        if (characterConfig.FakeFcNameText.Length == 0)
+        {
+            hook.Original(node, textPtr);
+            return;
+        }
+
         var text = SeStringUtils.ReadRawSeString(textPtr);
 
         foreach (var payload in text.Payloads) {
@@ -130,6 +136,12 @@ public class AtkTextNodeSetTextHook
         {
             var charaName = pair.Key;
             var characterConfig = pair.Value;
+
+            if (characterConfig.FakeNameText.Length == 0)
+            {
+                continue;
+            }
+            
             foreach (var payload in text.Payloads) {
                 switch (payload) {
                     /*case PlayerPayload pp:

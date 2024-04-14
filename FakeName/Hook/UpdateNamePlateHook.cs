@@ -88,13 +88,14 @@ internal class UpdateNamePlateHook : IDisposable
         }
         
         string oldName = namePlateInfo->Name.ToString();
-        if (!oldName.Equals(characterConfig.FakeNameText))
+        var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : character.Name.TextValue;
+        if (!oldName.Equals(newName))
         {
-            namePlateInfo->Name.SetString(characterConfig.FakeNameText);
+            namePlateInfo->Name.SetString(newName);
             if (!modifiedNamePlates.TryGetValue(actorId, out var old))
             {
                 modifiedNamePlates[actorId] = new KeyValuePair<string, string>(character.Name.TextValue, character.CompanyTag.TextValue);
-                Service.Log.Debug($"添加Player的Dic actorId:{actorId} <{character.Name.TextValue}, {character.CompanyTag.TextValue}>");
+                Service.Log.Debug($"添加Player的Dic actorId:{actorId} <{character.Name.TextValue}, {newName}>");
             }
             Service.Log.Debug($"替换了角色名：{oldName}->{characterConfig.FakeNameText}");
         }
@@ -105,7 +106,6 @@ internal class UpdateNamePlateHook : IDisposable
             if (!namePlateInfo->FcName.ToString().Equals(newFcName))
             {
                 Service.Log.Debug($"替换了部队简称：{namePlateInfo->FcName}->{newFcName} tag:{Service.ClientState.TerritoryType} duty:{Service.DutyState.IsDutyStarted}");
-                
                 namePlateInfo->FcName.SetString(newFcName);
             }
         }
