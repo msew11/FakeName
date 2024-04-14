@@ -77,6 +77,11 @@ public partial class HudComponent : IDisposable
      */
     public unsafe void RefreshPartyList()
     {
+        if (!config.Enabled)
+        {
+            return;
+        }
+        
         var groupManager = GroupManager.Instance();
         if (groupManager->MemberCount > 0)
         {
@@ -188,6 +193,11 @@ public partial class HudComponent : IDisposable
 
     private unsafe void RefreshTargetInfo()
     {
+        if (!config.Enabled)
+        {
+            return;
+        }
+        
         var localPlayer = Service.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
@@ -253,6 +263,11 @@ public partial class HudComponent : IDisposable
     
     private unsafe void RefreshFocusTargetInfo()
     {
+        if (!config.Enabled)
+        {
+            return;
+        }
+        
         var localPlayer = Service.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
@@ -290,6 +305,11 @@ public partial class HudComponent : IDisposable
 
     private unsafe void RefreshWideText()
     {
+        if (!config.Enabled)
+        {
+            return;
+        }
+        
         var localPlayer = Service.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
