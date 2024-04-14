@@ -4,6 +4,7 @@ using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using FakeName.Config;
 using FakeName.Utils;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
 namespace FakeName.Hook;
 
@@ -56,7 +57,7 @@ public class AtkTextNodeSetTextHook
         var character = Service.ClientState.LocalPlayer;
         if (character == null)
         {
-            hook.Original(node, textPtr);
+            TryUpdLoginUi(node, textPtr);
             return;
         }
 
@@ -98,6 +99,62 @@ public class AtkTextNodeSetTextHook
                     }
                     
                     break;
+            }
+        }
+        
+        fixed (byte* newText = text.Encode().Terminate())
+        {
+            hook.Original(node, (IntPtr)newText);
+        }
+    }
+    
+    private unsafe void TryUpdLoginUi(IntPtr node, IntPtr textPtr)
+    {
+        var agent = AgentLobby.Instance();
+        if (agent == null)
+        {
+            hook.Original(node, textPtr);
+            return;
+        }
+        
+        config.TryGetWorldDic(agent->WorldId, out var worldDic);
+        if (worldDic == null)
+        {
+            hook.Original(node, textPtr);
+            return;
+        }
+        
+        var text = SeStringUtils.ReadRawSeString(textPtr);
+        Service.Log.Verbose($"包含角色名的文本:{text.TextValue}");
+        foreach (var pair in worldDic)
+        {
+            var charaName = pair.Key;
+            var characterConfig = pair.Value;
+            foreach (var payload in text.Payloads) {
+                switch (payload) {
+                    /*case PlayerPayload pp:
+                        if (pp.PlayerName.Contains(charaName)) {
+                            pp.PlayerName = pp.PlayerName.Replace(charaName, characterConfig.FakeNameText);
+                        }
+
+                        break;*/
+                    case TextPayload txt:
+                        if (txt.Text.Equals(charaName))
+                        {
+                            Service.Log.Debug($"world[{agent->WorldId}] 替换{txt.Text} {charaName}->{characterConfig.FakeNameText}");
+                            txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
+                        }
+                        else if (txt.Text.Equals($"要以{charaName}登录吗？"))
+                        {
+                            txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
+                        }
+                        else if (txt.Text.Contains(charaName))
+                        {
+                            Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
+                        }
+                    
+                        break;
+                }
             }
         }
         

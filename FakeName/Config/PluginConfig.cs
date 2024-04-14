@@ -34,4 +34,9 @@ public class PluginConfig : IPluginConfiguration
 
         return false;
     }
+    
+    public bool TryGetWorldDic(uint world, out Dictionary<string, CharacterConfig>? worldDic) {
+        worldDic = null;
+        return WorldCharacterDictionary.TryGetValue(world, out worldDic);
+    }
 }
