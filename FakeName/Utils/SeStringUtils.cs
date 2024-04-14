@@ -61,4 +61,23 @@ internal static class SeStringUtils {
 
         return bytes.ToArray();
     }
+    
+    public static unsafe SeString ReadSeString(byte* ptr)
+    {
+        var offset = 0;
+        while (true)
+        {
+            var b = *(ptr + offset);
+            if (b == 0)
+            {
+                break;
+            }
+
+            offset += 1;
+        }
+
+        var bytes = new byte[offset];
+        Marshal.Copy(new nint(ptr), bytes, 0, offset);
+        return SeString.Parse(bytes);
+    }
 }

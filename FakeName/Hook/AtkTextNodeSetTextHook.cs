@@ -84,15 +84,15 @@ public class AtkTextNodeSetTextHook
                     {
                         txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
                     }
-                    else if (txt.Text.Equals($"{charaName} «{fcName}»"))
-                    {
-                        txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText)
-                                      .Replace(fcName, characterConfig.FakeFcNameText);
-                    }
-                    else if (txt.Text.Contains($"级 {charaName}"))
-                    {
-                        txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
-                    }
+                    // else if (txt.Text.Equals($"{charaName} «{fcName}»"))
+                    // {
+                    //     txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText)
+                    //                   .Replace(fcName, characterConfig.FakeFcNameText);
+                    // }
+                    // else if (txt.Text.Contains($"级 {charaName}"))
+                    // {
+                    //     txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
+                    // }
                     else if (txt.Text.Contains(charaName))
                     {
                         Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
