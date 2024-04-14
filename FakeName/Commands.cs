@@ -12,10 +12,15 @@ internal class Commands : IDisposable {
         Service.CommandManager.AddHandler("/fakename", new CommandInfo(this.OnCommand) {
             HelpMessage = "打开FakeName",
         });
+
+        Service.CommandManager.AddHandler("/fn", new CommandInfo(this.OnCommand) {
+            HelpMessage = "打开FakeName",
+        });
     }
 
     public void Dispose() {
         Service.CommandManager.RemoveHandler("/fakename");
+        Service.CommandManager.RemoveHandler("/fn");
     }
 
     private void OnCommand(string command, string arguments) {

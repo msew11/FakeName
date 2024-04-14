@@ -1,4 +1,6 @@
 using System;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Plugin.Services;
 using FakeName.Config;
@@ -21,6 +23,9 @@ public partial class HudComponent : IDisposable
         this.config = config;
         
         Service.Framework.Update += OnUpdate;
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_TargetInfoMainTarget", OnTargetInfoAddonPostDraw);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_FocusTargetInfo", OnFocusTargetAddonPostDraw);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_WideText", OnWideTextAddonPostDraw);
     }
 
     public void Dispose()
@@ -47,6 +52,25 @@ public partial class HudComponent : IDisposable
             Console.WriteLine(e);
         }
     }
+    
+    private void OnTargetInfoAddonPostDraw(AddonEvent type, AddonArgs args)
+    {
+        Service.Log.Debug($"{type.ToString()} {args}");
+        RefreshTargetInfo();
+    }
+    
+    private void OnFocusTargetAddonPostDraw(AddonEvent type, AddonArgs args)
+    {
+        Service.Log.Debug($"{type.ToString()} {args}");
+        RefreshFocusTargetInfo();
+    }
+    
+    private void OnWideTextAddonPostDraw(AddonEvent type, AddonArgs args)
+    {
+        Service.Log.Debug($"{type.ToString()} {args}");
+        RefreshWideText();
+    }
+
 
     /**
      * 刷新小队列表
@@ -169,8 +193,8 @@ public partial class HudComponent : IDisposable
         {
             return;
         }
-
-        var targetObj = localPlayer.TargetObject;
+        
+        var targetObj = Service.Targets.Target;
         if (targetObj == null)
         {
             return;

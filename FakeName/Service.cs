@@ -24,4 +24,5 @@ internal class Service
     [PluginService] public static ISigScanner SigScanner { get; private set; } = null!;
     [PluginService] public static IDutyState DutyState { get; private set; } = null!;
     [PluginService] public static IDataManager DataManager { get; private set; } = null!;
+    [PluginService] public static IAddonLifecycle AddonLifecycle { get; private set; } = null!;
 }

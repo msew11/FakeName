@@ -90,6 +90,14 @@ public class AtkTextNodeSetTextHook
                     {
                         txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
                     }
+                    else if (txt.Text.Equals(fcName))
+                    {
+                        txt.Text = txt.Text.Replace(fcName, characterConfig.FakeFcNameText);
+                    }
+                    else if (txt.Text.Equals($" [{fcName}]"))
+                    {
+                        txt.Text = txt.Text.Replace(fcName, characterConfig.FakeFcNameText);
+                    }
                     // else if (txt.Text.Equals($"{charaName} «{fcName}»"))
                     // {
                     //     txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText)
