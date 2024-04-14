@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Hooking;
@@ -17,6 +18,8 @@ internal class UpdateNamePlateNpcHook : IDisposable
 
     [Signature(Signatures.UpdateNamePlateNpc, DetourName = nameof(UpdateNamePlateNpcDetour))]
     private readonly Hook<UpdateNameplateNpcDelegate> hook = null!;
+    
+    private readonly Dictionary<uint, string> modifiedNamePlates = new();
 
     public UpdateNamePlateNpcHook(Plugin plugin, PluginConfig config)
     {
@@ -55,6 +58,7 @@ internal class UpdateNamePlateNpcHook : IDisposable
         if (!plugin.Config.Enabled)
         {
             //namePlateInfo->DisplayTitle.SetString(newName);
+            TryCleanUp(namePlateInfo, gameObject);
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
 
@@ -81,12 +85,35 @@ internal class UpdateNamePlateNpcHook : IDisposable
         }
 
         var newDisplayTitle = $"《{characterConfig.FakeNameText}》";
-        if (!namePlateInfo->DisplayTitle.ToString().Equals(newDisplayTitle))
+        string oldDisplayTitle = namePlateInfo->DisplayTitle.ToString();
+        if (!oldDisplayTitle.Equals(newDisplayTitle))
         {
             namePlateInfo->DisplayTitle.SetString(newDisplayTitle);
-            Service.Log.Debug($"替换了宠物{namePlateInfo->Name}title:{newDisplayTitle}");
+            if (!modifiedNamePlates.TryGetValue(actorId, out var old))
+            {
+                modifiedNamePlates[actorId] = character.Name.TextValue;
+                Service.Log.Debug($"添加NPC的Dic actorId:{actorId} displayTitle:{character.Name.TextValue}");
+            }
+            Service.Log.Debug($"替换了宠物[{namePlateInfo->Name}]的displayTitle:{oldDisplayTitle}->{newDisplayTitle}");
         }
         
         return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
+    }
+
+    private unsafe void TryCleanUp(RaptureAtkModule.NamePlateInfo* namePlateInfo, GameObject* gameObject)
+    {
+        if (gameObject->ObjectKind != 9)
+        {
+            return;
+        }
+        
+        var actorId = namePlateInfo->ObjectID.ObjectID;
+        if (!modifiedNamePlates.TryGetValue(actorId, out var old))
+        {
+            return;
+        }
+        Service.Log.Debug($"恢复了宠物[{namePlateInfo->Name}]的displayTitle:{namePlateInfo->DisplayTitle.ToString()}->{old}");
+        namePlateInfo->DisplayTitle.SetString($"《{old}》");
+        modifiedNamePlates.Remove(actorId);
     }
 }
