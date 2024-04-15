@@ -24,7 +24,7 @@ public class Plugin : IDalamudPlugin
     // internal ChatMessage ChatMessage { get; }
     
     internal DutyComponent DutyComponent { get; }
-    internal HudComponent HudComponent { get; }
+    internal TargetInfoComponent TargetInfoComponent { get; }
 
     internal WindowManager WindowManager { get; }
     // internal NameRepository NameRepository { get; }
@@ -42,7 +42,7 @@ public class Plugin : IDalamudPlugin
         this.Commands = new Commands(this);
 
         this.DutyComponent = new DutyComponent();
-        this.HudComponent = new HudComponent(Config);
+        this.TargetInfoComponent = new TargetInfoComponent(Config);
         //this.NameRepository = new NameRepository(this);
         
         //this.Common = new XivCommonBase(Hooks.NamePlates);

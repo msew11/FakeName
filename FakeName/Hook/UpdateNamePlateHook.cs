@@ -22,7 +22,7 @@ internal class UpdateNamePlateHook : IDisposable
     [Signature(Signatures.UpdateNamePlate, DetourName = nameof(UpdateNamePlateDetour))]
     private readonly Hook<UpdateNamePlateDelegate> hook = null!;
     
-    private readonly Dictionary<uint, KeyValuePair<string, string>> modifiedNamePlates = new();
+    private readonly Dictionary<uint, uint> modified = new();
 
     public UpdateNamePlateHook(Plugin plugin, PluginConfig config, DutyComponent dutyComponent)
     {
@@ -58,6 +58,11 @@ internal class UpdateNamePlateHook : IDisposable
         RaptureAtkModule* raptureAtkModule, RaptureAtkModule.NamePlateInfo* namePlateInfo, NumberArrayData* numArray,
         StringArrayData* stringArray, BattleChara* battleChara, int numArrayIndex, int stringArrayIndex)
     {
+        if (Service.ClientState.IsPvP)
+        {
+            return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
+        }
+        
         if (!plugin.Config.Enabled)
         {
             //namePlateInfo->DisplayTitle.SetString(newName);
@@ -92,12 +97,7 @@ internal class UpdateNamePlateHook : IDisposable
         if (!oldName.Equals(newName))
         {
             namePlateInfo->Name.SetString(newName);
-            if (!modifiedNamePlates.TryGetValue(actorId, out var old))
-            {
-                modifiedNamePlates[actorId] = new KeyValuePair<string, string>(character.Name.TextValue, character.CompanyTag.TextValue);
-                Service.Log.Debug($"添加Player的Dic actorId:{actorId} <{character.Name.TextValue}, {newName}>");
-            }
-            Service.Log.Debug($"替换了角色名：{oldName}->{characterConfig.FakeNameText}");
+            //Service.Log.Debug($"替换了角色名：{oldName}->{newName}");
         }
         
         if (character.CurrentWorld.Id == character.HomeWorld.Id && !dutyComponent.InDuty && character.CompanyTag.TextValue.Length > 0)
@@ -105,25 +105,48 @@ internal class UpdateNamePlateHook : IDisposable
             var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $"«{characterConfig.FakeFcNameText}»" : $"«{character.CompanyTag.TextValue}»";
             if (!namePlateInfo->FcName.ToString().Equals(newFcName))
             {
-                Service.Log.Debug($"替换了部队简称：{namePlateInfo->FcName}->{newFcName} tag:{Service.ClientState.TerritoryType} duty:{Service.DutyState.IsDutyStarted}");
+                //Service.Log.Debug($"替换了部队简称：{namePlateInfo->FcName}->{newFcName} tag:{Service.ClientState.TerritoryType} duty:{Service.DutyState.IsDutyStarted}");
                 namePlateInfo->FcName.SetString(newFcName);
             }
         }
+
+        modified[actorId] = 1;
         
         return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
     }
     
     private unsafe void TryCleanUp(RaptureAtkModule.NamePlateInfo* namePlateInfo)
     {
-        var actorId = namePlateInfo->ObjectID.ObjectID;
-        if (!modifiedNamePlates.TryGetValue(actorId, out var old))
+        var localPlayer = Service.ClientState.LocalPlayer;
+        if (localPlayer == null)
         {
             return;
         }
-        Service.Log.Debug($"恢复了角色名：{namePlateInfo->Name}->{old.Key}");
-        Service.Log.Debug($"恢复了角色部队：{namePlateInfo->FcName}->{old.Value}");
-        namePlateInfo->Name.SetString($"{old.Key}");
-        namePlateInfo->FcName.SetString($"«{old.Value}»");
-        modifiedNamePlates.Remove(actorId);
+        
+        var actorId = namePlateInfo->ObjectID.ObjectID;
+        if (!modified.ContainsKey(actorId))
+        {
+            return;
+        }
+        
+        var character = (PlayerCharacter?) Service.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == actorId);
+        if (character == null)
+        {
+            return;
+        }
+
+        var name = character.Name.TextValue;
+        if (!namePlateInfo->Name.ToString().Equals(name))
+        {
+            //Service.Log.Debug($"恢复了角色名：{namePlateInfo->Name}->{name}");
+            namePlateInfo->Name.SetString($"{name}");
+        }
+
+        var fcName = $"«{character.CompanyTag.TextValue}»";
+        if (fcName.Length > 0 && !namePlateInfo->FcName.ToString().Equals(fcName))
+        {
+            //Service.Log.Debug($"恢复了角色部队：{namePlateInfo->FcName}->{fcName}");
+            namePlateInfo->FcName.SetString(fcName);
+        }
     }
 }

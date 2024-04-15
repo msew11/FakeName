@@ -94,7 +94,12 @@ internal class ConfigWindow : Window
                 ImGui.Text("FakeName Options");
                 ImGui.Separator();
 
-                ImGui.Checkbox("Enable", ref config.Enabled);
+                if (ImGui.Checkbox("Enable", ref config.Enabled))
+                {
+                    Service.Interface.SavePluginConfig(config);
+                }
+
+                
                 // ImGui.Checkbox("小队模糊(非跨服)", ref config.PartyMemberReplace);
             }
         }
