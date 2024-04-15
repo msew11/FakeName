@@ -88,14 +88,11 @@ internal class UpdateNamePlateNpcHook : IDisposable
         string oldDisplayTitle = namePlateInfo->DisplayTitle.ToString();
         if (!oldDisplayTitle.Equals(newDisplayTitle))
         {
+            // Service.Log.Debug($"替换了宠物[{namePlateInfo->Name}]的displayTitle:{oldDisplayTitle}->{newDisplayTitle}");
             namePlateInfo->DisplayTitle.SetString(newDisplayTitle);
-            if (!modifiedNamePlates.TryGetValue(actorId, out var old))
-            {
-                modifiedNamePlates[actorId] = character.Name.TextValue;
-                Service.Log.Debug($"添加NPC的Dic actorId:{actorId} displayTitle:{character.Name.TextValue}");
-            }
-            Service.Log.Debug($"替换了宠物[{namePlateInfo->Name}]的displayTitle:{oldDisplayTitle}->{newDisplayTitle}");
         }
+        
+        modifiedNamePlates[actorId] = character.Name.TextValue;
         
         return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
     }
@@ -112,7 +109,7 @@ internal class UpdateNamePlateNpcHook : IDisposable
         {
             return;
         }
-        Service.Log.Debug($"恢复了宠物[{namePlateInfo->Name}]的displayTitle:{namePlateInfo->DisplayTitle.ToString()}->{old}");
+        //Service.Log.Debug($"恢复了宠物[{namePlateInfo->Name}]的displayTitle:{namePlateInfo->DisplayTitle.ToString()}->{old}");
         namePlateInfo->DisplayTitle.SetString($"《{old}》");
         modifiedNamePlates.Remove(actorId);
     }

@@ -58,11 +58,6 @@ internal class UpdateNamePlateHook : IDisposable
         RaptureAtkModule* raptureAtkModule, RaptureAtkModule.NamePlateInfo* namePlateInfo, NumberArrayData* numArray,
         StringArrayData* stringArray, BattleChara* battleChara, int numArrayIndex, int stringArrayIndex)
     {
-        if (Service.ClientState.IsPvP)
-        {
-            return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
-        }
-        
         if (!plugin.Config.Enabled)
         {
             //namePlateInfo->DisplayTitle.SetString(newName);
@@ -138,7 +133,7 @@ internal class UpdateNamePlateHook : IDisposable
         var name = character.Name.TextValue;
         if (!namePlateInfo->Name.ToString().Equals(name))
         {
-            //Service.Log.Debug($"恢复了角色名：{namePlateInfo->Name}->{name}");
+            // Service.Log.Debug($"恢复了角色名：{namePlateInfo->Name}->{name}");
             namePlateInfo->Name.SetString($"{name}");
         }
 
@@ -148,5 +143,7 @@ internal class UpdateNamePlateHook : IDisposable
             //Service.Log.Debug($"恢复了角色部队：{namePlateInfo->FcName}->{fcName}");
             namePlateInfo->FcName.SetString(fcName);
         }
+
+        modified.Remove(actorId);
     }
 }
