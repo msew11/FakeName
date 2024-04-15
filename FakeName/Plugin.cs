@@ -25,6 +25,7 @@ public class Plugin : IDalamudPlugin
     
     internal DutyComponent DutyComponent { get; }
     internal TargetInfoComponent TargetInfoComponent { get; }
+    internal PartyListComponent PartyListComponent { get; }
 
     internal WindowManager WindowManager { get; }
     // internal NameRepository NameRepository { get; }
@@ -43,7 +44,7 @@ public class Plugin : IDalamudPlugin
 
         this.DutyComponent = new DutyComponent();
         this.TargetInfoComponent = new TargetInfoComponent(Config);
-        //this.NameRepository = new NameRepository(this);
+        this.PartyListComponent = new PartyListComponent(Config);
         
         //this.Common = new XivCommonBase(Hooks.NamePlates);
         //this.NamePlates = new NamePlates(this);

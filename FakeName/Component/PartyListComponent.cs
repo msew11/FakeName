@@ -1,15 +1,17 @@
 using System;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
 using FakeName.Config;
 using FakeName.Utils;
 using FFXIVClientStructs.FFXIV.Client.Game.Group;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace FakeName.Component;
 
-// tip 找下有没有在某个hud出现时的事件
-public partial class PartyListComponent : IDisposable
+public class PartyListComponent : IDisposable
 {
     private readonly PluginConfig config;
     
@@ -18,19 +20,36 @@ public partial class PartyListComponent : IDisposable
     {
         this.config = config;
         
-        Service.Framework.Update += OnUpdate;
+        // Service.Framework.Update += OnUpdate;
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "_PartyList", ObPartyListUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "_PartyList", ObPartyListUpdate);
+        // Service.AddonLifecycle.RegisterListener(AddonEvent.PreUpdate, "_PartyList", ObPartyListUpdate);
+        // Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_PartyList", ObPartyListUpdate);
+        // Service.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "_PartyList", ObPartyListUpdate);
+        // Service.AddonLifecycle.RegisterListener(AddonEvent.PostDraw, "_PartyList", ObPartyListUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "_PartyList", ObPartyListUpdate);
+        // Service.AddonLifecycle.RegisterListener(AddonEvent.PreRequestedUpdate, "_PartyList", ObPartyListUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreRefresh, "_PartyList", ObPartyListUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRefresh, "_PartyList", ObPartyListUpdate);
+        // Service.AddonLifecycle.RegisterListener(AddonEvent.PreReceiveEvent, "_PartyList", ObPartyListUpdate);
+        // Service.AddonLifecycle.RegisterListener(AddonEvent.PostReceiveEvent, "_PartyList", ObPartyListUpdate);
+        
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_PartyList", ObPartyListUpdate);
+        
+        
     }
 
     public void Dispose()
     {
-        Service.Framework.Update -= OnUpdate;
+        // Service.Framework.Update -= OnUpdate;
+        Service.AddonLifecycle.UnregisterListener(ObPartyListUpdate);
     }
     
     private void OnUpdate(IFramework framework)
     {
         try
         {
-            if (DateTime.Now - lastUpdate > TimeSpan.FromSeconds(1))
+            if (DateTime.Now - lastUpdate > TimeSpan.FromSeconds(5))
             {
                 RefreshPartyList();
                 lastUpdate = DateTime.Now;
@@ -40,6 +59,12 @@ public partial class PartyListComponent : IDisposable
         {
             Service.Log.Error("PartyListComponent Err", e);
         }
+    }
+    
+    private void ObPartyListUpdate(AddonEvent type, AddonArgs args)
+    {
+        RefreshPartyList();
+        // Service.Log.Debug($"{type.ToString()} {args.AddonName} {Service.PartyList.Length}");
     }
 
     /**
@@ -59,13 +84,17 @@ public partial class PartyListComponent : IDisposable
         }
         else
         {
-            ReplaceCrossPartyListHud();
+            var cwProxy = InfoProxyCrossRealm.Instance();
+            if (cwProxy->IsInCrossRealmParty != 0)
+            {
+                ReplaceCrossPartyListHud(cwProxy);
+            }
         }
     }
 
     public unsafe void ReplacePartyListHud(GroupManager* groupManager)
     {
-        Service.Log.Debug($"party count:{groupManager->MemberCount}");
+        Service.Log.Verbose($"party count:{groupManager->MemberCount}");
         for (var i = 0; i < groupManager->MemberCount; i++)
         {
             var partyMember = groupManager->GetPartyMemberByIndex(i);
@@ -76,39 +105,28 @@ public partial class PartyListComponent : IDisposable
                 continue;
             }
             
-            if (!config.TryGetCharacterConfig(partyMemberName, partyMember->HomeWorld, out var characterConfig) || characterConfig == null)
-            {
-                continue;
-            }
-            
             var memberStruct = memberStructOptional.Value;
             var nameNode = memberStruct.Name;
+            
+            deal(i, partyMemberName, partyMember->HomeWorld, nameNode);
 
-            if (partyMemberName.Equals(characterConfig.FakeNameText) || !nameNode->NodeText.ToString().Contains(partyMemberName))
-            {
-                continue;
-            }
+            // if (partyMemberName.Equals(characterConfig.FakeNameText) || !nameNode->NodeText.ToString().Contains(partyMemberName))
+            // {
+            //     continue;
+            // }
 
-            var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : partyMemberName;
-            var newText = nameNode->NodeText.ToString().Replace(partyMemberName, newName);
-            nameNode->NodeText.SetString(newText);
-            Service.Log.Debug($"party {i} {partyMemberName} {partyMember->HomeWorld}");
+            // var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : partyMemberName;
+            // var newText = nameNode->NodeText.ToString().Replace(partyMemberName, newName);
+            // nameNode->NodeText.SetString(newText);
         }
     }
 
-    public unsafe void ReplaceCrossPartyListHud()
+    public unsafe void ReplaceCrossPartyListHud(InfoProxyCrossRealm* cwProxy)
     {
-        var cwProxy = InfoProxyCrossRealm.Instance();
-        if (cwProxy->IsInCrossRealmParty == 0)
-        {
-            // 不在跨服团队
-            return;
-        }
-        
         var localIndex = cwProxy->LocalPlayerGroupIndex;
         var crossRealmGroup = cwProxy->CrossRealmGroupArraySpan[localIndex];
 
-        Service.Log.Debug($"crossParty count:{crossRealmGroup.GroupMemberCount}");
+        Service.Log.Verbose($"crossParty count:{crossRealmGroup.GroupMemberCount}");
         for (var i = 0; i < crossRealmGroup.GroupMemberCount; i++)
         {
             var groupMember = crossRealmGroup.GroupMembersSpan[i];
@@ -120,28 +138,32 @@ public partial class PartyListComponent : IDisposable
                 continue;
             }
             
-            if (!config.TryGetCharacterConfig(groupMemberName, (uint)groupMember.HomeWorld, out var characterConfig) || characterConfig == null)
-            {
-                Service.Log.Debug("crossParty b");
-                continue;
-            }
-            
             var memberStruct = memberStructOptional.Value;
             var nameNode = memberStruct.Name;
-            var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : groupMemberName;
+            
+            deal(i, groupMemberName, (ushort) groupMember.HomeWorld, nameNode);
+        }
+    }
 
-            if (nameNode->NodeText.ToString().EndsWith(newName))
-            {
-                // Service.Log.Debug($"crossParty c {groupMemberName} {characterConfig.FakeNameText} {nameNode->NodeText.ToString()}");
-                continue;
-            }
-            
-            
-            Service.Log.Debug($"crossParty {nameNode->NodeText.ToString()}");
-            Service.Log.Debug($"crossParty {newName}");
-            
-            var newText = nameNode->NodeText.ToString().Replace(groupMemberName, newName);
-            nameNode->NodeText.SetString(newText);
+    private unsafe void deal(int idx, string name, uint worldId, AtkTextNode* nameNode)
+    {
+        var nameText = nameNode->NodeText.ToString();
+
+        var playerName = "";
+        if (nameText.Contains(" \u0002\u0012\u0002Y\u0003 "))
+        {
+            playerName = nameText.Split(" \u0002\u0012\u0002Y\u0003 ")[1];
+        }
+        else
+        {
+            playerName = nameText.Split(" ")[1];
+        }
+        Service.Log.Verbose($"party {idx} [{name}] [{nameText}] [{playerName}]");
+        
+        
+        if (!config.TryGetCharacterConfig(name, worldId, out var characterConfig) || characterConfig == null)
+        {
+            return;
         }
     }
 

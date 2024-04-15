@@ -2,213 +2,239 @@ using System;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Objects.SubKinds;
-using Dalamud.Plugin.Services;
 using FakeName.Config;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace FakeName.Component;
 
-// tip 找下有没有在某个hud出现时的事件
 public class TargetInfoComponent : IDisposable
 {
     private readonly PluginConfig config;
     
     private DateTime lastUpdate = DateTime.Today;
+    
     public TargetInfoComponent(PluginConfig config)
     {
         this.config = config;
         
-        //Service.Framework.Update += OnUpdate;
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_TargetInfoMainTarget", OnTargetInfoAddonPostDraw);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_FocusTargetInfo", OnFocusTargetAddonPostDraw);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostDraw, "_WideText", OnWideTextAddonPostDraw);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", TargetInfoUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", TargetTargetUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_FocusTargetInfo", FocusTargetInfoUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_WideText", WideTextUpdate);
     }
 
     public void Dispose()
     {
-        //Service.Framework.Update -= OnUpdate;
-        Service.AddonLifecycle.UnregisterListener(OnTargetInfoAddonPostDraw);
-        Service.AddonLifecycle.UnregisterListener(OnFocusTargetAddonPostDraw);
-        Service.AddonLifecycle.UnregisterListener(OnWideTextAddonPostDraw);
-    }
-    
-    private void OnUpdate(IFramework framework)
-    {
-        try
-        {
-            if (DateTime.Now - lastUpdate > TimeSpan.FromSeconds(1))
-            {
-                RefreshTargetInfo();
-                RefreshFocusTargetInfo();
-                RefreshWideText();
-                lastUpdate = DateTime.Now;
-            }
-        }
-        catch (Exception e)
-        {
-            Service.Log.Error("TargetInfoComponent Err", e);
-        }
-    }
-    
-    private void OnTargetInfoAddonPostDraw(AddonEvent type, AddonArgs args)
-    {
-        //Service.Log.Verbose($"{type.ToString()} {args.AddonName}");
-        RefreshTargetInfo();
-    }
-    
-    private void OnFocusTargetAddonPostDraw(AddonEvent type, AddonArgs args)
-    {
-        //Service.Log.Verbose($"{type.ToString()} {args.AddonName}");
-        RefreshFocusTargetInfo();
-    }
-    
-    private void OnWideTextAddonPostDraw(AddonEvent type, AddonArgs args)
-    {
-        //Service.Log.Debug($"{type.ToString()} {args.AddonName}");
-        RefreshWideText();
+        Service.AddonLifecycle.UnregisterListener(TargetInfoUpdate);
+        Service.AddonLifecycle.UnregisterListener(TargetTargetUpdate);
+        Service.AddonLifecycle.UnregisterListener(FocusTargetInfoUpdate);
+        Service.AddonLifecycle.UnregisterListener(WideTextUpdate);
     }
 
-    private unsafe void RefreshTargetInfo()
+    private unsafe void TargetInfoUpdate(AddonEvent type, AddonArgs args)
+    {
+        var addon = (AtkUnitBase*)args.Addon;
+        if (addon->IsVisible)
+        {
+            RefreshTargetInfo(addon);
+        }
+    }
+
+    private unsafe void TargetTargetUpdate(AddonEvent type, AddonArgs args)
+    {
+        var addon = (AtkUnitBase*)args.Addon;
+        if (addon->IsVisible)
+        {
+            var resNode = addon->GetNodeById(3);
+            if (resNode->IsVisible)
+            {
+                RefreshTargetTarget((AtkUnitBase*)args.Addon);
+            }
+        }
+    }
+    
+    private unsafe void FocusTargetInfoUpdate(AddonEvent type, AddonArgs args)
+    {
+        var addon = (AtkUnitBase*)args.Addon;
+        if (addon->IsVisible)
+        {
+            RefreshFocusTargetInfo(addon);
+        }
+    }
+    
+    private unsafe void WideTextUpdate(AddonEvent type, AddonArgs args)
+    {
+        var addon = (AtkUnitBase*)args.Addon;
+        if (addon->IsVisible)
+        {
+            RefreshWideText(addon);
+        }
+    }
+
+    private unsafe bool RefreshTargetInfo(AtkUnitBase* addon)
     {
         if (!config.Enabled)
         {
-            return;
+            return false;
         }
         
         var localPlayer = Service.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
-            return;
+            return false;
         }
         
         var targetObj = Service.Targets.Target;
         if (targetObj == null)
         {
-            return;
+            return false;
         }
 
         if (targetObj is not PlayerCharacter targetChar)
         {
-            return;
+            return false;
         }
 
         if (!config.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig) ||characterConfig == null)
         {
-            return;
+            return false;
         }
         
-        AtkUnitBase* targetInfoAddon = (AtkUnitBase*)Service.GameGui.GetAddonByName("_TargetInfoMainTarget", 1);
-        if (targetInfoAddon == null || !targetInfoAddon->IsVisible)
-        {
-            return;
-        }
-        
-        AtkTextNode* textNode = targetInfoAddon->GetTextNodeById(10);
+        AtkTextNode* textNode = addon->GetTextNodeById(10);
         var text = textNode->NodeText.ToString();
         
         var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : targetChar.Name.TextValue;
         var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $"«{characterConfig.FakeFcNameText}»" : $"«{targetChar.CompanyTag.TextValue}»";
         textNode->NodeText.SetString(text.Replace(targetChar.Name.TextValue, newName).Replace($"«{targetChar.CompanyTag.TextValue}»", newFcName));
 
-        RefreshTargetTarget(targetChar, targetInfoAddon);
+        return true;
     }
 
-    private unsafe void RefreshTargetTarget(PlayerCharacter chara, AtkUnitBase* targetInfoAddon)
-    {
-        var targetObj = chara.TargetObject;
-        if (targetObj == null)
-        {
-            return;
-        }
-
-        if (targetObj is not PlayerCharacter targetChar)
-        {
-            return;
-        }
-
-        if (!config.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig) ||characterConfig == null)
-        {
-            return;
-        }
-        
-        AtkTextNode* textNode = targetInfoAddon->GetTextNodeById(7);
-        var text = textNode->NodeText.ToString();
-        
-        var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : targetChar.Name.TextValue;
-        textNode->NodeText.SetString(text.Replace(targetChar.Name.TextValue, newName));
-    }
-    
-    private unsafe void RefreshFocusTargetInfo()
+    private unsafe bool RefreshTargetTarget(AtkUnitBase* addon)
     {
         if (!config.Enabled)
         {
-            return;
+            Service.Log.Debug($"a");
+            return false;
         }
         
         var localPlayer = Service.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
-            return;
+            Service.Log.Debug($"b");
+            return false;
+        }
+        
+        var targetObj = Service.Targets.Target;
+        if (targetObj == null)
+        {
+            return false;
+        }
+        
+        AtkTextNode* textNode = addon->GetTextNodeById(7);
+        var text = textNode->NodeText.ToString();
+        
+        PlayerCharacter? targetTargetChara = null;
+        var targetTargetObj = targetObj.TargetObject;
+        if (targetTargetObj != null)
+        {
+            if (targetTargetObj is PlayerCharacter obj && text.Contains(obj.Name.TextValue))
+            {
+                targetTargetChara = obj;
+            }
+            else if (text.Contains(localPlayer.Name.TextValue))
+            {
+                targetTargetChara = localPlayer;
+            }
+        }
+        else
+        {
+            targetTargetChara = localPlayer;
+        }
+
+        if (targetTargetChara == null)
+        {
+            return false;
+        }
+
+        if (!config.TryGetCharacterConfig(targetTargetChara.Name.TextValue, targetTargetChara.HomeWorld.Id, out var characterConfig) ||characterConfig == null)
+        {
+            return false;
+        }
+        
+        var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : targetTargetChara.Name.TextValue;
+        textNode->NodeText.SetString(text.Replace(targetTargetChara.Name.TextValue, newName));
+
+        return true;
+    }
+    
+    private unsafe bool RefreshFocusTargetInfo(AtkUnitBase* addon)
+    {
+        if (!config.Enabled)
+        {
+            return false;
+        }
+        
+        var localPlayer = Service.ClientState.LocalPlayer;
+        if (localPlayer == null)
+        {
+            return false;
         }
 
         var focusTarget = Service.Targets.FocusTarget;
         if (focusTarget == null)
         {
-            return;
+            return false;
         }
 
         if (focusTarget is not PlayerCharacter targetChar)
         {
-            return;
+            return false;
         }
 
         if (!config.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig) ||characterConfig == null)
         {
-            return;
+            return false;
         }
         
-        AtkUnitBase* focusTargetAddon = (AtkUnitBase*)Service.GameGui.GetAddonByName("_FocusTargetInfo", 1);
-        if (focusTargetAddon == null || !focusTargetAddon->IsVisible)
-        {
-            return;
-        }
-        
-        AtkTextNode* textNode = focusTargetAddon->GetTextNodeById(10);
+        AtkTextNode* textNode = addon->GetTextNodeById(10);
         var text = textNode->NodeText.ToString();
         
         var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : targetChar.Name.TextValue;
         textNode->NodeText.SetString(text.Replace(targetChar.Name.TextValue, newName));
+
+        return true;
     }
 
-    private unsafe void RefreshWideText()
+    private unsafe bool RefreshWideText(AtkUnitBase* addon)
     {
         if (!config.Enabled)
         {
-            return;
+            return false;
         }
         
         var localPlayer = Service.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
-            return;
+            return false;
         }
         
-        AtkUnitBase* wideTextAddon = (AtkUnitBase*)Service.GameGui.GetAddonByName("_WideText", 2);
-        if (wideTextAddon == null)
-        {
-            return;
-        }
+        // AtkUnitBase* addon = (AtkUnitBase*)Service.GameGui.GetAddonByName("_WideText", 2);
+        // if (addon == null)
+        // {
+        //     return false;
+        // }
 
-        CheckPlayerWideText(localPlayer.Name.TextValue, localPlayer.HomeWorld.Id, wideTextAddon);
+        return RefreshPlayerWideText(localPlayer.Name.TextValue, localPlayer.HomeWorld.Id, addon);
         
         // 增加小队其他成员倒计时
     }
 
-    private unsafe void CheckPlayerWideText(string name, uint worldId, AtkUnitBase* wideTextAddon)
+    private unsafe bool RefreshPlayerWideText(string name, uint worldId, AtkUnitBase* wideTextAddon)
     {
         if (!config.TryGetCharacterConfig(name, worldId, out var characterConfig) || characterConfig == null)
         {
-            return;
+            return false;
         }
         
         AtkTextNode* textNode = wideTextAddon->GetTextNodeById(3);
@@ -218,7 +244,8 @@ public class TargetInfoComponent : IDisposable
         if (text.EndsWith($"（{name}）") || text.StartsWith($"{name}取消了"))
         {
             textNode->NodeText.SetString(text.Replace(name, newName));
-            Service.Log.Debug($"WideText {textNode->NodeText.ToString()}");
         }
+
+        return true;
     }
 }
