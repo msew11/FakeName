@@ -34,6 +34,7 @@ internal class UpdateNamePlateNpcHook : IDisposable
     public void Dispose()
     {
         hook.Disable();
+        hook.Dispose();
     }
 
     private unsafe void* UpdateNamePlateNpcDetour(
@@ -90,6 +91,7 @@ internal class UpdateNamePlateNpcHook : IDisposable
         {
             // Service.Log.Debug($"替换了宠物[{namePlateInfo->Name}]的displayTitle:{oldDisplayTitle}->{newDisplayTitle}");
             namePlateInfo->DisplayTitle.SetString(newDisplayTitle);
+            namePlateInfo->IsDirty = true;
         }
         
         modifiedNamePlates[actorId] = character.Name.TextValue;
@@ -111,6 +113,7 @@ internal class UpdateNamePlateNpcHook : IDisposable
         }
         //Service.Log.Debug($"恢复了宠物[{namePlateInfo->Name}]的displayTitle:{namePlateInfo->DisplayTitle.ToString()}->{old}");
         namePlateInfo->DisplayTitle.SetString($"《{old}》");
+        namePlateInfo->IsDirty = true;
         modifiedNamePlates.Remove(actorId);
     }
 }

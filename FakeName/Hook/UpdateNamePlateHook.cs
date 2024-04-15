@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
@@ -32,11 +34,19 @@ internal class UpdateNamePlateHook : IDisposable
 
         Service.Hook.InitializeFromAttributes(this);
         hook.Enable();
+        
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRefresh, "CharacterInspect", RefreshCharacterInspect);
     }
 
     public void Dispose()
     {
         hook.Disable();
+        hook.Dispose();
+    }
+
+    private void RefreshCharacterInspect(AddonEvent type, AddonArgs args)
+    {
+        Service.Log.Debug("aa");
     }
 
     private unsafe void* UpdateNamePlateDetour(
@@ -89,9 +99,11 @@ internal class UpdateNamePlateHook : IDisposable
         
         string oldName = namePlateInfo->Name.ToString();
         var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : character.Name.TextValue;
+        var changed = false;
         if (!oldName.Equals(newName))
         {
             namePlateInfo->Name.SetString(newName);
+            changed = true;
             //Service.Log.Debug($"替换了角色名：{oldName}->{newName}");
         }
         
@@ -102,10 +114,15 @@ internal class UpdateNamePlateHook : IDisposable
             {
                 //Service.Log.Debug($"替换了部队简称：{namePlateInfo->FcName}->{newFcName} tag:{Service.ClientState.TerritoryType} duty:{Service.DutyState.IsDutyStarted}");
                 namePlateInfo->FcName.SetString(newFcName);
+                changed = true;
             }
         }
 
         modified[actorId] = 1;
+        if (changed)
+        {
+            namePlateInfo->IsDirty = true;
+        }
         
         return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
     }
@@ -130,11 +147,13 @@ internal class UpdateNamePlateHook : IDisposable
             return;
         }
 
+        var changed = false;
         var name = character.Name.TextValue;
         if (!namePlateInfo->Name.ToString().Equals(name))
         {
             // Service.Log.Debug($"恢复了角色名：{namePlateInfo->Name}->{name}");
             namePlateInfo->Name.SetString($"{name}");
+            changed = true;
         }
 
         var fcName = $"«{character.CompanyTag.TextValue}»";
@@ -142,6 +161,12 @@ internal class UpdateNamePlateHook : IDisposable
         {
             //Service.Log.Debug($"恢复了角色部队：{namePlateInfo->FcName}->{fcName}");
             namePlateInfo->FcName.SetString(fcName);
+            changed = true;
+        }
+
+        if (changed)
+        {
+            namePlateInfo->IsDirty = true;
         }
 
         modified.Remove(actorId);
