@@ -225,9 +225,21 @@ public class TargetInfoComponent : IDisposable
         //     return false;
         // }
 
-        return RefreshPlayerWideText(localPlayer.Name.TextValue, localPlayer.HomeWorld.Id, addon);
-        
-        // 增加小队其他成员倒计时
+        var change = RefreshPlayerWideText(localPlayer.Name.TextValue, localPlayer.HomeWorld.Id, addon);
+        if (!change)
+        {
+            // 小队成员的倒计时
+            foreach (var partyMember in Service.PartyList)
+            {
+                change = RefreshPlayerWideText(partyMember.Name.TextValue, partyMember.World.Id, addon);
+                if (change)
+                {
+                    return change;
+                }
+            }
+        }
+
+        return false;
     }
 
     private unsafe bool RefreshPlayerWideText(string name, uint worldId, AtkUnitBase* wideTextAddon)
@@ -244,8 +256,9 @@ public class TargetInfoComponent : IDisposable
         if (text.EndsWith($"（{name}）") || text.StartsWith($"{name}取消了"))
         {
             textNode->NodeText.SetString(text.Replace(name, newName));
+            return true;
         }
 
-        return true;
+        return false;
     }
 }
