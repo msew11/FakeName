@@ -109,7 +109,7 @@ public class AtkTextNodeSetTextHook
                     // }
                     else if (txt.Text.Contains(charaName))
                     {
-                        Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
+                        // Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
                     }
                     
                     break;
@@ -139,7 +139,7 @@ public class AtkTextNodeSetTextHook
         }
         
         var text = SeStringUtils.ReadRawSeString(textPtr);
-        Service.Log.Verbose($"包含角色名的文本:{text.TextValue}");
+        // Service.Log.Verbose($"包含角色名的文本:{text.TextValue}");
         foreach (var pair in worldDic)
         {
             var charaName = pair.Key;
@@ -161,7 +161,7 @@ public class AtkTextNodeSetTextHook
                     case TextPayload txt:
                         if (txt.Text.Equals(charaName))
                         {
-                            Service.Log.Debug($"world[{agent->WorldId}] 替换{txt.Text} {charaName}->{characterConfig.FakeNameText}");
+                            // Service.Log.Debug($"world[{agent->WorldId}] 替换{txt.Text} {charaName}->{characterConfig.FakeNameText}");
                             txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
                         }
                         else if (txt.Text.Equals($"要以{charaName}登录吗？"))
@@ -170,7 +170,7 @@ public class AtkTextNodeSetTextHook
                         }
                         else if (txt.Text.Contains(charaName))
                         {
-                            Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
+                            // Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
                         }
                     
                         break;

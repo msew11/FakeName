@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dalamud.Game.Addon.Lifecycle;
-using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
@@ -34,19 +32,12 @@ internal class UpdateNamePlateHook : IDisposable
 
         Service.Hook.InitializeFromAttributes(this);
         hook.Enable();
-        
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRefresh, "CharacterInspect", RefreshCharacterInspect);
     }
 
     public void Dispose()
     {
         hook.Disable();
         hook.Dispose();
-    }
-
-    private void RefreshCharacterInspect(AddonEvent type, AddonArgs args)
-    {
-        Service.Log.Debug("aa");
     }
 
     private unsafe void* UpdateNamePlateDetour(

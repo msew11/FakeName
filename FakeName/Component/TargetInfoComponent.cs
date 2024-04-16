@@ -114,14 +114,12 @@ public class TargetInfoComponent : IDisposable
     {
         if (!config.Enabled)
         {
-            Service.Log.Debug($"a");
             return false;
         }
         
         var localPlayer = Service.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
-            Service.Log.Debug($"b");
             return false;
         }
         

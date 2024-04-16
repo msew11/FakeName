@@ -59,8 +59,7 @@ public static class NamePlateUtils
 
             if (npObjectArrayPtr == IntPtr.Zero)
             {
-                Service.Log.Verbose($"[{GetType().Name}] NamePlateObjectArray was null");
-
+                // Service.Log.Verbose($"[{GetType().Name}] NamePlateObjectArray was null");
                 return null;
             }
 

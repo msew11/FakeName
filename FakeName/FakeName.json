@@ -7,7 +7,7 @@
     "ApplicableVersion": "any",
     "repoUrl": "https://github.com/msew11/FakeName",
     "IconUrl": "https://raw.githubusercontent.com/msew11/FakeName/master/icon.png",
-    "Changelog": "1 禁用插件后，角色名牌自动恢复\n2 增加选角界面的支持\n3 增加目标，焦点的支持\n4 增加自己倒计时的支持，并且不会给队友看到（笑",
+    "Changelog": "增加小队列表的支持，包括同服/跨服",
     "Tags": [
         "name",
         "ui"
