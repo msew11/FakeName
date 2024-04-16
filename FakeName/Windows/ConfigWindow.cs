@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
@@ -94,7 +95,12 @@ internal class ConfigWindow : Window
                 ImGui.Text("FakeName Options");
                 ImGui.Separator();
 
-                if (ImGui.Checkbox("Enable", ref config.Enabled))
+                if (ImGui.Checkbox("启用", ref config.Enabled))
+                {
+                    Service.Interface.SavePluginConfig(config);
+                }
+
+                if (ImGui.Checkbox("匿名模式", ref config.IncognitoMode))
                 {
                     Service.Interface.SavePluginConfig(config);
                 }
@@ -137,14 +143,14 @@ internal class ConfigWindow : Window
             ImGui.Separator();
 
             foreach (var (name, characterConfig) in characters.ToArray()) {
-                if (ImGui.Selectable($"{name}##{world.Name.RawString}", selectedCharaCfg == characterConfig)) {
+                if (ImGui.Selectable($"{IncognitoModeName(name).PadRight(7, '\u3000')}->[{characterConfig.FakeNameText}]##{world.Name.RawString}", selectedCharaCfg == characterConfig)) {
                     selectedCharaCfg = characterConfig;
                     selectedName = name;
                     selectedWorld = world.RowId;
                 }
                 
                 if (ImGui.BeginPopupContextItem()) {
-                    if (ImGui.Selectable($"Remove '{name} @ {world.Name.RawString}' from Config")) {
+                    if (ImGui.Selectable($"Remove '{IncognitoModeName(name)} @ {world.Name.RawString}' from Config")) {
                         characters.Remove(name);
                         if (selectedCharaCfg == characterConfig) selectedCharaCfg = null;
                         if (characters.Count == 0) {
@@ -156,6 +162,18 @@ internal class ConfigWindow : Window
             }
 
             ImGuiHelpers.ScaledDummy(10);
+        }
+    }
+
+    public string IncognitoModeName(string name)
+    {
+        if (!config.IncognitoMode)
+        {
+            return name;
+        }
+        else
+        {
+            return name.Substring(0, 1) + "...";
         }
     }
 }

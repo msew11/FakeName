@@ -11,6 +11,8 @@ public class PluginConfig : IPluginConfiguration
     public int Version { get; set; } = 0;
 
     public bool Enabled = false;
+
+    public bool IncognitoMode = false;
     
     public bool PartyMemberReplace = false;
 
