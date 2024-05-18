@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
@@ -104,7 +103,6 @@ internal class ConfigWindow : Window
                 {
                     Service.Interface.SavePluginConfig(config);
                 }
-
                 
                 // ImGui.Checkbox("小队模糊(非跨服)", ref config.PartyMemberReplace);
             }

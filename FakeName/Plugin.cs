@@ -64,6 +64,10 @@ public class Plugin : IDalamudPlugin
         this.UpdateNamePlateNpcHook.Dispose();
         this.AtkTextNodeSetTextHook.Dispose();
         
+        this.DutyComponent.Dispose();
+        this.TargetInfoComponent.Dispose();
+        this.PartyListComponent.Dispose();
+        
         //this.NamePlates.Dispose();
         //this.Common.Dispose();
         

@@ -13,12 +13,6 @@ public class PluginConfig : IPluginConfiguration
     public bool Enabled = false;
 
     public bool IncognitoMode = false;
-    
-    public bool PartyMemberReplace = false;
-
-    public string FakeNameText { get; set; } = "";
-    
-    public string FakeFcNameText { get; set; } = "";
 
     public Dictionary<uint, Dictionary<string, CharacterConfig>> WorldCharacterDictionary = new();
     
