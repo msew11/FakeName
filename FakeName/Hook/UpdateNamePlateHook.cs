@@ -98,9 +98,14 @@ internal class UpdateNamePlateHook : IDisposable
             //Service.Log.Debug($"替换了角色名：{oldName}->{newName}");
         }
         
-        if (character.CurrentWorld.Id == character.HomeWorld.Id && !dutyComponent.InDuty && character.CompanyTag.TextValue.Length > 0)
+        if (characterConfig.HideFcName)
         {
-            var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $"«{characterConfig.FakeFcNameText}»" : $"«{character.CompanyTag.TextValue}»";
+            namePlateInfo->FcName.SetString("");
+            changed = true;
+        }
+        else if (character.CurrentWorld.Id == character.HomeWorld.Id && !dutyComponent.InDuty && character.CompanyTag.TextValue.Length > 0)
+        {
+            var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $" «{characterConfig.FakeFcNameText}»" : $" «{character.CompanyTag.TextValue}»";
             if (!namePlateInfo->FcName.ToString().Equals(newFcName))
             {
                 //Service.Log.Debug($"替换了部队简称：{namePlateInfo->FcName}->{newFcName} tag:{Service.ClientState.TerritoryType} duty:{Service.DutyState.IsDutyStarted}");

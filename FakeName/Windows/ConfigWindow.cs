@@ -131,6 +131,14 @@ internal class ConfigWindow : Window
             Service.Interface.SavePluginConfig(config);
             modified = true;
         }
+
+        var hideFcName = characterConfig.HideFcName;
+        if (ImGui.Checkbox("隐藏部队简称", ref hideFcName))
+        {
+            characterConfig.HideFcName = hideFcName;
+            Service.Interface.SavePluginConfig(config);
+            modified = true;
+        }
     }
 
     public void DrawCharacterList()
