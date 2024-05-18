@@ -76,7 +76,7 @@ public class AtkTextNodeSetTextHook
         }
 
         var text = SeStringUtils.ReadRawSeString(textPtr);
-
+        bool changed = false;
         foreach (var payload in text.Payloads) {
             switch (payload) {
                 /*case PlayerPayload pp:
@@ -89,14 +89,17 @@ public class AtkTextNodeSetTextHook
                     if (txt.Text.Equals(charaName))
                     {
                         txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
+                        changed = true;
                     }
-                    else if (txt.Text.Equals(fcName))
+                    else if (txt.Text.Equals($"«{fcName}»"))
                     {
                         txt.Text = txt.Text.Replace(fcName, characterConfig.FakeFcNameText);
+                        changed = true;
                     }
                     else if (txt.Text.Equals($" [{fcName}]"))
                     {
                         txt.Text = txt.Text.Replace(fcName, characterConfig.FakeFcNameText);
+                        changed = true;
                     }
                     // else if (txt.Text.Equals($"{charaName} «{fcName}»"))
                     // {
@@ -115,10 +118,17 @@ public class AtkTextNodeSetTextHook
                     break;
             }
         }
-        
-        fixed (byte* newText = text.Encode().Terminate())
+
+        if (changed)
         {
-            hook.Original(node, (IntPtr)newText);
+            fixed (byte* newText = text.Encode().Terminate())
+            {
+                hook.Original(node, (IntPtr)newText);
+            }
+        }
+        else
+        {
+            hook.Original(node, textPtr);
         }
     }
     
@@ -140,6 +150,7 @@ public class AtkTextNodeSetTextHook
         
         var text = SeStringUtils.ReadRawSeString(textPtr);
         // Service.Log.Verbose($"包含角色名的文本:{text.TextValue}");
+        bool changed = false;
         foreach (var pair in worldDic)
         {
             var charaName = pair.Key;
@@ -163,10 +174,12 @@ public class AtkTextNodeSetTextHook
                         {
                             // Service.Log.Debug($"world[{agent->WorldId}] 替换{txt.Text} {charaName}->{characterConfig.FakeNameText}");
                             txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
+                            changed = true;
                         }
                         else if (txt.Text.Equals($"要以{charaName}登录吗？"))
                         {
                             txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
+                            changed = true;
                         }
                         else if (txt.Text.Contains(charaName))
                         {
@@ -177,10 +190,17 @@ public class AtkTextNodeSetTextHook
                 }
             }
         }
-        
-        fixed (byte* newText = text.Encode().Terminate())
+
+        if (changed)
         {
-            hook.Original(node, (IntPtr)newText);
+            fixed (byte* newText = text.Encode().Terminate())
+            {
+                hook.Original(node, (IntPtr)newText);
+            }
+        }
+        else
+        {
+            hook.Original(node, textPtr);
         }
     }
 }
