@@ -22,14 +22,14 @@ public class PartyListComponent : IDisposable
     {
         this.config = config;
         
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_PartyList", ObPartyListUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_PartyList", OnPartyListUpdate);
         
         
     }
 
     public void Dispose()
     {
-        Service.AddonLifecycle.UnregisterListener(ObPartyListUpdate);
+        Service.AddonLifecycle.UnregisterListener(OnPartyListUpdate);
     }
     
     private void OnUpdate(IFramework framework)
@@ -48,9 +48,21 @@ public class PartyListComponent : IDisposable
         }
     }
     
-    private void ObPartyListUpdate(AddonEvent type, AddonArgs args)
+    private void OnPartyListUpdate(AddonEvent type, AddonArgs args)
     {
-        RefreshPartyList();
+        try
+        {
+            if (DateTime.Now - lastUpdate > TimeSpan.FromSeconds(1))
+            {
+                RefreshPartyList();
+                lastUpdate = DateTime.Now;
+            }
+        }
+        catch (Exception e)
+        {
+            Service.Log.Error("PartyListComponent Err", e);
+        }
+
         // Service.Log.Debug($"{type.ToString()} {args.AddonName} {Service.PartyList.Length}");
     }
 
@@ -64,30 +76,53 @@ public class PartyListComponent : IDisposable
             return;
         }
         
+        var localPlayer = Service.ClientState.LocalPlayer;
+        if (localPlayer == null)
+        {
+            return;
+        }
+        
         var partyListMemberStructs = GetPartyListAddon();
         var cwProxy = InfoProxyCrossRealm.Instance();
         foreach (var memberStruct in partyListMemberStructs)
         {
             var nodeText = memberStruct.Name->NodeText.ToString();
             var nameNode = memberStruct.Name;
-            // Service.Log.Debug($"party {nodeText}");
-            var match = Regex.Match(nodeText, "^.*级\\s(?:\u0002\u0012\u0002Y\u0003)?\\s?(.*)$");
+            // Service.Log.Debug($"partyList文本 {nodeText}");
+            var match = Regex.Match(nodeText, "^(?:.*级\\s)?(?:\u0002\u0012\u0002Y\u0003)?\\s?(.*?)(?:\u0002\u001a\u0002\u0001\u0003)?$");
             if (match.Success)
             {
                 var memberName = match.Groups[1].Value;
-                // Service.Log.Debug($"[{memberName}]");
-                if (Service.PartyList.Any())
+                // Service.Log.Debug($"匹配到文本 [{memberName}]");
+                if (memberName.Equals(localPlayer.Name.TextValue))
                 {
-                    // 同服小队
-                    ReplacePartyListHud(memberName, nameNode);
+                    ReplaceSelf(memberName, localPlayer.HomeWorld.Id, nameNode);
                 }
                 else
                 {
-                    // 跨服小队
-                    ReplaceCrossPartyListHud(memberName, nameNode, cwProxy);
+                    if (Service.PartyList.Any())
+                    {
+                        // 同服小队
+                        ReplacePartyListHud(memberName, nameNode);
+                    }
+                    else
+                    {
+                        // 跨服小队
+                        ReplaceCrossPartyListHud(memberName, nameNode, cwProxy);
+                    }
                 }
             }
         }
+    }
+
+    public unsafe void ReplaceSelf(string memberName, uint world, AtkTextNode* nameNode)
+    {
+        if (!config.TryGetCharacterConfig(memberName, world, out var characterConfig) || characterConfig == null)
+        {
+            return;
+        }
+            
+        nameNode->NodeText.SetString(nameNode->NodeText.ToString().Replace(memberName, characterConfig.FakeNameText));
     }
 
     public unsafe void ReplacePartyListHud(string memberName, AtkTextNode* nameNode)
