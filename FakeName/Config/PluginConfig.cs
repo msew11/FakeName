@@ -14,6 +14,8 @@ public class PluginConfig : IPluginConfiguration
 
     public bool IncognitoMode = false;
 
+    public bool HideSupport = false;
+
     public Dictionary<uint, Dictionary<string, CharacterConfig>> WorldCharacterDictionary = new();
     
     public bool TryGetCharacterConfig(string name, uint world, out CharacterConfig? characterConfig) {

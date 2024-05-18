@@ -1,11 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Interface;
+using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
+using Dalamud.Utility;
 using FakeName.Config;
 using ImGuiNET;
 using World = Lumina.Excel.GeneratedSheets.World;
@@ -38,6 +41,8 @@ internal class ConfigWindow : Window
         Service.Interface.SavePluginConfig(config);
         base.OnClose();
     }
+    
+    private float supportButtonOffset;
 
     public override void Draw()
     {
@@ -58,7 +63,7 @@ internal class ConfigWindow : Window
                     }
                 }
                 
-                if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add current character");
+                if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加本地角色");
                 
                 ImGui.SameLine();
                 if (ImGuiComponents.IconButton(FontAwesomeIcon.DotCircle)) {
@@ -66,7 +71,7 @@ internal class ConfigWindow : Window
                         config.TryAddCharacter(pc.Name.TextValue, pc.HomeWorld.Id);
                     }
                 }
-                if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add targeted character");
+                if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加目标角色");
                 ImGui.SameLine();
             }
             
@@ -75,8 +80,17 @@ internal class ConfigWindow : Window
                 selectedName = string.Empty;
                 selectedWorld = 0;
             }
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Plugin Options");
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("选项");
             iconButtonSize = ImGui.GetItemRectSize() + ImGui.GetStyle().ItemSpacing;
+            
+            if (!config.HideSupport) {
+                ImGui.SameLine();
+                if (supportButtonOffset > 0) ImGui.SetCursorPosX(MathF.Max(ImGui.GetCursorPosX(), charListSize - supportButtonOffset + ImGui.GetStyle().WindowPadding.X));
+                if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Coffee, "发电", ImGuiColors.ParsedPurple)) {
+                    Util.OpenLink("https://afdian.net/a/msew11");
+                }
+                supportButtonOffset = ImGui.GetItemRectSize().X;
+            }
         }
         ImGui.EndGroup();
         
@@ -91,7 +105,7 @@ internal class ConfigWindow : Window
             }
             else
             {
-                ImGui.Text("FakeName Options");
+                ImGui.Text("FakeName 选项");
                 ImGui.Separator();
 
                 if (ImGui.Checkbox("启用", ref config.Enabled))
@@ -100,6 +114,11 @@ internal class ConfigWindow : Window
                 }
 
                 if (ImGui.Checkbox("匿名模式", ref config.IncognitoMode))
+                {
+                    Service.Interface.SavePluginConfig(config);
+                }
+
+                if (ImGui.Checkbox("隐藏发电按钮", ref config.HideSupport))
                 {
                     Service.Interface.SavePluginConfig(config);
                 }
@@ -156,7 +175,7 @@ internal class ConfigWindow : Window
                 }
                 
                 if (ImGui.BeginPopupContextItem()) {
-                    if (ImGui.Selectable($"Remove '{IncognitoModeName(name)} @ {world.Name.RawString}' from Config")) {
+                    if (ImGui.Selectable($"移除 '{IncognitoModeName(name)} @ {world.Name.RawString}'")) {
                         characters.Remove(name);
                         if (selectedCharaCfg == characterConfig) selectedCharaCfg = null;
                         if (characters.Count == 0) {
