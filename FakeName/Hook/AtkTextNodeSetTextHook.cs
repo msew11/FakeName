@@ -86,12 +86,27 @@ public class AtkTextNodeSetTextHook
                 
                     break;*/
                 case TextPayload txt:
-                    if (txt.Text.Equals(charaName))
+                    if (txt.Text == null)
+                    {
+                        
+                    }
+                    else if (txt.Text.Equals(charaName))
                     {
                         txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
                         changed = true;
                     }
+                    /*else if (txt.Text.Contains($"\n《{charaName}》"))
+                    {
+                        Service.Log.Debug($"包含角色名的文本:{txt.Text}");
+                        txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
+                        changed = true;
+                    }*/
                     else if (txt.Text.Equals($"«{fcName}»"))
+                    {
+                        txt.Text = txt.Text.Replace(fcName, characterConfig.FakeFcNameText);
+                        changed = true;
+                    }
+                    else if (txt.Text.Equals($" «{fcName}»"))
                     {
                         txt.Text = txt.Text.Replace(fcName, characterConfig.FakeFcNameText);
                         changed = true;
@@ -112,7 +127,7 @@ public class AtkTextNodeSetTextHook
                     // }
                     else if (txt.Text.Contains(charaName))
                     {
-                        // Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
+                        // Service.Log.Debug($"包含角色名的文本:{txt.Text}");
                     }
                     
                     break;

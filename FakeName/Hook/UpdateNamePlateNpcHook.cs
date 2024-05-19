@@ -63,8 +63,14 @@ internal class UpdateNamePlateNpcHook : IDisposable
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
 
-        if (gameObject->ObjectKind != 9)
+        if (gameObject->ObjectKind == (byte)ObjectKind.EventNpc)
         {
+            return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
+        }
+
+        if (gameObject->ObjectKind != (byte)ObjectKind.Companion)
+        {
+            // Service.Log.Debug($"{namePlateInfo->Name.ToString()}");
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
         
@@ -84,6 +90,8 @@ internal class UpdateNamePlateNpcHook : IDisposable
         {
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
+        
+        // Service.Log.Debug($"{namePlateInfo->Title.ToString()} {namePlateInfo->DisplayTitle.ToString()} {gameObject->ObjectID} {namePlateInfo->ObjectID.ObjectID}");
 
         var newDisplayTitle = $"《{characterConfig.FakeNameText}》";
         string oldDisplayTitle = namePlateInfo->DisplayTitle.ToString();

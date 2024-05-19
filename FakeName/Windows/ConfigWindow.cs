@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
+using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Interface;
@@ -123,6 +124,34 @@ internal class ConfigWindow : Window
                     Service.Interface.SavePluginConfig(config);
                 }
                 
+                // ImGuiHelpers.ScaledDummy(10);
+                // ImGui.Text("Local Player");
+                // ImGui.Separator();
+                // if (Service.ClientState.LocalPlayer != null)
+                // {
+                //     ImGui.Text($"{Service.ClientState.LocalPlayer.ObjectId}");
+                // }
+                // ImGui.Separator();
+                // ImGui.Text("Objects");
+                // foreach (var gameObject in Service.Objects)
+                // {
+                //     if (gameObject.ObjectKind == ObjectKind.BattleNpc)
+                //     {
+                //         ImGui.Text($"{gameObject.Name} | {gameObject.ObjectId} | {gameObject.OwnerId}");
+                //     }
+                // }
+                // ImGui.Separator();
+                // ImGui.Text($"Buddy {Service.BuddyList.Length}");
+                // foreach (var buddyMember in Service.BuddyList)
+                // {
+                //     var gameObject = buddyMember.GameObject;
+                //     ImGui.Text($"{buddyMember.ObjectId}");
+                //     if (gameObject != null)
+                //     {
+                //         ImGui.Text($"{gameObject.Name} | {gameObject.RawName()} | {gameObject.OwnerId}");
+                //     }
+                // }
+
                 // ImGui.Checkbox("小队模糊(非跨服)", ref config.PartyMemberReplace);
             }
         }
