@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
-using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Interface;
@@ -12,6 +11,7 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using FakeName.Config;
 using ImGuiNET;
+using Lumina.Excel;
 using World = Lumina.Excel.GeneratedSheets.World;
 
 namespace FakeName.Windows;
@@ -22,15 +22,20 @@ internal class ConfigWindow : Window
     private readonly Plugin plugin;
     
     private Vector2 iconButtonSize = new(16);
+    private ExcelSheet<World>? worlds;
     
     private CharacterConfig? selectedCharaCfg;
     private string selectedName = string.Empty;
     private uint selectedWorld;
 
+    private string customName = string.Empty;
+    private uint customWorld;
+
     public ConfigWindow(Plugin plugin, PluginConfig config) : base("FakeName")
     {
         this.config = config;
         this.plugin = plugin;
+        this.worlds = Service.Data.GetExcelSheet<World>();
     }
 
     public void Open()
@@ -74,6 +79,53 @@ internal class ConfigWindow : Window
                 }
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加目标角色");
                 ImGui.SameLine();
+                
+                ImGui.SameLine();
+                if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus)) {
+                    ImGui.OpenPopup("AddCustomChara");
+                }
+                if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加指定角色");
+                ImGui.SameLine();
+
+                if (worlds != null)
+                {
+                    if (ImGui.BeginPopup("AddCustomChara", ImGuiWindowFlags.AlwaysAutoResize))
+                    {
+                        ImGui.TextColored(ImGuiColors.DalamudYellow, "添加指定角色");
+                        ImGui.Separator();
+
+                        var worldRow = worlds.FirstOrDefault(w => w.IsPublic && !w.Name.RawData.IsEmpty && w.Region == 2 && w.RowId == customWorld);
+                        if (ImGui.BeginCombo("####指定角色服务器", worldRow != null ? worldRow.Name.RawString : "请选择服务器", ImGuiComboFlags.HeightLarge))
+                        {
+                            foreach (var world in worlds.Where(w => w.IsPublic && !w.Name.RawData.IsEmpty && w.Region == 2))
+                            {
+                                if (ImGui.Selectable($"{world.Name.RawString} ({world.RowId})",
+                                                     world.RowId == customWorld))
+                                {
+                                    customWorld = world.RowId;
+                                }
+                            }
+                            
+                            ImGui.EndCombo();
+                        }
+                        
+                        ImGui.SameLine();
+                        if (ImGuiComponents.IconButton("AddCustomCurrency", FontAwesomeIcon.Plus))
+                        {
+                            if (customWorld != 0)
+                            {
+                                config.TryAddCharacter(customName, customWorld);
+                            }
+                        }
+
+                        if (ImGui.InputTextWithHint("####指定角色名", "角色名", ref customName, 100))
+                        {
+                        
+                        }
+                        
+                        ImGui.EndPopup();
+                    }
+                }
             }
             
             if (ImGuiComponents.IconButton(FontAwesomeIcon.Cog)) {
@@ -161,6 +213,8 @@ internal class ConfigWindow : Window
     public void DrawCharacterView(CharacterConfig? characterConfig, GameObject? activeCharacter, ref bool modified)
     {
         if (characterConfig == null) return;
+        var world = worlds?.GetRow(selectedWorld);
+        ImGui.Text($"{(world == null ? string.Empty:world.Name.RawString)} {IncognitoModeName(selectedName)}");
         
         var fakeName = characterConfig.FakeNameText;
         if (ImGui.InputText("角色名", ref fakeName, 100))

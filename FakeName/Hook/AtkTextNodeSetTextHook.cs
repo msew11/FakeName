@@ -63,7 +63,7 @@ public class AtkTextNodeSetTextHook
 
         var charaName = character.Name.TextValue;
         var fcName = character.CompanyTag.TextValue;
-        if (!config.TryGetCharacterConfig(charaName, character.HomeWorld.Id, out var characterConfig) || characterConfig == null)
+        if (!config.TryGetCharacterConfig(charaName, character.HomeWorld.Id, out var characterConfig))
         {
             hook.Original(node, textPtr);
             return;
@@ -156,8 +156,7 @@ public class AtkTextNodeSetTextHook
             return;
         }
         
-        config.TryGetWorldDic(agent->WorldId, out var worldDic);
-        if (worldDic == null)
+        if (!config.TryGetWorldDic(agent->WorldId, out var worldDic))
         {
             hook.Original(node, textPtr);
             return;

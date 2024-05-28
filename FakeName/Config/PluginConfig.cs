@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Dalamud.Configuration;
 
 namespace FakeName.Config;
@@ -18,7 +19,7 @@ public class PluginConfig : IPluginConfiguration
 
     public Dictionary<uint, Dictionary<string, CharacterConfig>> WorldCharacterDictionary = new();
     
-    public bool TryGetCharacterConfig(string name, uint world, out CharacterConfig? characterConfig) {
+    public bool TryGetCharacterConfig(string name, uint world, [MaybeNullWhen(false)] out CharacterConfig characterConfig) {
         characterConfig = null;
         if (!WorldCharacterDictionary.TryGetValue(world, out var w)) return false;
         return w.TryGetValue(name, out characterConfig);
@@ -33,7 +34,7 @@ public class PluginConfig : IPluginConfiguration
         return false;
     }
     
-    public bool TryGetWorldDic(uint world, out Dictionary<string, CharacterConfig>? worldDic) {
+    public bool TryGetWorldDic(uint world, [MaybeNullWhen(false)] out Dictionary<string, CharacterConfig> worldDic) {
         worldDic = null;
         return WorldCharacterDictionary.TryGetValue(world, out worldDic);
     }
