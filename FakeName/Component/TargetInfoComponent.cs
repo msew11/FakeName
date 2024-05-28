@@ -16,8 +16,10 @@ public class TargetInfoComponent : IDisposable
     public TargetInfoComponent(PluginConfig config)
     {
         this.config = config;
-        
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", TargetInfoUpdate);
+
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfo", TargetInfoUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfo", TargetTargetUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", IndependentTargetInfoUpdate);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", TargetTargetUpdate);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_FocusTargetInfo", FocusTargetInfoUpdate);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_WideText", WideTextUpdate);
@@ -37,6 +39,15 @@ public class TargetInfoComponent : IDisposable
         if (addon->IsVisible)
         {
             RefreshTargetInfo(addon);
+        }
+    }
+
+    private unsafe void IndependentTargetInfoUpdate(AddonEvent type, AddonArgs args)
+    {
+        var addon = (AtkUnitBase*)args.Addon;
+        if (addon->IsVisible)
+        {
+            RefreshIndependentTargetInfo(addon);
         }
     }
 
@@ -72,6 +83,45 @@ public class TargetInfoComponent : IDisposable
     }
 
     private unsafe bool RefreshTargetInfo(AtkUnitBase* addon)
+    {
+        if (!config.Enabled)
+        {
+            return false;
+        }
+        
+        var localPlayer = Service.ClientState.LocalPlayer;
+        if (localPlayer == null)
+        {
+            return false;
+        }
+        
+        var targetObj = Service.Targets.Target;
+        if (targetObj == null)
+        {
+            return false;
+        }
+
+        if (targetObj is not PlayerCharacter targetChar)
+        {
+            return false;
+        }
+
+        if (!config.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig) ||characterConfig == null)
+        {
+            return false;
+        }
+        
+        AtkTextNode* textNode = addon->GetTextNodeById(16);
+        var text = textNode->NodeText.ToString();
+        
+        var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : targetChar.Name.TextValue;
+        var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $"«{characterConfig.FakeFcNameText}»" : $"«{targetChar.CompanyTag.TextValue}»";
+        textNode->NodeText.SetString(text.Replace(targetChar.Name.TextValue, newName).Replace($"«{targetChar.CompanyTag.TextValue}»", newFcName));
+
+        return true;
+    }
+
+    private unsafe bool RefreshIndependentTargetInfo(AtkUnitBase* addon)
     {
         if (!config.Enabled)
         {
