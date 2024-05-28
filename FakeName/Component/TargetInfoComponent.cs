@@ -19,7 +19,7 @@ public class TargetInfoComponent : IDisposable
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfo", TargetInfoUpdate);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfo", TargetTargetUpdate);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", IndependentTargetInfoUpdate);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", TargetInfoMainTargetUpdate);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", TargetTargetUpdate);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_FocusTargetInfo", FocusTargetInfoUpdate);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_WideText", WideTextUpdate);
@@ -42,7 +42,7 @@ public class TargetInfoComponent : IDisposable
         }
     }
 
-    private unsafe void IndependentTargetInfoUpdate(AddonEvent type, AddonArgs args)
+    private unsafe void TargetInfoMainTargetUpdate(AddonEvent type, AddonArgs args)
     {
         var addon = (AtkUnitBase*)args.Addon;
         if (addon->IsVisible)
