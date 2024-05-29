@@ -29,6 +29,7 @@ public class TargetInfoComponent : IDisposable
     {
         Service.AddonLifecycle.UnregisterListener(TargetInfoUpdate);
         Service.AddonLifecycle.UnregisterListener(TargetTargetUpdate);
+        Service.AddonLifecycle.UnregisterListener(TargetInfoMainTargetUpdate);
         Service.AddonLifecycle.UnregisterListener(FocusTargetInfoUpdate);
         Service.AddonLifecycle.UnregisterListener(WideTextUpdate);
     }
