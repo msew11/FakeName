@@ -115,9 +115,20 @@ public class TargetInfoComponent : IDisposable
         AtkTextNode* textNode = addon->GetTextNodeById(16);
         var text = textNode->NodeText.ToString();
         
+        var oriName = targetChar.Name.TextValue;
+        var oriFcName = $"«{targetChar.CompanyTag.TextValue}»";
         var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : targetChar.Name.TextValue;
         var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $"«{characterConfig.FakeFcNameText}»" : $"«{targetChar.CompanyTag.TextValue}»";
-        textNode->NodeText.SetString(text.Replace(targetChar.Name.TextValue, newName).Replace($"«{targetChar.CompanyTag.TextValue}»", newFcName));
+        
+        if (!(newName.Contains(oriName) && text.Contains(newName)))
+        {
+            text = text.Replace(oriName, newName);
+        }
+        if (!(newFcName.Contains(oriFcName) && text.Contains(newFcName)))
+        {
+            text = text.Replace(oriFcName, newFcName);
+        }
+        textNode->NodeText.SetString(text);
 
         return true;
     }
@@ -146,17 +157,28 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!config.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig) ||characterConfig == null)
+        if (!config.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
         {
             return false;
         }
         
         AtkTextNode* textNode = addon->GetTextNodeById(10);
         var text = textNode->NodeText.ToString();
+
+        var oriName = targetChar.Name.TextValue;
+        var oriFcName = $"«{targetChar.CompanyTag.TextValue}»";
+        var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : oriName;
+        var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $"«{characterConfig.FakeFcNameText}»" : oriFcName;
         
-        var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : targetChar.Name.TextValue;
-        var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $"«{characterConfig.FakeFcNameText}»" : $"«{targetChar.CompanyTag.TextValue}»";
-        textNode->NodeText.SetString(text.Replace(targetChar.Name.TextValue, newName).Replace($"«{targetChar.CompanyTag.TextValue}»", newFcName));
+        if (!(newName.Contains(oriName) && text.Contains(newName)))
+        {
+            text = text.Replace(oriName, newName);
+        }
+        if (!(newFcName.Contains(oriFcName) && text.Contains(newFcName)))
+        {
+            text = text.Replace(oriFcName, newFcName);
+        }
+        textNode->NodeText.SetString(text);
 
         return true;
     }
@@ -211,8 +233,14 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
         
+        var oriName = targetTargetChara.Name.TextValue;
         var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : targetTargetChara.Name.TextValue;
-        textNode->NodeText.SetString(text.Replace(targetTargetChara.Name.TextValue, newName));
+        
+        if (!(newName.Contains(oriName) && text.Contains(newName)))
+        {
+            text = text.Replace(oriName, newName);
+        }
+        textNode->NodeText.SetString(text);
 
         return true;
     }
@@ -249,8 +277,14 @@ public class TargetInfoComponent : IDisposable
         AtkTextNode* textNode = addon->GetTextNodeById(10);
         var text = textNode->NodeText.ToString();
         
+        var oriName = targetChar.Name.TextValue;
         var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : targetChar.Name.TextValue;
-        textNode->NodeText.SetString(text.Replace(targetChar.Name.TextValue, newName));
+        
+        if (!(newName.Contains(oriName) && text.Contains(newName)))
+        {
+            text = text.Replace(oriName, newName);
+        }
+        textNode->NodeText.SetString(text);
 
         return true;
     }
@@ -301,10 +335,15 @@ public class TargetInfoComponent : IDisposable
         AtkTextNode* textNode = wideTextAddon->GetTextNodeById(3);
         var text = textNode->NodeText.ToString();
         
+        var oriName = name;
         var newName = characterConfig.FakeNameText.Length > 0 ? characterConfig.FakeNameText : name;
         if (text.EndsWith($"（{name}）") || text.StartsWith($"{name}取消了"))
         {
-            textNode->NodeText.SetString(text.Replace(name, newName));
+            if (!(newName.Contains(oriName) && text.Contains(newName)))
+            {
+                text = text.Replace(oriName, newName);
+            }
+            textNode->NodeText.SetString(text);
             return true;
         }
 

@@ -215,7 +215,29 @@ internal class ConfigWindow : Window
         if (characterConfig == null) return;
         var world = worlds?.GetRow(selectedWorld);
         ImGui.Text($"{(world == null ? string.Empty:world.Name.RawString)} {IncognitoModeName(selectedName)}");
+        ImGui.Separator();
         
+        // IconId
+        var iconReplace = characterConfig.IconReplace;
+        if (ImGui.Checkbox("##替换图标Id", ref iconReplace))
+        {
+            characterConfig.IconReplace = iconReplace;
+            Service.Interface.SavePluginConfig(config);
+            modified = true;
+        }
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("替换图标Id");
+        ImGui.SameLine();
+        ImGui.SetCursorPosX(50);
+        var iconId = characterConfig.IconId;
+        if (ImGui.InputInt("图标Id", ref iconId))
+        {
+            characterConfig.IconId = iconId;
+            Service.Interface.SavePluginConfig(config);
+            modified = true;
+        }
+        
+        // Name
+        ImGui.SetCursorPosX(50);
         var fakeName = characterConfig.FakeNameText;
         if (ImGui.InputText("角色名", ref fakeName, 100))
         {
@@ -223,19 +245,22 @@ internal class ConfigWindow : Window
             Service.Interface.SavePluginConfig(config);
             modified = true;
         }
-
+        
+        // FcName
+        var hideFcName = characterConfig.HideFcName;
+        if (ImGui.Checkbox("##隐藏部队简称", ref hideFcName))
+        {
+            characterConfig.HideFcName = hideFcName;
+            Service.Interface.SavePluginConfig(config);
+            modified = true;
+        }
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("隐藏部队简称");
+        ImGui.SameLine();
+        ImGui.SetCursorPosX(50);
         var fakeFcName = characterConfig.FakeFcNameText;
         if (ImGui.InputText("部队简称", ref fakeFcName, 100))
         {
             characterConfig.FakeFcNameText = fakeFcName;
-            Service.Interface.SavePluginConfig(config);
-            modified = true;
-        }
-
-        var hideFcName = characterConfig.HideFcName;
-        if (ImGui.Checkbox("隐藏部队简称", ref hideFcName))
-        {
-            characterConfig.HideFcName = hideFcName;
             Service.Interface.SavePluginConfig(config);
             modified = true;
         }
@@ -251,10 +276,14 @@ internal class ConfigWindow : Window
             ImGui.Separator();
 
             foreach (var (name, characterConfig) in characters.ToArray()) {
-                if (ImGui.Selectable($"{IncognitoModeName(name).PadRight(7, '\u3000')}->[{characterConfig.FakeNameText}]##{world.Name.RawString}", selectedCharaCfg == characterConfig)) {
+                if (ImGui.Selectable($"{IncognitoModeName(name).PadRight(7, '\u3000')}", selectedCharaCfg == characterConfig)) {
                     selectedCharaCfg = characterConfig;
                     selectedName = name;
                     selectedWorld = world.RowId;
+                }
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(100);
+                if (ImGui.Selectable($"[{characterConfig.FakeNameText}]##{world.Name.RawString}", false)) {
                 }
                 
                 if (ImGui.BeginPopupContextItem()) {

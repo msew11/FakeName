@@ -81,7 +81,17 @@ internal class SetNamePlateHook : IDisposable
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
 
-        if (!string.IsNullOrEmpty(characterConfig.FakeNameText))
+        if (!characterConfig.IconReplace)
+        {
+            return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
+        }
+        
+        var name = SeStringUtils.ReadRawSeString(namePtr);
+        var title = SeStringUtils.ReadRawSeString(titlePtr);
+        var fcName = SeStringUtils.ReadRawSeString(fcNamePtr);
+        // Service.Log.Debug($"SetNamePlate：{name} {title} {fcName} {iconId}");
+
+        /*if (!string.IsNullOrEmpty(characterConfig.FakeNameText))
         {
             var nameText = SeStringUtils.ReadRawSeString(namePtr);
             // Service.Log.Debug($"角色Id:{actorId}");
@@ -104,8 +114,9 @@ internal class SetNamePlateHook : IDisposable
             {
                 fcNamePtr = (IntPtr)newFcNamePtr;
             }
-        }
+        }*/
         
-        return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
+        // 61524
+        return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, characterConfig.IconId);
     }
 }
