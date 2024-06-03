@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FakeName", "FakeName\FakeNa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommons", "ECommons\ECommons\ECommons.csproj", "{84867740-2782-4BBB-B7C7-2ADF83280E81}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtterGui", "OtterGui\OtterGui.csproj", "{7881C77A-6499-4607-B692-C32A0985ADB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{84867740-2782-4BBB-B7C7-2ADF83280E81}.Debug|x64.Build.0 = Debug|x64
 		{84867740-2782-4BBB-B7C7-2ADF83280E81}.Release|x64.ActiveCfg = Release|x64
 		{84867740-2782-4BBB-B7C7-2ADF83280E81}.Release|x64.Build.0 = Release|x64
+		{7881C77A-6499-4607-B692-C32A0985ADB8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7881C77A-6499-4607-B692-C32A0985ADB8}.Debug|x64.Build.0 = Debug|Any CPU
+		{7881C77A-6499-4607-B692-C32A0985ADB8}.Release|x64.ActiveCfg = Release|Any CPU
+		{7881C77A-6499-4607-B692-C32A0985ADB8}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
