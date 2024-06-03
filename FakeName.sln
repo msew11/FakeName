@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FakeName", "FakeName\FakeName.csproj", "{13C812E9-0D42-4B95-8646-40EEBF30636F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommons", "ECommons\ECommons\ECommons.csproj", "{84867740-2782-4BBB-B7C7-2ADF83280E81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{13C812E9-0D42-4B95-8646-40EEBF30636F}.Debug|x64.Build.0 = Debug|Any CPU
 		{13C812E9-0D42-4B95-8646-40EEBF30636F}.Release|x64.ActiveCfg = Release|Any CPU
 		{13C812E9-0D42-4B95-8646-40EEBF30636F}.Release|x64.Build.0 = Release|Any CPU
+		{84867740-2782-4BBB-B7C7-2ADF83280E81}.Debug|x64.ActiveCfg = Debug|x64
+		{84867740-2782-4BBB-B7C7-2ADF83280E81}.Debug|x64.Build.0 = Debug|x64
+		{84867740-2782-4BBB-B7C7-2ADF83280E81}.Release|x64.ActiveCfg = Release|x64
+		{84867740-2782-4BBB-B7C7-2ADF83280E81}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

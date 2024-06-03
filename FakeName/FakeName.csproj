@@ -34,6 +34,10 @@
     </Target>
 
     <ItemGroup>
+        <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="DalamudPackager" Version="2.1.12"  MakeZip="true" />
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
