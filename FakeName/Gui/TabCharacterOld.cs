@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Game.ClientState.Objects.SubKinds;
@@ -7,65 +8,45 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
-using FakeName.Config;
+using ECommons.DalamudServices;
+using FakeName.Data;
 using ImGuiNET;
 using Lumina.Excel;
 using World = Lumina.Excel.GeneratedSheets.World;
 
 namespace FakeName.Windows;
 
-internal class ConfigWindow : Window
+internal class TabCharacterOld
 {
-    private readonly PluginConfig config;
-    private readonly Plugin plugin;
+    static ExcelSheet<World>? Worlds => Svc.Data.GetExcelSheet<World>();
     
-    private Vector2 iconButtonSize = new(16);
-    private ExcelSheet<World>? worlds;
+    static Vector2 IconButtonSize = new(16);
+    static float SupportButtonOffset;
     
-    private CharacterConfig? selectedCharaCfg;
-    private string selectedName = string.Empty;
-    private uint selectedWorld;
+    static CharacterConfig? SelectedCharaCfg;
+    static string SelectedName = string.Empty;
+    static uint SelectedWorld;
 
-    private string customName = string.Empty;
-    private uint customWorld;
+    static string CustomName = string.Empty;
+    static uint CustomWorld;
 
-    public ConfigWindow(Plugin plugin, PluginConfig config) : base("FakeName")
-    {
-        this.config = config;
-        this.plugin = plugin;
-        this.worlds = Service.Data.GetExcelSheet<World>();
-    }
-
-    public void Open()
-    {
-        IsOpen = true;
-    }
-    
-    public override void OnClose() {
-        Service.Interface.SavePluginConfig(config);
-        base.OnClose();
-    }
-    
-    private float supportButtonOffset;
-
-    public override void Draw()
+    public static void Draw()
     {
         var modified = false;
         ImGui.BeginGroup();
         {
-            if (ImGui.BeginChild("character_select", ImGuiHelpers.ScaledVector2(240, 0) - iconButtonSize with { X = 0 }, true)) {
+            if (ImGui.BeginChild("character_select", ImGuiHelpers.ScaledVector2(240, 0) - IconButtonSize with { X = 0 }, true)) {
                 DrawCharacterList();
             }
             ImGui.EndChild();
             
             var charListSize = ImGui.GetItemRectSize().X;
             
-            if (Service.ClientState.LocalPlayer != null) {
+            if (Svc.ClientState.LocalPlayer != null) {
                 if (ImGuiComponents.IconButton(FontAwesomeIcon.User)) {
-                    if (Service.ClientState.LocalPlayer != null) {
-                        config.TryAddCharacter(Service.ClientState.LocalPlayer.Name.TextValue, Service.ClientState.LocalPlayer.HomeWorld.Id);
+                    if (Svc.ClientState.LocalPlayer != null) {
+                        P.Config.TryAddCharacter(Svc.ClientState.LocalPlayer.Name.TextValue, Svc.ClientState.LocalPlayer.HomeWorld.Id);
                     }
                 }
                 
@@ -73,8 +54,8 @@ internal class ConfigWindow : Window
                 
                 ImGui.SameLine();
                 if (ImGuiComponents.IconButton(FontAwesomeIcon.DotCircle)) {
-                    if (Service.Targets.Target is PlayerCharacter pc) {
-                        config.TryAddCharacter(pc.Name.TextValue, pc.HomeWorld.Id);
+                    if (Svc.Targets.Target is PlayerCharacter pc) {
+                        P.Config.TryAddCharacter(pc.Name.TextValue, pc.HomeWorld.Id);
                     }
                 }
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加目标角色");
@@ -87,22 +68,22 @@ internal class ConfigWindow : Window
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加指定角色");
                 ImGui.SameLine();
 
-                if (worlds != null)
+                if (Worlds != null)
                 {
                     if (ImGui.BeginPopup("AddCustomChara", ImGuiWindowFlags.AlwaysAutoResize))
                     {
                         ImGui.TextColored(ImGuiColors.DalamudYellow, "添加指定角色");
                         ImGui.Separator();
 
-                        var worldRow = worlds.FirstOrDefault(w => w.IsPublic && !w.Name.RawData.IsEmpty && w.Region == 2 && w.RowId == customWorld);
+                        var worldRow = Worlds.FirstOrDefault(w => w.IsPublic && !w.Name.RawData.IsEmpty && w.Region == 2 && w.RowId == CustomWorld);
                         if (ImGui.BeginCombo("####指定角色服务器", worldRow != null ? worldRow.Name.RawString : "请选择服务器", ImGuiComboFlags.HeightLarge))
                         {
-                            foreach (var world in worlds.Where(w => w.IsPublic && !w.Name.RawData.IsEmpty && w.Region == 2))
+                            foreach (var world in Worlds.Where(w => w.IsPublic && !w.Name.RawData.IsEmpty && w.Region == 2))
                             {
                                 if (ImGui.Selectable($"{world.Name.RawString} ({world.RowId})",
-                                                     world.RowId == customWorld))
+                                                     world.RowId == CustomWorld))
                                 {
-                                    customWorld = world.RowId;
+                                    CustomWorld = world.RowId;
                                 }
                             }
                             
@@ -112,13 +93,13 @@ internal class ConfigWindow : Window
                         ImGui.SameLine();
                         if (ImGuiComponents.IconButton("AddCustomCurrency", FontAwesomeIcon.Plus))
                         {
-                            if (customWorld != 0)
+                            if (CustomWorld != 0)
                             {
-                                config.TryAddCharacter(customName, customWorld);
+                                P.Config.TryAddCharacter(CustomName, CustomWorld);
                             }
                         }
 
-                        if (ImGui.InputTextWithHint("####指定角色名", "角色名", ref customName, 100))
+                        if (ImGui.InputTextWithHint("####指定角色名", "角色名", ref CustomName, 100))
                         {
                         
                         }
@@ -129,20 +110,20 @@ internal class ConfigWindow : Window
             }
             
             if (ImGuiComponents.IconButton(FontAwesomeIcon.Cog)) {
-                selectedCharaCfg = null;
-                selectedName = string.Empty;
-                selectedWorld = 0;
+                SelectedCharaCfg = null;
+                SelectedName = string.Empty;
+                SelectedWorld = 0;
             }
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("选项");
-            iconButtonSize = ImGui.GetItemRectSize() + ImGui.GetStyle().ItemSpacing;
+            IconButtonSize = ImGui.GetItemRectSize() + ImGui.GetStyle().ItemSpacing;
             
-            if (!config.HideSupport) {
+            if (!P.Config.HideSupport) {
                 ImGui.SameLine();
-                if (supportButtonOffset > 0) ImGui.SetCursorPosX(MathF.Max(ImGui.GetCursorPosX(), charListSize - supportButtonOffset + ImGui.GetStyle().WindowPadding.X));
+                if (SupportButtonOffset > 0) ImGui.SetCursorPosX(MathF.Max(ImGui.GetCursorPosX(), charListSize - SupportButtonOffset + ImGui.GetStyle().WindowPadding.X));
                 if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Coffee, "发电", ImGuiColors.ParsedPurple)) {
                     Util.OpenLink("https://afdian.net/a/msew11");
                 }
-                supportButtonOffset = ImGui.GetItemRectSize().X;
+                SupportButtonOffset = ImGui.GetItemRectSize().X;
             }
         }
         ImGui.EndGroup();
@@ -150,30 +131,30 @@ internal class ConfigWindow : Window
         ImGui.SameLine();
         if (ImGui.BeginChild("character_view", ImGuiHelpers.ScaledVector2(0), true))
         {
-            if (selectedCharaCfg != null)
+            if (SelectedCharaCfg != null)
             {
-                var activePlayer = Service.Objects.FirstOrDefault(t => t is PlayerCharacter playerCharacter && playerCharacter.Name.TextValue == selectedName && playerCharacter.HomeWorld.Id == selectedWorld);
+                var activePlayer = Svc.Objects.FirstOrDefault(t => t is PlayerCharacter playerCharacter && playerCharacter.Name.TextValue == SelectedName && playerCharacter.HomeWorld.Id == SelectedWorld);
 
-                DrawCharacterView(selectedCharaCfg, activePlayer, ref modified);
+                DrawCharacterView(SelectedCharaCfg, activePlayer, ref modified);
             }
             else
             {
                 ImGui.Text("FakeName 选项");
                 ImGui.Separator();
 
-                if (ImGui.Checkbox("启用", ref config.Enabled))
+                if (ImGui.Checkbox("启用", ref P.Config.Enabled))
                 {
-                    Service.Interface.SavePluginConfig(config);
+                    Svc.PluginInterface.SavePluginConfig(P.Config);
                 }
 
-                if (ImGui.Checkbox("匿名模式", ref config.IncognitoMode))
+                if (ImGui.Checkbox("匿名模式", ref P.Config.IncognitoMode))
                 {
-                    Service.Interface.SavePluginConfig(config);
+                    Svc.PluginInterface.SavePluginConfig(P.Config);
                 }
 
-                if (ImGui.Checkbox("隐藏发电按钮", ref config.HideSupport))
+                if (ImGui.Checkbox("隐藏发电按钮", ref P.Config.HideSupport))
                 {
-                    Service.Interface.SavePluginConfig(config);
+                    Svc.PluginInterface.SavePluginConfig(P.Config);
                 }
                 
                 // ImGuiHelpers.ScaledDummy(10);
@@ -210,11 +191,11 @@ internal class ConfigWindow : Window
         ImGui.EndChild();
     }
 
-    public void DrawCharacterView(CharacterConfig? characterConfig, GameObject? activeCharacter, ref bool modified)
+    public static void DrawCharacterView(CharacterConfig? characterConfig, GameObject? activeCharacter, ref bool modified)
     {
         if (characterConfig == null) return;
-        var world = worlds?.GetRow(selectedWorld);
-        ImGui.Text($"{(world == null ? string.Empty:world.Name.RawString)} {IncognitoModeName(selectedName)}");
+        var world = Worlds?.GetRow(SelectedWorld);
+        ImGui.Text($"{(world == null ? string.Empty:world.Name.RawString)} {IncognitoModeName(SelectedName)}");
         ImGui.Separator();
         
         // IconId
@@ -222,7 +203,7 @@ internal class ConfigWindow : Window
         if (ImGui.Checkbox("##替换图标Id", ref iconReplace))
         {
             characterConfig.IconReplace = iconReplace;
-            Service.Interface.SavePluginConfig(config);
+            Svc.PluginInterface.SavePluginConfig(P.Config);
             modified = true;
         }
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("替换图标Id");
@@ -232,7 +213,7 @@ internal class ConfigWindow : Window
         if (ImGui.InputInt("图标Id", ref iconId))
         {
             characterConfig.IconId = iconId;
-            Service.Interface.SavePluginConfig(config);
+            Svc.PluginInterface.SavePluginConfig(P.Config);
             modified = true;
         }
         
@@ -242,7 +223,7 @@ internal class ConfigWindow : Window
         if (ImGui.InputText("角色名", ref fakeName, 100))
         {
             characterConfig.FakeNameText = fakeName;
-            Service.Interface.SavePluginConfig(config);
+            Svc.PluginInterface.SavePluginConfig(P.Config);
             modified = true;
         }
         
@@ -251,7 +232,7 @@ internal class ConfigWindow : Window
         if (ImGui.Checkbox("##隐藏部队简称", ref hideFcName))
         {
             characterConfig.HideFcName = hideFcName;
-            Service.Interface.SavePluginConfig(config);
+            Svc.PluginInterface.SavePluginConfig(P.Config);
             modified = true;
         }
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("隐藏部队简称");
@@ -261,25 +242,25 @@ internal class ConfigWindow : Window
         if (ImGui.InputText("部队简称", ref fakeFcName, 100))
         {
             characterConfig.FakeFcNameText = fakeFcName;
-            Service.Interface.SavePluginConfig(config);
+            Svc.PluginInterface.SavePluginConfig(P.Config);
             modified = true;
         }
     }
 
-    public void DrawCharacterList()
+    public static void DrawCharacterList()
     {
-        foreach (var (worldId, characters) in config.WorldCharacterDictionary.ToArray()) {
-            var world = Service.Data.GetExcelSheet<World>()?.GetRow(worldId);
+        foreach (var (worldId, characters) in P.Config.WorldCharacterDictionary.ToArray()) {
+            var world = Svc.Data.GetExcelSheet<World>()?.GetRow(worldId);
             if (world == null) continue;
             
             ImGui.TextDisabled($"{world.Name.RawString}");
             ImGui.Separator();
 
             foreach (var (name, characterConfig) in characters.ToArray()) {
-                if (ImGui.Selectable($"{IncognitoModeName(name).PadRight(7, '\u3000')}", selectedCharaCfg == characterConfig)) {
-                    selectedCharaCfg = characterConfig;
-                    selectedName = name;
-                    selectedWorld = world.RowId;
+                if (ImGui.Selectable($"{IncognitoModeName(name).PadRight(7, '\u3000')}", SelectedCharaCfg == characterConfig)) {
+                    SelectedCharaCfg = characterConfig;
+                    SelectedName = name;
+                    SelectedWorld = world.RowId;
                 }
                 ImGui.SameLine();
                 ImGui.SetCursorPosX(100);
@@ -289,9 +270,9 @@ internal class ConfigWindow : Window
                 if (ImGui.BeginPopupContextItem()) {
                     if (ImGui.Selectable($"移除 '{IncognitoModeName(name)} @ {world.Name.RawString}'")) {
                         characters.Remove(name);
-                        if (selectedCharaCfg == characterConfig) selectedCharaCfg = null;
+                        if (SelectedCharaCfg == characterConfig) SelectedCharaCfg = null;
                         if (characters.Count == 0) {
-                            config.WorldCharacterDictionary.Remove(worldId);
+                            P.Config.WorldCharacterDictionary.Remove(worldId);
                         }
                     }
                     ImGui.EndPopup();
@@ -302,9 +283,9 @@ internal class ConfigWindow : Window
         }
     }
 
-    public string IncognitoModeName(string name)
+    /*public static string IncognitoModeName(string name)
     {
-        if (!config.IncognitoMode)
+        if (!P.Config.IncognitoMode)
         {
             return name;
         }
@@ -312,5 +293,6 @@ internal class ConfigWindow : Window
         {
             return name.Substring(0, 1) + "...";
         }
-    }
+    }#1#
 }
+*/

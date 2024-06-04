@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using ECommons.DalamudServices;
 using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
 
@@ -24,19 +25,19 @@ public class DutyComponent : IDisposable
 
     public DutyComponent()
     {
-        _contentFinderConditionsSheet = Service.DataManager.GameData.GetExcelSheet<ContentFinderCondition>() ?? throw new InvalidOperationException();
-        Service.ClientState.TerritoryChanged += OnTerritoryChanged;
+        _contentFinderConditionsSheet = Svc.Data.GameData.GetExcelSheet<ContentFinderCondition>() ?? throw new InvalidOperationException();
+        Svc.ClientState.TerritoryChanged += OnTerritoryChanged;
     }
 
     public void Dispose()
     {
-        Service.ClientState.TerritoryChanged -= OnTerritoryChanged;
+        Svc.ClientState.TerritoryChanged -= OnTerritoryChanged;
     }
 
     private void OnTerritoryChanged(ushort e)
     {
         var content =
-            _contentFinderConditionsSheet.FirstOrDefault(t => t.TerritoryType.Row == Service.ClientState.TerritoryType);
+            _contentFinderConditionsSheet.FirstOrDefault(t => t.TerritoryType.Row == Svc.ClientState.TerritoryType);
 
         if (content == null)
         {

@@ -4,29 +4,25 @@ using System.Linq;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using FakeName.Config;
+using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace FakeName.Hook;
 
-internal class UpdateNamePlateNpcHook : IDisposable
+public class UpdateNamePlateNpcHook : IDisposable
 {
-    private readonly Plugin plugin;
-    private readonly PluginConfig config;
 
     [Signature(Signatures.UpdateNamePlateNpc, DetourName = nameof(UpdateNamePlateNpcDetour))]
     private readonly Hook<UpdateNameplateNpcDelegate> hook = null!;
     
     private readonly Dictionary<uint, string> modifiedNamePlates = new();
 
-    public UpdateNamePlateNpcHook(Plugin plugin, PluginConfig config)
+    public UpdateNamePlateNpcHook()
     {
-        this.plugin = plugin;
-        this.config = config;
 
-        Service.Hook.InitializeFromAttributes(this);
+        Svc.Hook.InitializeFromAttributes(this);
 
         hook.Enable();
     }
@@ -47,7 +43,7 @@ internal class UpdateNamePlateNpcHook : IDisposable
         }
         catch (Exception ex)
         {
-            Service.Log.Error(ex, "UpdateNamePlateNpcDetour encountered a critical error");
+            ex.Log();
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
     }
@@ -56,7 +52,7 @@ internal class UpdateNamePlateNpcHook : IDisposable
         RaptureAtkModule* raptureAtkModule, RaptureAtkModule.NamePlateInfo* namePlateInfo, NumberArrayData* numArray,
         StringArrayData* stringArray, GameObject* gameObject, int numArrayIndex, int stringArrayIndex)
     {
-        if (!plugin.Config.Enabled)
+        if (!C.Enabled)
         {
             //namePlateInfo->DisplayTitle.SetString(newName);
             TryCleanUp(namePlateInfo, gameObject);
@@ -80,13 +76,13 @@ internal class UpdateNamePlateNpcHook : IDisposable
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
         
-        var character = (PlayerCharacter?) Service.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == actorId);
+        var character = (PlayerCharacter?) Svc.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == actorId);
         if (character == null)
         {
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
         
-        if (!config.TryGetCharacterConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
+        if (!C.TryGetCharacterConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
         {
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }

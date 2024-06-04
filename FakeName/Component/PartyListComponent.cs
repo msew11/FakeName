@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
-using FakeName.Config;
+using ECommons.DalamudServices;
 using FakeName.Utils;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Info;
@@ -15,21 +15,16 @@ namespace FakeName.Component;
 
 public class PartyListComponent : IDisposable
 {
-    private readonly PluginConfig config;
     
     private DateTime lastUpdate = DateTime.Today;
-    public PartyListComponent(PluginConfig config)
+    public PartyListComponent()
     {
-        this.config = config;
-        
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_PartyList", OnPartyListUpdate);
-        
-        
+        Svc.AddonLifecycle.RegisterListener(AddonEvent.PostRequestedUpdate, "_PartyList", OnPartyListUpdate);
     }
 
     public void Dispose()
     {
-        Service.AddonLifecycle.UnregisterListener(OnPartyListUpdate);
+        Svc.AddonLifecycle.UnregisterListener(OnPartyListUpdate);
     }
     
     private void OnUpdate(IFramework framework)
@@ -44,7 +39,7 @@ public class PartyListComponent : IDisposable
         }
         catch (Exception e)
         {
-            Service.Log.Error("PartyListComponent Err", e);
+            e.Log();
         }
     }
     
@@ -60,7 +55,7 @@ public class PartyListComponent : IDisposable
         }
         catch (Exception e)
         {
-            Service.Log.Error("PartyListComponent Err", e);
+            e.Log();
         }
 
         // Service.Log.Debug($"{type.ToString()} {args.AddonName} {Service.PartyList.Length}");
@@ -71,12 +66,12 @@ public class PartyListComponent : IDisposable
      */
     public unsafe void RefreshPartyList()
     {
-        if (!config.Enabled)
+        if (!C.Enabled)
         {
             return;
         }
         
-        var localPlayer = Service.ClientState.LocalPlayer;
+        var localPlayer = Svc.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
             return;
@@ -100,7 +95,7 @@ public class PartyListComponent : IDisposable
                 }
                 else
                 {
-                    if (Service.PartyList.Any())
+                    if (Svc.Party.Any())
                     {
                         // 同服小队
                         ReplacePartyListHud(memberName, nameNode);
@@ -117,7 +112,7 @@ public class PartyListComponent : IDisposable
 
     public unsafe void ReplaceSelf(string memberName, uint world, AtkTextNode* nameNode)
     {
-        if (!config.TryGetCharacterConfig(memberName, world, out var characterConfig))
+        if (!C.TryGetCharacterConfig(memberName, world, out var characterConfig))
         {
             return;
         }
@@ -127,14 +122,14 @@ public class PartyListComponent : IDisposable
 
     public unsafe void ReplacePartyListHud(string memberName, AtkTextNode* nameNode)
     {
-        foreach (var partyMember in Service.PartyList)
+        foreach (var partyMember in Svc.Party)
         {
             if (!partyMember.Name.TextValue.Equals(memberName))
             {
                 continue;
             }
 
-            if (!config.TryGetCharacterConfig(memberName, partyMember.World.Id, out var characterConfig))
+            if (!C.TryGetCharacterConfig(memberName, partyMember.World.Id, out var characterConfig))
             {
                 continue;
             }
@@ -159,7 +154,7 @@ public class PartyListComponent : IDisposable
                 continue;
             }
 
-            if (!config.TryGetCharacterConfig(memberName, (ushort)groupMember.HomeWorld, out var characterConfig))
+            if (!C.TryGetCharacterConfig(memberName, (ushort)groupMember.HomeWorld, out var characterConfig))
             {
                 continue;
             }
@@ -172,7 +167,7 @@ public class PartyListComponent : IDisposable
 
     private unsafe List<AddonPartyList.PartyListMemberStruct> GetPartyListAddon()
     {
-        var partyListAddon = (AddonPartyList*) Service.GameGui.GetAddonByName("_PartyList", 1);
+        var partyListAddon = (AddonPartyList*) Svc.GameGui.GetAddonByName("_PartyList", 1);
         
         List<AddonPartyList.PartyListMemberStruct> p = [
             partyListAddon->PartyMember.PartyMember0,

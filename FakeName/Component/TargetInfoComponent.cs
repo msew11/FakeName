@@ -2,36 +2,33 @@ using System;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Objects.SubKinds;
-using FakeName.Config;
+using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace FakeName.Component;
 
 public class TargetInfoComponent : IDisposable
 {
-    private readonly PluginConfig config;
     
     private DateTime lastUpdate = DateTime.Today;
     
-    public TargetInfoComponent(PluginConfig config)
+    public TargetInfoComponent()
     {
-        this.config = config;
-
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfo", TargetInfoUpdate);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfo", TargetTargetUpdate);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", TargetInfoMainTargetUpdate);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", TargetTargetUpdate);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_FocusTargetInfo", FocusTargetInfoUpdate);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_WideText", WideTextUpdate);
+        Svc.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfo", TargetInfoUpdate);
+        Svc.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfo", TargetTargetUpdate);
+        Svc.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", TargetInfoMainTargetUpdate);
+        Svc.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_TargetInfoMainTarget", TargetTargetUpdate);
+        Svc.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_FocusTargetInfo", FocusTargetInfoUpdate);
+        Svc.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, "_WideText", WideTextUpdate);
     }
 
     public void Dispose()
     {
-        Service.AddonLifecycle.UnregisterListener(TargetInfoUpdate);
-        Service.AddonLifecycle.UnregisterListener(TargetTargetUpdate);
-        Service.AddonLifecycle.UnregisterListener(TargetInfoMainTargetUpdate);
-        Service.AddonLifecycle.UnregisterListener(FocusTargetInfoUpdate);
-        Service.AddonLifecycle.UnregisterListener(WideTextUpdate);
+        Svc.AddonLifecycle.UnregisterListener(TargetInfoUpdate);
+        Svc.AddonLifecycle.UnregisterListener(TargetTargetUpdate);
+        Svc.AddonLifecycle.UnregisterListener(TargetInfoMainTargetUpdate);
+        Svc.AddonLifecycle.UnregisterListener(FocusTargetInfoUpdate);
+        Svc.AddonLifecycle.UnregisterListener(WideTextUpdate);
     }
 
     private unsafe void TargetInfoUpdate(AddonEvent type, AddonArgs args)
@@ -85,18 +82,18 @@ public class TargetInfoComponent : IDisposable
 
     private unsafe bool RefreshTargetInfo(AtkUnitBase* addon)
     {
-        if (!config.Enabled)
+        if (!C.Enabled)
         {
             return false;
         }
         
-        var localPlayer = Service.ClientState.LocalPlayer;
+        var localPlayer = Svc.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
             return false;
         }
         
-        var targetObj = Service.Targets.Target;
+        var targetObj = Svc.Targets.Target;
         if (targetObj == null)
         {
             return false;
@@ -107,7 +104,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!config.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
+        if (!C.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
         {
             return false;
         }
@@ -135,18 +132,18 @@ public class TargetInfoComponent : IDisposable
 
     private unsafe bool RefreshIndependentTargetInfo(AtkUnitBase* addon)
     {
-        if (!config.Enabled)
+        if (!C.Enabled)
         {
             return false;
         }
         
-        var localPlayer = Service.ClientState.LocalPlayer;
+        var localPlayer = Svc.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
             return false;
         }
         
-        var targetObj = Service.Targets.Target;
+        var targetObj = Svc.Targets.Target;
         if (targetObj == null)
         {
             return false;
@@ -157,7 +154,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!config.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
+        if (!C.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
         {
             return false;
         }
@@ -185,18 +182,18 @@ public class TargetInfoComponent : IDisposable
 
     private unsafe bool RefreshTargetTarget(AtkUnitBase* addon)
     {
-        if (!config.Enabled)
+        if (!C.Enabled)
         {
             return false;
         }
         
-        var localPlayer = Service.ClientState.LocalPlayer;
+        var localPlayer = Svc.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
             return false;
         }
         
-        var targetObj = Service.Targets.Target;
+        var targetObj = Svc.Targets.Target;
         if (targetObj == null)
         {
             return false;
@@ -228,7 +225,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!config.TryGetCharacterConfig(targetTargetChara.Name.TextValue, targetTargetChara.HomeWorld.Id, out var characterConfig))
+        if (!C.TryGetCharacterConfig(targetTargetChara.Name.TextValue, targetTargetChara.HomeWorld.Id, out var characterConfig))
         {
             return false;
         }
@@ -247,18 +244,18 @@ public class TargetInfoComponent : IDisposable
     
     private unsafe bool RefreshFocusTargetInfo(AtkUnitBase* addon)
     {
-        if (!config.Enabled)
+        if (!C.Enabled)
         {
             return false;
         }
         
-        var localPlayer = Service.ClientState.LocalPlayer;
+        var localPlayer = Svc.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
             return false;
         }
 
-        var focusTarget = Service.Targets.FocusTarget;
+        var focusTarget = Svc.Targets.FocusTarget;
         if (focusTarget == null)
         {
             return false;
@@ -269,7 +266,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!config.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
+        if (!C.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
         {
             return false;
         }
@@ -291,12 +288,12 @@ public class TargetInfoComponent : IDisposable
 
     private unsafe bool RefreshWideText(AtkUnitBase* addon)
     {
-        if (!config.Enabled)
+        if (!C.Enabled)
         {
             return false;
         }
         
-        var localPlayer = Service.ClientState.LocalPlayer;
+        var localPlayer = Svc.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
             return false;
@@ -312,7 +309,7 @@ public class TargetInfoComponent : IDisposable
         if (!change)
         {
             // 小队成员的倒计时
-            foreach (var partyMember in Service.PartyList)
+            foreach (var partyMember in Svc.Party)
             {
                 change = RefreshPlayerWideText(partyMember.Name.TextValue, partyMember.World.Id, addon);
                 if (change)
@@ -327,7 +324,7 @@ public class TargetInfoComponent : IDisposable
 
     private unsafe bool RefreshPlayerWideText(string name, uint worldId, AtkUnitBase* wideTextAddon)
     {
-        if (!config.TryGetCharacterConfig(name, worldId, out var characterConfig))
+        if (!C.TryGetCharacterConfig(name, worldId, out var characterConfig))
         {
             return false;
         }

@@ -3,25 +3,21 @@ using System.Linq;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using FakeName.Config;
+using ECommons.DalamudServices;
+using FakeName.Data;
 using FakeName.Utils;
 
 namespace FakeName.Hook;
 
-internal class SetNamePlateHook : IDisposable
+public class SetNamePlateHook : IDisposable
 {
-    private readonly Plugin plugin;
-    private readonly PluginConfig config;
-
     [Signature(Signatures.SetNamePlate, DetourName = nameof(SetNamePlateDetour))]
     private readonly Hook<SetNamePlateDelegate> hook = null!;
 
-    public SetNamePlateHook(Plugin plugin, PluginConfig config)
+    public SetNamePlateHook()
     {
-        this.plugin = plugin;
-        this.config = config;
 
-        Service.Hook.InitializeFromAttributes(this);
+        Svc.Hook.InitializeFromAttributes(this);
 
         hook.Enable();
     }
@@ -41,7 +37,7 @@ internal class SetNamePlateHook : IDisposable
         }
         catch (Exception ex)
         {
-            Service.Log.Error(ex, "SetNamePlateDetour encountered a critical error");
+            ex.Log();
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
     }
@@ -50,7 +46,7 @@ internal class SetNamePlateHook : IDisposable
         IntPtr namePlateObjectPtr, bool isPrefixTitle, bool displayTitle,
         IntPtr titlePtr, IntPtr namePtr, IntPtr fcNamePtr, IntPtr prefix, int iconId
     ) {
-        if (!plugin.Config.Enabled)
+        if (!C.Enabled)
         {
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
@@ -69,14 +65,14 @@ internal class SetNamePlateHook : IDisposable
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
 
-        var character = (PlayerCharacter?) Service.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == actorId);
+        var character = (PlayerCharacter?) Svc.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == actorId);
         if (character == null)
         {
             //Service.Log.Debug($"非玩家");
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
 
-        if (!config.TryGetCharacterConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
+        if (!C.TryGetCharacterConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
         {
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }

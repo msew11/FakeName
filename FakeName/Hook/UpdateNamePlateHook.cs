@@ -5,19 +5,16 @@ using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
+using ECommons.DalamudServices;
 using FakeName.Component;
-using FakeName.Config;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using BattleChara = FFXIVClientStructs.FFXIV.Client.Game.Character.BattleChara;
 
 namespace FakeName.Hook;
 
-internal class UpdateNamePlateHook : IDisposable
+public class UpdateNamePlateHook : IDisposable
 {
-    private readonly Plugin plugin;
-    private readonly PluginConfig config;
-
     private readonly DutyComponent dutyComponent;
 
     [Signature(Signatures.UpdateNamePlate, DetourName = nameof(UpdateNamePlateDetour))]
@@ -25,13 +22,11 @@ internal class UpdateNamePlateHook : IDisposable
     
     private readonly Dictionary<uint, string> modifiedNamePlates = new();
 
-    public UpdateNamePlateHook(Plugin plugin, PluginConfig config, DutyComponent dutyComponent)
+    public UpdateNamePlateHook(DutyComponent dutyComponent)
     {
-        this.plugin = plugin;
-        this.config = config;
         this.dutyComponent = dutyComponent;
 
-        Service.Hook.InitializeFromAttributes(this);
+        Svc.Hook.InitializeFromAttributes(this);
         hook.Enable();
     }
 
@@ -51,7 +46,7 @@ internal class UpdateNamePlateHook : IDisposable
         }
         catch (Exception ex)
         {
-            Service.Log.Error(ex, "UpdateNamePlateDetour encountered a critical error");
+            ex.Log();
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
         }
     }
@@ -60,7 +55,7 @@ internal class UpdateNamePlateHook : IDisposable
         RaptureAtkModule* raptureAtkModule, RaptureAtkModule.NamePlateInfo* namePlateInfo, NumberArrayData* numArray,
         StringArrayData* stringArray, BattleChara* battleChara, int numArrayIndex, int stringArrayIndex)
     {
-        if (!plugin.Config.Enabled)
+        if (!C.Enabled)
         {
             //namePlateInfo->DisplayTitle.SetString(newName);
             TryCleanUp(namePlateInfo);
@@ -73,7 +68,7 @@ internal class UpdateNamePlateHook : IDisposable
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
         }
         
-        var gameObject = Service.Objects.FirstOrDefault(t => t.ObjectId == actorId);
+        var gameObject = Svc.Objects.FirstOrDefault(t => t.ObjectId == actorId);
         if (gameObject == null)
         {
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
@@ -81,7 +76,7 @@ internal class UpdateNamePlateHook : IDisposable
 
         if (gameObject is PlayerCharacter character)
         {
-            if (!config.TryGetCharacterConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
+            if (!C.TryGetCharacterConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
             {
                 return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
             }
@@ -123,13 +118,13 @@ internal class UpdateNamePlateHook : IDisposable
 
         if (gameObject is BattleNpc battleNpc)
         {
-            var owner = (PlayerCharacter?) Service.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == battleNpc.OwnerId);
+            var owner = (PlayerCharacter?) Svc.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == battleNpc.OwnerId);
             if (owner == null)
             {
                 return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
             }
             
-            if (!config.TryGetCharacterConfig(owner.Name.TextValue, owner.HomeWorld.Id, out var characterConfig))
+            if (!C.TryGetCharacterConfig(owner.Name.TextValue, owner.HomeWorld.Id, out var characterConfig))
             {
                 return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
             }
@@ -155,14 +150,14 @@ internal class UpdateNamePlateHook : IDisposable
     
     private unsafe void TryCleanUp(RaptureAtkModule.NamePlateInfo* namePlateInfo)
     {
-        var localPlayer = Service.ClientState.LocalPlayer;
+        var localPlayer = Svc.ClientState.LocalPlayer;
         if (localPlayer == null)
         {
             return;
         }
         
         var actorId = namePlateInfo->ObjectID.ObjectID;
-        var gameObject = Service.Objects.FirstOrDefault(t => t.ObjectId == actorId);
+        var gameObject = Svc.Objects.FirstOrDefault(t => t.ObjectId == actorId);
         if (gameObject == null)
         {
             return;

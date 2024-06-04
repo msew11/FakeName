@@ -1,23 +1,24 @@
 ﻿using System;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
+using ECommons.DalamudServices;
 
 namespace FakeName.Hook;
 
 internal class ChatMessage : IDisposable
 {
-    private Plugin Plugin { get; }
+    private FakeName FakeName { get; }
 
-    internal ChatMessage(Plugin plugin)
+    internal ChatMessage(FakeName fakeName)
     {
-        Plugin = plugin;
+        FakeName = fakeName;
 
-        Service.ChatGui.ChatMessage += OnChatMessage;
+        Svc.Chat.ChatMessage += OnChatMessage;
     }
 
     public void Dispose()
     {
-        Service.ChatGui.ChatMessage -= OnChatMessage;
+        Svc.Chat.ChatMessage -= OnChatMessage;
     }
 
     private void OnChatMessage(
@@ -29,7 +30,7 @@ internal class ChatMessage : IDisposable
 
     private void ChangeNames(SeString text)
     {
-        if (!Plugin.Config.Enabled)
+        if (!FakeName.Config.Enabled)
         {
             return;
         }

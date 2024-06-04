@@ -2,7 +2,7 @@
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using FakeName.Config;
+using ECommons.DalamudServices;
 using FakeName.Utils;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
@@ -10,19 +10,13 @@ namespace FakeName.Hook;
 
 public class AtkTextNodeSetTextHook
 {
-    private readonly Plugin plugin;
-    private readonly PluginConfig config;
-
     [Signature(Signatures.AtkTextNodeSetText, DetourName = nameof(AtkTextNodeSetTextDetour))]
     private readonly Hook<AtkTextNodeSetTextDelegate> hook = null!;
 
     // Constructor
-    internal AtkTextNodeSetTextHook(Plugin plugin, PluginConfig config)
+    internal AtkTextNodeSetTextHook()
     {
-        this.plugin = plugin;
-        this.config = config;
-        
-        Service.Hook.InitializeFromAttributes(this);
+        Svc.Hook.InitializeFromAttributes(this);
 
         this.hook.Enable();
     }
@@ -41,20 +35,20 @@ public class AtkTextNodeSetTextHook
         }
         catch (Exception ex)
         {
-            Service.Log.Error(ex, "AtkTextNodeSetTextDetour encountered a critical error");
+            ex.Log();
             hook.Original(node, text);
         }
     }
 
     private unsafe void AtkTextNodeSetText(IntPtr node, IntPtr textPtr)
     {
-        if (!plugin.Config.Enabled)
+        if (!C.Enabled)
         {
             hook.Original(node, textPtr);
             return;
         }
 
-        var character = Service.ClientState.LocalPlayer;
+        var character = Svc.ClientState.LocalPlayer;
         if (character == null)
         {
             TryUpdLoginUi(node, textPtr);
@@ -63,7 +57,7 @@ public class AtkTextNodeSetTextHook
 
         var charaName = character.Name.TextValue;
         var fcName = character.CompanyTag.TextValue;
-        if (!config.TryGetCharacterConfig(charaName, character.HomeWorld.Id, out var characterConfig))
+        if (!C.TryGetCharacterConfig(charaName, character.HomeWorld.Id, out var characterConfig))
         {
             hook.Original(node, textPtr);
             return;
@@ -77,19 +71,18 @@ public class AtkTextNodeSetTextHook
 
         var text = SeStringUtils.ReadRawSeString(textPtr);
         bool changed = false;
-        foreach (var payload in text.Payloads) {
-            switch (payload) {
+        foreach (var payload in text.Payloads)
+        {
+            switch (payload)
+            {
                 /*case PlayerPayload pp:
                     if (pp.PlayerName.Contains(charaName)) {
                         pp.PlayerName = pp.PlayerName.Replace(charaName, characterConfig.FakeNameText);
                     }
-                
+
                     break;*/
                 case TextPayload txt:
-                    if (txt.Text == null)
-                    {
-                        
-                    }
+                    if (txt.Text == null) { }
                     else if (txt.Text.Equals(charaName))
                     {
                         txt.Text = txt.Text.Replace(charaName, characterConfig.FakeNameText);
@@ -129,7 +122,7 @@ public class AtkTextNodeSetTextHook
                     {
                         // Service.Log.Debug($"包含角色名的文本:{txt.Text}");
                     }
-                    
+
                     break;
             }
         }
@@ -146,7 +139,7 @@ public class AtkTextNodeSetTextHook
             hook.Original(node, textPtr);
         }
     }
-    
+
     private unsafe void TryUpdLoginUi(IntPtr node, IntPtr textPtr)
     {
         var agent = AgentLobby.Instance();
@@ -155,13 +148,13 @@ public class AtkTextNodeSetTextHook
             hook.Original(node, textPtr);
             return;
         }
-        
-        if (!config.TryGetWorldDic(agent->WorldId, out var worldDic))
+
+        if (!C.TryGetWorldDic(agent->WorldId, out var worldDic))
         {
             hook.Original(node, textPtr);
             return;
         }
-        
+
         var text = SeStringUtils.ReadRawSeString(textPtr);
         // Service.Log.Verbose($"包含角色名的文本:{text.TextValue}");
         bool changed = false;
@@ -174,9 +167,11 @@ public class AtkTextNodeSetTextHook
             {
                 continue;
             }
-            
-            foreach (var payload in text.Payloads) {
-                switch (payload) {
+
+            foreach (var payload in text.Payloads)
+            {
+                switch (payload)
+                {
                     /*case PlayerPayload pp:
                         if (pp.PlayerName.Contains(charaName)) {
                             pp.PlayerName = pp.PlayerName.Replace(charaName, characterConfig.FakeNameText);
@@ -199,7 +194,7 @@ public class AtkTextNodeSetTextHook
                         {
                             // Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
                         }
-                    
+
                         break;
                 }
             }

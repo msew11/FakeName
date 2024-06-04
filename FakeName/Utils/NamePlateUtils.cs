@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Dalamud.Logging;
 using Dalamud.Plugin;
+using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Client.System.String;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -33,13 +34,13 @@ public static class NamePlateUtils
         }
     }
     
-    public static SafeAddonNamePlate GetSafeAddonNamePlate() => new(Service.Interface);
+    public static SafeAddonNamePlate GetSafeAddonNamePlate() => new(Svc.PluginInterface);
     
     public class SafeAddonNamePlate
     {
         private readonly DalamudPluginInterface Interface;
 
-        public IntPtr Pointer => Service.GameGui.GetAddonByName("NamePlate", 1);
+        public IntPtr Pointer => Svc.GameGui.GetAddonByName("NamePlate", 1);
 
         public SafeAddonNamePlate(DalamudPluginInterface pluginInterface)
         {
