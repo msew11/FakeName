@@ -30,7 +30,7 @@ internal class ChatMessage : IDisposable
 
     private void ChangeNames(SeString text)
     {
-        if (!FakeName.Config.Enabled)
+        if (!C.Enabled)
         {
             return;
         }

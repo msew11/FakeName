@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using ECommons.DalamudServices;
 using FakeName.Data;
 using FakeName.OtterGuiHandlers;
 using ImGuiNET;
@@ -41,11 +42,14 @@ internal class TabCharacter
     {
         if (characterConfig == null) return;
 
+        var change = false;
+
         // IconId
         var iconReplace = characterConfig.IconReplace;
         if (ImGui.Checkbox("##替换图标Id", ref iconReplace))
         {
             characterConfig.IconReplace = iconReplace;
+            change = true;
         }
 
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("替换图标Id");
@@ -55,6 +59,7 @@ internal class TabCharacter
         if (ImGui.InputInt("图标Id", ref iconId))
         {
             characterConfig.IconId = iconId;
+            change = true;
         }
 
         // Name
@@ -63,6 +68,7 @@ internal class TabCharacter
         if (ImGui.InputText("角色名", ref fakeName, 100))
         {
             characterConfig.FakeNameText = fakeName;
+            change = true;
         }
 
         // FcName
@@ -70,6 +76,7 @@ internal class TabCharacter
         if (ImGui.Checkbox("##隐藏部队简称", ref hideFcName))
         {
             characterConfig.HideFcName = hideFcName;
+            change = true;
         }
 
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("隐藏部队简称");
@@ -79,6 +86,13 @@ internal class TabCharacter
         if (ImGui.InputText("部队简称", ref fakeFcName, 100))
         {
             characterConfig.FakeFcNameText = fakeFcName;
+            change = true;
+        }
+
+        var localPlayer = Svc.ClientState.LocalPlayer;
+        if (change && localPlayer != null && localPlayer.Name.TextValue.Equals(characterConfig.Name) && localPlayer.HomeWorld.Id == characterConfig.World)
+        {
+            P.IpcProcessor.ChangedLocalCharacterTitle(characterConfig);
         }
     }
 }

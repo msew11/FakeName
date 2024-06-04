@@ -25,6 +25,7 @@ public class SetNamePlateHook : IDisposable
     public void Dispose()
     {
         hook.Disable();
+        hook.Dispose();
     }
 
     private IntPtr SetNamePlateDetour(
@@ -72,7 +73,7 @@ public class SetNamePlateHook : IDisposable
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
 
-        if (!C.TryGetCharacterConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
         {
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }

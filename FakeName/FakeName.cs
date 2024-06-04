@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Dalamud.Plugin;
 using ECommons;
@@ -18,9 +19,11 @@ public class FakeName : IDalamudPlugin
 {
     public static FakeName P;
     public static Config C => P.NewConfig;
+    public static IpcDataManager Idm => P.IpcDataManager;
 
     public PluginConfig Config;
     public Config NewConfig;
+    public IpcDataManager IpcDataManager;
     
     public OtterGuiHandler OtterGuiHandler;
     
@@ -33,6 +36,8 @@ public class FakeName : IDalamudPlugin
     public TargetInfoComponent TargetInfoComponent;
     public PartyListComponent PartyListComponent;
 
+    public IpcProcessor IpcProcessor;
+
     public FakeName(DalamudPluginInterface pi)
     {
         P = this;
@@ -43,6 +48,7 @@ public class FakeName : IDalamudPlugin
             NewConfig = EzConfig.Init<Config>();
             Config = Svc.PluginInterface.GetPluginConfig() as PluginConfig ?? new PluginConfig();
             OldConfigMove(Config, NewConfig);
+            IpcDataManager = new();
             
             EzConfigGui.Init(UI.Draw);
             EzCmd.Add("/fakename", EzConfigGui.Open, "打开FakeName");
@@ -52,7 +58,6 @@ public class FakeName : IDalamudPlugin
             // 尝试修复节点
             RepairFileSystem();
             
-            // Old
             DutyComponent = new();
             TargetInfoComponent = new();
             PartyListComponent = new();
@@ -60,6 +65,7 @@ public class FakeName : IDalamudPlugin
             SetNamePlateHook = new();
             UpdateNamePlateHook = new(DutyComponent);
             UpdateNamePlateNpcHook = new();
+            IpcProcessor = new();
 
         });
     }
@@ -81,9 +87,9 @@ public class FakeName : IDalamudPlugin
             }
         }
         
-        foreach (var (worldId, characters) in C.WorldCharacterDictionary.ToArray())
+        foreach (var (_, characters) in C.WorldCharacterDictionary.ToArray())
         {
-            foreach (var (name, characterConfig) in characters.ToArray())
+            foreach (var (_, characterConfig) in characters.ToArray())
             {
                 C.Characters.Add(characterConfig);
             }
@@ -107,6 +113,8 @@ public class FakeName : IDalamudPlugin
     public void Dispose()
     {
         
+        Safe(()=>IpcProcessor.Dispose());
+        
         // this.ChatMessage.Dispose();
         Safe(()=>SetNamePlateHook.Dispose());
         Safe(()=>UpdateNamePlateHook.Dispose());
@@ -117,9 +125,11 @@ public class FakeName : IDalamudPlugin
         Safe(()=>TargetInfoComponent.Dispose());
         Safe(()=>PartyListComponent.Dispose());
         
+        Safe(()=>OtterGuiHandler.Dispose());
+        
+        
         //this.NamePlates.Dispose();
         //this.Common.Dispose();
-        
         ECommonsMain.Dispose();
         P = null;
     }
@@ -134,5 +144,20 @@ public class FakeName : IDalamudPlugin
         {
             return name.Substring(0, 1) + "...";
         }
+    }
+    
+    public bool TryGetConfig(string name, uint world, [MaybeNullWhen(false)] out CharacterConfig characterConfig) {
+        if (Idm.TryGetCharacterConfig(name, world, out characterConfig))
+        {
+            PluginLog.Debug($"找到了{characterConfig.Name}的ipc配置：");
+            return true;
+        }
+
+        if (C.TryGetCharacterConfig(name, world, out characterConfig))
+        {
+            return true;
+        }
+
+        return false;
     }
 }

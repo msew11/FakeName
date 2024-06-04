@@ -76,7 +76,7 @@ public class UpdateNamePlateHook : IDisposable
 
         if (gameObject is PlayerCharacter character)
         {
-            if (!C.TryGetCharacterConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
+            if (!P.TryGetConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
             {
                 return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
             }
@@ -124,7 +124,7 @@ public class UpdateNamePlateHook : IDisposable
                 return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
             }
             
-            if (!C.TryGetCharacterConfig(owner.Name.TextValue, owner.HomeWorld.Id, out var characterConfig))
+            if (!P.TryGetConfig(owner.Name.TextValue, owner.HomeWorld.Id, out var characterConfig))
             {
                 return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
             }

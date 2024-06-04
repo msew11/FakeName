@@ -104,7 +104,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!C.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
         {
             return false;
         }
@@ -154,7 +154,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!C.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
         {
             return false;
         }
@@ -225,7 +225,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!C.TryGetCharacterConfig(targetTargetChara.Name.TextValue, targetTargetChara.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(targetTargetChara.Name.TextValue, targetTargetChara.HomeWorld.Id, out var characterConfig))
         {
             return false;
         }
@@ -266,7 +266,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!C.TryGetCharacterConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
         {
             return false;
         }
@@ -324,7 +324,7 @@ public class TargetInfoComponent : IDisposable
 
     private unsafe bool RefreshPlayerWideText(string name, uint worldId, AtkUnitBase* wideTextAddon)
     {
-        if (!C.TryGetCharacterConfig(name, worldId, out var characterConfig))
+        if (!P.TryGetConfig(name, worldId, out var characterConfig))
         {
             return false;
         }

@@ -112,7 +112,7 @@ public class PartyListComponent : IDisposable
 
     public unsafe void ReplaceSelf(string memberName, uint world, AtkTextNode* nameNode)
     {
-        if (!C.TryGetCharacterConfig(memberName, world, out var characterConfig))
+        if (!P.TryGetConfig(memberName, world, out var characterConfig))
         {
             return;
         }
@@ -129,7 +129,7 @@ public class PartyListComponent : IDisposable
                 continue;
             }
 
-            if (!C.TryGetCharacterConfig(memberName, partyMember.World.Id, out var characterConfig))
+            if (!P.TryGetConfig(memberName, partyMember.World.Id, out var characterConfig))
             {
                 continue;
             }
@@ -154,7 +154,7 @@ public class PartyListComponent : IDisposable
                 continue;
             }
 
-            if (!C.TryGetCharacterConfig(memberName, (ushort)groupMember.HomeWorld, out var characterConfig))
+            if (!P.TryGetConfig(memberName, (ushort)groupMember.HomeWorld, out var characterConfig))
             {
                 continue;
             }
