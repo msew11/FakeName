@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using ECommons.Configuration;
 
 namespace FakeName.Data;
@@ -29,6 +28,7 @@ public class Config : IEzConfig
             var characterConfig = new CharacterConfig();
             characterConfig.Name = name;
             characterConfig.World = homeWorld;
+            // 如果已经存在，不会覆盖
             return world.TryAdd(name, characterConfig);
         }
 
@@ -41,6 +41,7 @@ public class Config : IEzConfig
         {
             characterConfig.World = homeWorld;
             characterConfig.Name = name;
+            // 如果已经存在，不会覆盖
             return world.TryAdd(name, characterConfig);
         }
 

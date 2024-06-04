@@ -249,6 +249,11 @@ public sealed class FakeNameFileSystem : FileSystem<CharacterConfig> , IDisposab
                         {
                             Fs.DoDelete(characterConfig);
                             C.Characters.Remove(characterConfig);
+
+                            if (worldDic.Count == 0)
+                            {
+                                C.WorldCharacterDictionary.Remove(world);
+                            }
                         }
                     }
                 }

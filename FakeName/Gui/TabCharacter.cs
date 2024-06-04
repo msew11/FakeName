@@ -22,7 +22,7 @@ internal class TabCharacter
     private static void DrawHeader()
     {
         HeaderDrawer.Draw(
-            P.OtterGuiHandler.FakeNameFileSystem.FindLeaf(Selected, out var l) ? l.Value.IncognitoName() : "", 0,
+            P.OtterGuiHandler.FakeNameFileSystem.FindLeaf(Selected, out var l) ? $"{l.Value.IncognitoName()}({l.Value.WorldName()})" : "", 0,
             ImGui.GetColorU32(ImGuiCol.FrameBg), 0,
             HeaderDrawer.Button.IncognitoButton(C.IncognitoMode, v => C.IncognitoMode = v));
     }
