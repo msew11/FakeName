@@ -1,10 +1,7 @@
-using System;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
-using Dalamud.Interface.Utility;
 using Dalamud.Utility;
-using ECommons;
 using ECommons.Configuration;
 using ECommons.DalamudServices;
 using ECommons.ImGuiMethods;
@@ -25,28 +22,32 @@ public class UI
 
         DrawSupportButton();
         ImGui.Checkbox("启用", ref C.Enabled);
-        TabCharacter.Draw();
-        /*ImGuiEx.EzTabBar("##main",[
+#if DEBUG
+        ImGuiEx.EzTabBar("##main",[
             ("角色设置", TabCharacter.Draw, null, true),
-            ("插件设置", TabSettings.Draw, null, true),
-        ]);*/
+            ("Debug", TabDebug.Draw, null, true),
+        ]);
+#endif
+        TabCharacter.Draw();
     }
 
-    private static float SupportButtonOffset;
+    private static float ButtonOffset;
     
     public static void DrawSupportButton()
     {
         var cur = ImGui.GetCursorPos();
 
-        if (SupportButtonOffset > 0) 
-        {
-            ImGui.SetCursorPosX(cur.X + ImGui.GetContentRegionAvail().X - SupportButtonOffset);
-        }
-
+        ImGui.SetCursorPosX(cur.X + ImGui.GetContentRegionAvail().X - ButtonOffset);
+        ImGui.BeginGroup();
         if (ImGuiComponents.IconButton(FontAwesomeIcon.Coffee, ImGuiColors.ParsedPurple)) {
             Util.OpenLink("https://afdian.net/a/msew11");
         }
-        SupportButtonOffset = ImGui.GetItemRectSize().X;
+        ImGui.SameLine();
+        if (ImGuiComponents.IconButton(FontAwesomeIcon.Globe, ImGuiColors.ParsedGrey)) {
+            Util.OpenLink("https://github.com/msew11/FakeName");
+        }
+        ImGui.EndGroup();
+        ButtonOffset = ImGui.GetItemRectSize().X;
         ImGui.SetCursorPos(cur);
     }
 }

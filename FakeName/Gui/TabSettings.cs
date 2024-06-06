@@ -14,11 +14,11 @@ public static class TabSettings
             {
                 if (C.Enabled && C.TryGetCharacterConfig(localPlayer.Name.TextValue, localPlayer.HomeWorld.Id, out var characterConfig))
                 {
-                    P.IpcProcessor.ChangedLocalCharacterTitle(characterConfig);
+                    P.IpcProcessor.ChangedLocalCharacterData(characterConfig);
                 }
                 else
                 {
-                    P.IpcProcessor.ChangedLocalCharacterTitle(null);
+                    P.IpcProcessor.ChangedLocalCharacterData(null);
                 }
             }
         }

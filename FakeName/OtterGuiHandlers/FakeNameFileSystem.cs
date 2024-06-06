@@ -118,6 +118,7 @@ public sealed class FakeNameFileSystem : FileSystem<CharacterConfig> , IDisposab
     {
         string newName = "";
         string clipboardText = null;
+        string forderName = string.Empty;
         CharacterConfig cloneConfig = null;
         string customName = string.Empty;
         uint customWorld;
@@ -129,6 +130,9 @@ public sealed class FakeNameFileSystem : FileSystem<CharacterConfig> , IDisposab
             AddButton(NewLocalCharaButton, 0);
             AddButton(NewTargetCharaButton, 1);
             AddButton(NewCustomCharaButton, 2);
+
+            RemoveButton(FolderAddButton);
+            AddButton(NewFolderButton, 3);
             // AddButton(ImportButton, 10);
             // AddButton(CopyToClipboardButton, 20);
             // AddButton(DeleteButton, 1000);
@@ -234,6 +238,27 @@ public sealed class FakeNameFileSystem : FileSystem<CharacterConfig> , IDisposab
                     ImGui.EndPopup();
                 }
             }
+        }
+        
+        protected void NewFolderButton(Vector2 size)
+        {
+            const string newFolderName = "folderName";
+
+            if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.FolderPlus.ToIconString(), size,
+                                             "创建目录", false, true))
+                ImGui.OpenPopup(newFolderName);
+
+            Folder? folder = null;
+            if (ImGuiUtil.OpenNameField(newFolderName, ref forderName) && forderName.Length > 0)
+                try
+                {
+                    folder   = FileSystem.FindOrCreateAllFolders(forderName);
+                    forderName = string.Empty;
+                }
+                catch
+                {
+                    // Ignored
+                }
         }
 
         private void DeleteCharaConfig(Leaf leaf)

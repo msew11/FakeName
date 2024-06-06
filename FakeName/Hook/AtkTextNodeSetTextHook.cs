@@ -3,6 +3,8 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using ECommons.DalamudServices;
+using ECommons.Logging;
+using FakeName.Component;
 using FakeName.Utils;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 
@@ -193,6 +195,11 @@ public class AtkTextNodeSetTextHook
                         else if (txt.Text.Contains(charaName))
                         {
                             // Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
+                        }
+                        else if (txt.Text.Contains("选择角色"))
+                        {
+                            AntiMeasurement.Init = true;
+                            // AntiMeasurement2.Init = true;
                         }
 
                         break;

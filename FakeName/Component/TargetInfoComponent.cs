@@ -55,7 +55,7 @@ public class TargetInfoComponent : IDisposable
         if (addon->IsVisible)
         {
             var resNode = addon->GetNodeById(3);
-            if (resNode->IsVisible)
+            if (resNode != null && resNode->IsVisible)
             {
                 RefreshTargetTarget((AtkUnitBase*)args.Addon);
             }

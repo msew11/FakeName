@@ -8,6 +8,7 @@ public class Config : IEzConfig
 {
     public bool Enabled = false;
     public bool IncognitoMode = false;
+    public bool DevMode = false;
     public bool HideSupport = false;
 
     public Dictionary<uint, Dictionary<string, CharacterConfig>> WorldCharacterDictionary = new();

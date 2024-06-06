@@ -38,6 +38,8 @@ public class FakeName : IDalamudPlugin
 
     public IpcProcessor IpcProcessor;
 
+    public string msg = "null";
+
     public FakeName(DalamudPluginInterface pi)
     {
         P = this;

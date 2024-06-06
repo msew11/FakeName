@@ -106,7 +106,7 @@ public class IpcProcessor : IDisposable
         }
     }
     
-    public void ChangedLocalCharacterTitle(CharacterConfig? characterConfig) {
+    public void ChangedLocalCharacterData(CharacterConfig? characterConfig) {
         var json = characterConfig == null? string.Empty : JsonConvert.SerializeObject((CharacterData)characterConfig);
         LocalCharacterDataChanged(json);
     }
@@ -118,7 +118,7 @@ public class IpcProcessor : IDisposable
 
     public void NotifyDisposing()
     {
-        ChangedLocalCharacterTitle(null);
+        ChangedLocalCharacterData(null);
         Disposing();
     }
     
