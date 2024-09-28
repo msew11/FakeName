@@ -63,9 +63,9 @@ public class IpcProcessor : IDisposable
     }
 
     [EzIPC("ClearCharacterData")]
-    void ClearCharacterData(Character character)
+    void ClearCharacterData(ICharacter character)
     {
-        if (character is not PlayerCharacter playerCharacter) return;
+        if (character is not IPlayerCharacter playerCharacter) return;
         var world = playerCharacter.HomeWorld.Id;
         var name = playerCharacter.Name.TextValue;
         if (Idm.TryGetCharacterConfig(name, world, out var characterConfig))
@@ -78,11 +78,11 @@ public class IpcProcessor : IDisposable
     }
     
     [EzIPC]
-    void SetCharacterData(Character character, string dataJson)
+    void SetCharacterData(ICharacter character, string dataJson)
     {
         try
         {
-            if (character is not PlayerCharacter playerCharacter) return;
+            if (character is not IPlayerCharacter playerCharacter) return;
             ClearCharacterData(character);
         
             if (dataJson == string.Empty)

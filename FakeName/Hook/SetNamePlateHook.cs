@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Hooking;
@@ -54,7 +55,7 @@ public class SetNamePlateHook : IDisposable
         
         var npObject = new NamePlateUtils.SafeNamePlateObject(namePlateObjectPtr);
         var npInfo = npObject.NamePlateInfo;
-        var actorId = npInfo.Data.ObjectID.ObjectID;
+        var actorId = npInfo.Data.ObjectId.ObjectId;
         if (actorId == 0xE0000000)
         {
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
@@ -66,7 +67,7 @@ public class SetNamePlateHook : IDisposable
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
 
-        var character = (PlayerCharacter?) Svc.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == actorId);
+        var character = (IPlayerCharacter?) Svc.Objects.FirstOrDefault(t => t is IPlayerCharacter && t.GameObjectId == actorId);
         if (character == null)
         {
             //Service.Log.Debug($"非玩家");
@@ -83,37 +84,10 @@ public class SetNamePlateHook : IDisposable
             return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, iconId);
         }
         
-        var name = SeStringUtils.ReadRawSeString(namePtr);
-        var title = SeStringUtils.ReadRawSeString(titlePtr);
-        var fcName = SeStringUtils.ReadRawSeString(fcNamePtr);
-        // Service.Log.Debug($"SetNamePlate：{name} {title} {fcName} {iconId}");
-
-        /*if (!string.IsNullOrEmpty(characterConfig.FakeNameText))
-        {
-            var nameText = SeStringUtils.ReadRawSeString(namePtr);
-            // Service.Log.Debug($"角色Id:{actorId}");
-            // Service.Log.Debug($"替换了角色名称:{nameText.TextValue}=>{characterConfig.FakeNameText} np:{npInfo.Name}");
-            
-            nameText.ReplaceSeStringText(character.Name.TextValue, characterConfig.FakeNameText);
-            fixed (byte* newNamePtr = nameText.Encode().Terminate())
-            {
-                namePtr = (IntPtr)newNamePtr;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(characterConfig.FakeFcNameText))
-        {
-            var fcNameText = SeStringUtils.ReadRawSeString(fcNamePtr);
-            // Service.Log.Debug($"替换了部队简称:{fcNameText.TextValue}=>{characterConfig.FakeFcNameText} np:{npInfo.FcName}");
-            
-            fcNameText.ReplaceSeStringText(character.CompanyTag.TextValue, characterConfig.FakeFcNameText);
-            fixed (byte* newFcNamePtr = fcNameText.Encode().Terminate())
-            {
-                fcNamePtr = (IntPtr)newFcNamePtr;
-            }
-        }*/
-        
-        // 61524
+        // var name = SeStringUtils.ReadRawSeString(namePtr);
+        // var title = SeStringUtils.ReadRawSeString(titlePtr);
+        // var fcName = SeStringUtils.ReadRawSeString(fcNamePtr);
         return hook.Original(namePlateObjectPtr, isPrefixTitle, displayTitle, titlePtr, namePtr, fcNamePtr, prefix, characterConfig.IconId);
     }
 }
+*/

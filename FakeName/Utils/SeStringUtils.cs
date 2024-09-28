@@ -29,11 +29,6 @@ internal static class SeStringUtils {
         }
     }
 
-    internal static unsafe string? RawName(this GameObject obj) {
-        var gameObj = (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*) obj.Address;
-        return Marshal.PtrToStringUTF8((IntPtr) gameObj->Name);
-    }
-
     internal static byte[] Terminate(this byte[] bs) {
         var terminated = new byte[bs.Length + 1];
         Array.Copy(bs, terminated, bs.Length);

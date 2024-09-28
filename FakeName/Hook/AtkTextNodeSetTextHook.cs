@@ -196,12 +196,6 @@ public class AtkTextNodeSetTextHook
                         {
                             // Service.Log.Verbose($"包含角色名的文本:{txt.Text}");
                         }
-                        else if (txt.Text.Contains("选择角色"))
-                        {
-                            AntiMeasurement.Init = true;
-                            // AntiMeasurement2.Init = true;
-                        }
-
                         break;
                 }
             }

@@ -62,19 +62,19 @@ public class UpdateNamePlateHook : IDisposable
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
         }
         
-        var actorId = namePlateInfo->ObjectID.ObjectID;
+        var actorId = namePlateInfo->ObjectId.ObjectId;
         if (actorId == 0xE0000000)
         {
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
         }
         
-        var gameObject = Svc.Objects.FirstOrDefault(t => t.ObjectId == actorId);
+        var gameObject = Svc.Objects.FirstOrDefault(t => t.GameObjectId == actorId);
         if (gameObject == null)
         {
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
         }
 
-        if (gameObject is PlayerCharacter character)
+        if (gameObject is IPlayerCharacter character)
         {
             if (!P.TryGetConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
             {
@@ -116,9 +116,9 @@ public class UpdateNamePlateHook : IDisposable
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
         }
 
-        if (gameObject is BattleNpc battleNpc)
+        if (gameObject is IBattleNpc battleNpc)
         {
-            var owner = (PlayerCharacter?) Svc.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == battleNpc.OwnerId);
+            var owner = (IPlayerCharacter?) Svc.Objects.FirstOrDefault(t => t is IPlayerCharacter && t.EntityId == battleNpc.OwnerId);
             if (owner == null)
             {
                 return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
@@ -156,14 +156,14 @@ public class UpdateNamePlateHook : IDisposable
             return;
         }
         
-        var actorId = namePlateInfo->ObjectID.ObjectID;
-        var gameObject = Svc.Objects.FirstOrDefault(t => t.ObjectId == actorId);
+        var actorId = namePlateInfo->ObjectId.ObjectId;
+        var gameObject = Svc.Objects.FirstOrDefault(t => t.GameObjectId == actorId);
         if (gameObject == null)
         {
             return;
         }
 
-        if (gameObject is PlayerCharacter character)
+        if (gameObject is IPlayerCharacter character)
         {
             var changed = false;
             var name = character.Name.TextValue;
@@ -190,7 +190,7 @@ public class UpdateNamePlateHook : IDisposable
             modifiedNamePlates.Remove(actorId);
         }
 
-        if (gameObject is BattleNpc)
+        if (gameObject is IBattleNpc)
         {
             if (!modifiedNamePlates.TryGetValue(actorId, out var old))
             {

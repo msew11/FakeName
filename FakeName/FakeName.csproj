@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Version>1.6.5.12</Version>
+        <Version>1.7.0.1</Version>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -18,11 +18,11 @@
 
     <PropertyGroup>
         <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
-        <DevPluginsPath>G:\FFXIV\Dalamud Related\_devPlugins\</DevPluginsPath>
-        <PluginsRepoPath>D:\DalamudProj\DalamudPlugins\plugins\</PluginsRepoPath>
+        <!--<DevPluginsPath>G:\FFXIV\Dalamud Related\_devPlugins\</DevPluginsPath>
+        <PluginsRepoPath>D:\DalamudProj\DalamudPlugins\plugins\</PluginsRepoPath>-->
     </PropertyGroup>
 
-    <Target Name="CopyCustomContent" AfterTargets="DefaultDalamudPackagerRelease">
+    <!--<Target Name="CopyCustomContent" AfterTargets="DefaultDalamudPackagerRelease">
         <ItemGroup>
             <PluginDevFiles Include="bin/**" Exclude="bin/$(ProjectName)/**" />
         </ItemGroup>
@@ -31,7 +31,7 @@
         </ItemGroup>
         <Copy SourceFiles="@(PluginDevFiles)" DestinationFolder="$(DevPluginsPath)$(ProjectName)\"/>
         <Copy SourceFiles="@(PluginPubFiles)" DestinationFolder="$(PluginsRepoPath)$(ProjectName)\" />
-    </Target>
+    </Target>-->
 
     <ItemGroup>
         <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
@@ -39,7 +39,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="DalamudPackager" Version="2.1.12"  MakeZip="true" />
+        <PackageReference Include="DalamudPackager" Version="2.1.13"  MakeZip="true" />
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
             <Private>false</Private>

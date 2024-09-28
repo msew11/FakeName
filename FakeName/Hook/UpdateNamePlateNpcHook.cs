@@ -59,24 +59,24 @@ public class UpdateNamePlateNpcHook : IDisposable
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
 
-        if (gameObject->ObjectKind == (byte)ObjectKind.EventNpc)
+        if (gameObject->ObjectKind == ObjectKind.EventNpc)
         {
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
 
-        if (gameObject->ObjectKind != (byte)ObjectKind.Companion)
+        if (gameObject->ObjectKind != ObjectKind.Companion)
         {
             // Service.Log.Debug($"{namePlateInfo->Name.ToString()}");
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
         
-        var actorId = namePlateInfo->ObjectID.ObjectID;
+        var actorId = namePlateInfo->ObjectId.ObjectId;
         if (actorId == 0xE0000000)
         {
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
         
-        var character = (PlayerCharacter?) Svc.Objects.FirstOrDefault(t => t is PlayerCharacter && t.ObjectId == actorId);
+        var character = (IPlayerCharacter?) Svc.Objects.FirstOrDefault(t => t is IPlayerCharacter && t.GameObjectId == actorId);
         if (character == null)
         {
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
@@ -105,12 +105,12 @@ public class UpdateNamePlateNpcHook : IDisposable
 
     private unsafe void TryCleanUp(RaptureAtkModule.NamePlateInfo* namePlateInfo, GameObject* gameObject)
     {
-        if (gameObject->ObjectKind != 9)
+        if (gameObject->ObjectKind != ObjectKind.Companion)
         {
             return;
         }
         
-        var actorId = namePlateInfo->ObjectID.ObjectID;
+        var actorId = namePlateInfo->ObjectId.ObjectId;
         if (!modifiedNamePlates.TryGetValue(actorId, out var old))
         {
             return;

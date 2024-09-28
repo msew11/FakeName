@@ -55,7 +55,7 @@ public class TargetInfoComponent : IDisposable
         if (addon->IsVisible)
         {
             var resNode = addon->GetNodeById(3);
-            if (resNode != null && resNode->IsVisible)
+            if (resNode != null && resNode->IsVisible())
             {
                 RefreshTargetTarget((AtkUnitBase*)args.Addon);
             }
@@ -99,7 +99,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (targetObj is not PlayerCharacter targetChar)
+        if (targetObj is not IPlayerCharacter targetChar)
         {
             return false;
         }
@@ -149,7 +149,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (targetObj is not PlayerCharacter targetChar)
+        if (targetObj is not IPlayerCharacter targetChar)
         {
             return false;
         }
@@ -202,11 +202,11 @@ public class TargetInfoComponent : IDisposable
         AtkTextNode* textNode = addon->GetTextNodeById(7);
         var text = textNode->NodeText.ToString();
         
-        PlayerCharacter? targetTargetChara = null;
+        IPlayerCharacter? targetTargetChara = null;
         var targetTargetObj = targetObj.TargetObject;
         if (targetTargetObj != null)
         {
-            if (targetTargetObj is PlayerCharacter obj && text.Contains(obj.Name.TextValue))
+            if (targetTargetObj is IPlayerCharacter obj && text.Contains(obj.Name.TextValue))
             {
                 targetTargetChara = obj;
             }
@@ -261,7 +261,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (focusTarget is not PlayerCharacter targetChar)
+        if (focusTarget is not IPlayerCharacter targetChar)
         {
             return false;
         }

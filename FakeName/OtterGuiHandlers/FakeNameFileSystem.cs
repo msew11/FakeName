@@ -174,7 +174,7 @@ public sealed class FakeNameFileSystem : FileSystem<CharacterConfig> , IDisposab
         {
             if (ImGuiUtil.DrawDisabledButton(FontAwesomeIcon.DotCircle.ToIconString(), size, "添加目标角色", false, true))
             {
-                if (Svc.Targets.Target is PlayerCharacter pc) {
+                if (Svc.Targets.Target is IPlayerCharacter pc) {
                     var name = pc.Name.TextValue;
                     var world = pc.HomeWorld.Id;
                     if (C.TryAddCharacter(name, world))

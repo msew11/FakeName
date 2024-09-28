@@ -142,14 +142,14 @@ public class PartyListComponent : IDisposable
     public unsafe void ReplaceCrossPartyListHud(string memberName, AtkTextNode* nameNode, InfoProxyCrossRealm* cwProxy)
     {
         var localIndex = cwProxy->LocalPlayerGroupIndex;
-        var crossRealmGroup = cwProxy->CrossRealmGroupArraySpan[localIndex];
+        var crossRealmGroup = cwProxy->CrossRealmGroups[localIndex];
         
         for (var i = 0; i < crossRealmGroup.GroupMemberCount; i++)
         {
-            var groupMember = crossRealmGroup.GroupMembersSpan[i];
-            var groupMemberName = SeStringUtils.ReadSeString(groupMember.Name).TextValue;
+            var groupMember = crossRealmGroup.GroupMembers[i];
+            var groupMemberName = groupMember.NameString;
             
-            if (!groupMemberName.Equals(memberName))
+            if (!memberName.Equals(groupMemberName))
             {
                 continue;
             }
@@ -170,14 +170,14 @@ public class PartyListComponent : IDisposable
         var partyListAddon = (AddonPartyList*) Svc.GameGui.GetAddonByName("_PartyList", 1);
         
         List<AddonPartyList.PartyListMemberStruct> p = [
-            partyListAddon->PartyMember.PartyMember0,
-            partyListAddon->PartyMember.PartyMember1,
-            partyListAddon->PartyMember.PartyMember2,
-            partyListAddon->PartyMember.PartyMember3,
-            partyListAddon->PartyMember.PartyMember4,
-            partyListAddon->PartyMember.PartyMember5,
-            partyListAddon->PartyMember.PartyMember6,
-            partyListAddon->PartyMember.PartyMember7
+            partyListAddon->PartyMembers[0],
+            partyListAddon->PartyMembers[1],
+            partyListAddon->PartyMembers[2],
+            partyListAddon->PartyMembers[3],
+            partyListAddon->PartyMembers[4],
+            partyListAddon->PartyMembers[5],
+            partyListAddon->PartyMembers[6],
+            partyListAddon->PartyMembers[7]
         ];
 
         return p.Where(n => n.Name->NodeText.ToString().Length > 0).ToList();
