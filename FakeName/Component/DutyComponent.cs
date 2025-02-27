@@ -37,15 +37,15 @@ public class DutyComponent : IDisposable
     private void OnTerritoryChanged(ushort e)
     {
         var content =
-            _contentFinderConditionsSheet.FirstOrDefault(t => t.TerritoryType.Row == Svc.ClientState.TerritoryType);
+            _contentFinderConditionsSheet.FirstOrDefault(t => t.TerritoryType.RowId == Svc.ClientState.TerritoryType);
 
-        if (content == null)
+        if (content.RowId == 0)
         {
             ZoneType = ZoneType.Overworld;
         }
         else
         {
-            var memberType = content.ContentMemberType.Row;
+            var memberType = content.ContentMemberType.RowId;
 
             if (content.RowId == 16 || content.RowId == 15)
             {

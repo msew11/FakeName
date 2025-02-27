@@ -76,7 +76,7 @@ public class UpdateNamePlateHook : IDisposable
 
         if (gameObject is IPlayerCharacter character)
         {
-            if (!P.TryGetConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
+            if (!P.TryGetConfig(character.Name.TextValue, character.HomeWorld.RowId, out var characterConfig))
             {
                 return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
             }
@@ -96,7 +96,7 @@ public class UpdateNamePlateHook : IDisposable
                 namePlateInfo->FcName.SetString("");
                 changed = true;
             }
-            else if (character.CurrentWorld.Id == character.HomeWorld.Id && !dutyComponent.InDuty && character.CompanyTag.TextValue.Length > 0)
+            else if (character.CurrentWorld.RowId == character.HomeWorld.RowId && !dutyComponent.InDuty && character.CompanyTag.TextValue.Length > 0)
             {
                 var newFcName = characterConfig.FakeFcNameText.Length > 0 ? $" «{characterConfig.FakeFcNameText}»" : $" «{character.CompanyTag.TextValue}»";
                 if (!namePlateInfo->FcName.ToString().Equals(newFcName))
@@ -124,7 +124,7 @@ public class UpdateNamePlateHook : IDisposable
                 return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
             }
             
-            if (!P.TryGetConfig(owner.Name.TextValue, owner.HomeWorld.Id, out var characterConfig))
+            if (!P.TryGetConfig(owner.Name.TextValue, owner.HomeWorld.RowId, out var characterConfig))
             {
                 return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, battleChara, numArrayIndex, stringArrayIndex);
             }

@@ -12,7 +12,7 @@ public static class TabSettings
             var localPlayer = Svc.ClientState.LocalPlayer;
             if (localPlayer!= null)
             {
-                if (C.Enabled && C.TryGetCharacterConfig(localPlayer.Name.TextValue, localPlayer.HomeWorld.Id, out var characterConfig))
+                if (C.Enabled && C.TryGetCharacterConfig(localPlayer.Name.TextValue, localPlayer.HomeWorld.RowId, out var characterConfig))
                 {
                     P.IpcProcessor.ChangedLocalCharacterData(characterConfig);
                 }

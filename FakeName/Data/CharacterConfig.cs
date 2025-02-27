@@ -31,7 +31,7 @@ public class CharacterConfig
             return "Unknown";
         }
 
-        return world.Name.RawString;
+        return world.Value.Name.ToString();
     }
     internal string IncognitoName()
     {

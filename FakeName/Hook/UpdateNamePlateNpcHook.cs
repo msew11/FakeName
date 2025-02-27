@@ -82,7 +82,7 @@ public class UpdateNamePlateNpcHook : IDisposable
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }
         
-        if (!P.TryGetConfig(character.Name.TextValue, character.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(character.Name.TextValue, character.HomeWorld.RowId, out var characterConfig))
         {
             return hook.Original(raptureAtkModule, namePlateInfo, numArray, stringArray, gameObject, numArrayIndex, stringArrayIndex);
         }

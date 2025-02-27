@@ -46,7 +46,7 @@ internal class TabCharacterOld
             if (Svc.ClientState.LocalPlayer != null) {
                 if (ImGuiComponents.IconButton(FontAwesomeIcon.User)) {
                     if (Svc.ClientState.LocalPlayer != null) {
-                        P.Config.TryAddCharacter(Svc.ClientState.LocalPlayer.Name.TextValue, Svc.ClientState.LocalPlayer.HomeWorld.Id);
+                        P.Config.TryAddCharacter(Svc.ClientState.LocalPlayer.Name.TextValue, Svc.ClientState.LocalPlayer.HomeWorld.RowId);
                     }
                 }
                 
@@ -55,7 +55,7 @@ internal class TabCharacterOld
                 ImGui.SameLine();
                 if (ImGuiComponents.IconButton(FontAwesomeIcon.DotCircle)) {
                     if (Svc.Targets.Target is PlayerCharacter pc) {
-                        P.Config.TryAddCharacter(pc.Name.TextValue, pc.HomeWorld.Id);
+                        P.Config.TryAddCharacter(pc.Name.TextValue, pc.HomeWorld.RowId);
                     }
                 }
                 if (ImGui.IsItemHovered()) ImGui.SetTooltip("添加目标角色");
@@ -133,7 +133,7 @@ internal class TabCharacterOld
         {
             if (SelectedCharaCfg != null)
             {
-                var activePlayer = Svc.Objects.FirstOrDefault(t => t is PlayerCharacter playerCharacter && playerCharacter.Name.TextValue == SelectedName && playerCharacter.HomeWorld.Id == SelectedWorld);
+                var activePlayer = Svc.Objects.FirstOrDefault(t => t is PlayerCharacter playerCharacter && playerCharacter.Name.TextValue == SelectedName && playerCharacter.HomeWorld.RowId == SelectedWorld);
 
                 DrawCharacterView(SelectedCharaCfg, activePlayer, ref modified);
             }

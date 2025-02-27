@@ -104,7 +104,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!P.TryGetConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(targetChar.Name.TextValue, targetChar.HomeWorld.RowId, out var characterConfig))
         {
             return false;
         }
@@ -154,7 +154,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!P.TryGetConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(targetChar.Name.TextValue, targetChar.HomeWorld.RowId, out var characterConfig))
         {
             return false;
         }
@@ -225,7 +225,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!P.TryGetConfig(targetTargetChara.Name.TextValue, targetTargetChara.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(targetTargetChara.Name.TextValue, targetTargetChara.HomeWorld.RowId, out var characterConfig))
         {
             return false;
         }
@@ -266,7 +266,7 @@ public class TargetInfoComponent : IDisposable
             return false;
         }
 
-        if (!P.TryGetConfig(targetChar.Name.TextValue, targetChar.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(targetChar.Name.TextValue, targetChar.HomeWorld.RowId, out var characterConfig))
         {
             return false;
         }
@@ -305,13 +305,13 @@ public class TargetInfoComponent : IDisposable
         //     return false;
         // }
 
-        var change = RefreshPlayerWideText(localPlayer.Name.TextValue, localPlayer.HomeWorld.Id, addon);
+        var change = RefreshPlayerWideText(localPlayer.Name.TextValue, localPlayer.HomeWorld.RowId, addon);
         if (!change)
         {
             // 小队成员的倒计时
             foreach (var partyMember in Svc.Party)
             {
-                change = RefreshPlayerWideText(partyMember.Name.TextValue, partyMember.World.Id, addon);
+                change = RefreshPlayerWideText(partyMember.Name.TextValue, partyMember.World.RowId, addon);
                 if (change)
                 {
                     return change;

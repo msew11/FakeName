@@ -156,7 +156,7 @@ public sealed class FakeNameFileSystem : FileSystem<CharacterConfig> , IDisposab
             {
                 if (Svc.ClientState.LocalPlayer != null) {
                     var name = Svc.ClientState.LocalPlayer.Name.TextValue;
-                    var world = Svc.ClientState.LocalPlayer.HomeWorld.Id;
+                    var world = Svc.ClientState.LocalPlayer.HomeWorld.RowId;
                     if (C.TryAddCharacter(name, world))
                     {
                         if (C.TryGetCharacterConfig(name, world, out var characterConfig))
@@ -176,7 +176,7 @@ public sealed class FakeNameFileSystem : FileSystem<CharacterConfig> , IDisposab
             {
                 if (Svc.Targets.Target is IPlayerCharacter pc) {
                     var name = pc.Name.TextValue;
-                    var world = pc.HomeWorld.Id;
+                    var world = pc.HomeWorld.RowId;
                     if (C.TryAddCharacter(name, world))
                     {
                         if (C.TryGetCharacterConfig(name, world, out var characterConfig))
@@ -202,12 +202,12 @@ public sealed class FakeNameFileSystem : FileSystem<CharacterConfig> , IDisposab
                     ImGui.TextColored(ImGuiColors.DalamudYellow, "添加指定角色");
                     ImGui.Separator();
 
-                    var worldRow = Worlds.FirstOrDefault(w => w.IsPublic && !w.Name.RawData.IsEmpty && w.Region == 2 && w.RowId == customWorld);
-                    if (ImGui.BeginCombo("##指定角色服务器", worldRow != null ? worldRow.Name.RawString : "请选择服务器", ImGuiComboFlags.HeightLarge))
+                    var worldRow = Worlds.FirstOrDefault(w => w.IsPublic && !w.Name.IsEmpty && w.Region == 2 && w.RowId == customWorld);
+                    if (ImGui.BeginCombo("##指定角色服务器", worldRow.RowId != 0 ? worldRow.Name.ToString() : "请选择服务器", ImGuiComboFlags.HeightLarge))
                     {
-                        foreach (var world in Worlds.Where(w => w.IsPublic && !w.Name.RawData.IsEmpty && w.Region == 2))
+                        foreach (var world in Worlds.Where(w => w.IsPublic && !w.Name.IsEmpty && w.Region == 2))
                         {
-                            if (ImGui.Selectable($"{world.Name.RawString} ({world.RowId})",
+                            if (ImGui.Selectable($"{world.Name} ({world.RowId})",
                                                  world.RowId == customWorld))
                             {
                                 customWorld = world.RowId;
