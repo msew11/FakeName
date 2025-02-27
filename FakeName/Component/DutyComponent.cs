@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using ECommons.DalamudServices;
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace FakeName.Component;
 

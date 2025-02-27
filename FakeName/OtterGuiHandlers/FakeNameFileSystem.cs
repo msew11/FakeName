@@ -16,7 +16,7 @@ using ECommons.Logging;
 using FakeName.Data;
 using ImGuiNET;
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using OtterGui;
 using OtterGui.Classes;
 using OtterGui.Filesystem;

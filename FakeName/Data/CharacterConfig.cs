@@ -1,6 +1,6 @@
 using System;
 using ECommons.DalamudServices;
-using World = Lumina.Excel.GeneratedSheets.World;
+using World = Lumina.Excel.Sheets.World;
 
 namespace FakeName.Data;
 
