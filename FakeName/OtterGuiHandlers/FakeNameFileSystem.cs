@@ -202,8 +202,8 @@ public sealed class FakeNameFileSystem : FileSystem<CharacterConfig> , IDisposab
                     ImGui.TextColored(ImGuiColors.DalamudYellow, "添加指定角色");
                     ImGui.Separator();
 
-                    var worldRow = Worlds.FirstOrDefault(w => w.IsPublic && !w.Name.IsEmpty && w.Region == 2 && w.RowId == customWorld);
-                    if (ImGui.BeginCombo("##指定角色服务器", worldRow.RowId != 0 ? worldRow.Name.ToString() : "请选择服务器", ImGuiComboFlags.HeightLarge))
+                    var worldRow = Worlds.FirstOrNull(w => w.IsPublic && !w.Name.IsEmpty && w.Region == 2 && w.RowId == customWorld);
+                    if (ImGui.BeginCombo("##指定角色服务器", worldRow != null ? worldRow?.Name.ToString() : "请选择服务器", ImGuiComboFlags.HeightLarge))
                     {
                         foreach (var world in Worlds.Where(w => w.IsPublic && !w.Name.IsEmpty && w.Region == 2))
                         {
