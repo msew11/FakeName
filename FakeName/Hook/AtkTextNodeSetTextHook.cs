@@ -59,7 +59,7 @@ public class AtkTextNodeSetTextHook
 
         var charaName = character.Name.TextValue;
         var fcName = character.CompanyTag.TextValue;
-        if (!P.TryGetConfig(charaName, character.HomeWorld.Id, out var characterConfig))
+        if (!P.TryGetConfig(charaName, character.HomeWorld.RowId, out var characterConfig))
         {
             hook.Original(node, textPtr);
             return;

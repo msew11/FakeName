@@ -91,7 +91,7 @@ public class PartyListComponent : IDisposable
                 // Service.Log.Debug($"匹配到文本 [{memberName}]");
                 if (memberName.Equals(localPlayer.Name.TextValue))
                 {
-                    ReplaceSelf(memberName, localPlayer.HomeWorld.Id, nameNode);
+                    ReplaceSelf(memberName, localPlayer.HomeWorld.RowId, nameNode);
                 }
                 else
                 {
@@ -129,7 +129,7 @@ public class PartyListComponent : IDisposable
                 continue;
             }
 
-            if (!P.TryGetConfig(memberName, partyMember.World.Id, out var characterConfig))
+            if (!P.TryGetConfig(memberName, partyMember.World.RowId, out var characterConfig))
             {
                 continue;
             }

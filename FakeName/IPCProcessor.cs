@@ -54,7 +54,7 @@ public class IpcProcessor : IDisposable
             return string.Empty;
         }
 
-        if (!C.TryGetCharacterConfig(player.Name.TextValue, player.HomeWorld.Id, out var characterConfig))
+        if (!C.TryGetCharacterConfig(player.Name.TextValue, player.HomeWorld.RowId, out var characterConfig))
         {
             return string.Empty;
         }
@@ -66,7 +66,7 @@ public class IpcProcessor : IDisposable
     void ClearCharacterData(ICharacter character)
     {
         if (character is not IPlayerCharacter playerCharacter) return;
-        var world = playerCharacter.HomeWorld.Id;
+        var world = playerCharacter.HomeWorld.RowId;
         var name = playerCharacter.Name.TextValue;
         if (Idm.TryGetCharacterConfig(name, world, out var characterConfig))
         {
@@ -96,7 +96,7 @@ public class IpcProcessor : IDisposable
                 return;
             }
         
-            var world = playerCharacter.HomeWorld.Id;
+            var world = playerCharacter.HomeWorld.RowId;
             var name = playerCharacter.Name.TextValue;
             Idm.AddOrUpdCharacter(name, world, titleData);
         }

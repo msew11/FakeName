@@ -90,7 +90,7 @@ internal class TabCharacter
         }
 
         var localPlayer = Svc.ClientState.LocalPlayer;
-        if (change && localPlayer != null && localPlayer.Name.TextValue.Equals(characterConfig.Name) && localPlayer.HomeWorld.Id == characterConfig.World)
+        if (change && localPlayer != null && localPlayer.Name.TextValue.Equals(characterConfig.Name) && localPlayer.HomeWorld.RowId == characterConfig.World)
         {
             P.IpcProcessor.ChangedLocalCharacterData(characterConfig);
         }

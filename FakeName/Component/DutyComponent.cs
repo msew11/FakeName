@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using ECommons.DalamudServices;
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace FakeName.Component;
 
@@ -37,7 +37,7 @@ public class DutyComponent : IDisposable
     private void OnTerritoryChanged(ushort e)
     {
         var content =
-            _contentFinderConditionsSheet.FirstOrDefault(t => t.TerritoryType.Row == Svc.ClientState.TerritoryType);
+            _contentFinderConditionsSheet.FirstOrNull(t => t.TerritoryType.RowId == Svc.ClientState.TerritoryType);
 
         if (content == null)
         {
@@ -45,15 +45,15 @@ public class DutyComponent : IDisposable
         }
         else
         {
-            var memberType = content.ContentMemberType.Row;
+            var memberType = content?.ContentMemberType.RowId;
 
-            if (content.RowId == 16 || content.RowId == 15)
+            if (content?.RowId == 16 || content?.RowId == 15)
             {
                 // Praetorium and Castrum Meridianum
                 memberType = 2;
             }
 
-            if (content.RowId == 735 || content.RowId == 778)
+            if (content?.RowId == 735 || content?.RowId == 778)
             {
                 // Bozja
                 memberType = 127;

@@ -1,6 +1,6 @@
 using System;
 using ECommons.DalamudServices;
-using World = Lumina.Excel.GeneratedSheets.World;
+using World = Lumina.Excel.Sheets.World;
 
 namespace FakeName.Data;
 
@@ -31,7 +31,7 @@ public class CharacterConfig
             return "Unknown";
         }
 
-        return world.Name.RawString;
+        return world.Value.Name.ToString();
     }
     internal string IncognitoName()
     {
